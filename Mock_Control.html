@@ -1,0 +1,2439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Mock Control — Tom</title>
+<style>
+:root{
+  --ink:#1D1D1F; --sub:#6E6E73; --faint:#98989D;
+  --glass:rgba(255,255,255,.62); --glass-strong:rgba(255,255,255,.8);
+  --stroke:rgba(255,255,255,.75); --edge:rgba(29,29,31,.08);
+  --shadow:0 8px 32px rgba(31,38,64,.10), 0 1.5px 4px rgba(31,38,64,.06);
+  --blue:#0A84FF; --red:#FF3B30;
+  --physics:#64748B; --math:#FF6B4A; --chem:#30B58A; --spanish:#F5A623;
+  --history:#BF5AC2; --english:#7A6FF0; --buffer:#A8A8AD;
+  --r-lg:22px; --r-md:16px; --r-sm:12px;
+  --ease:cubic-bezier(.32,.72,.28,1);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased;
+  min-height:100vh;
+  background:#EEF1F7;
+  background-image:
+    radial-gradient(1100px 600px at 12% -8%, rgba(122,111,240,.20), transparent 60%),
+    radial-gradient(900px 550px at 105% 12%, rgba(10,132,255,.16), transparent 55%),
+    radial-gradient(1000px 700px at 50% 115%, rgba(48,181,138,.14), transparent 60%);
+  background-attachment:fixed;
+}
+.wrap{max-width:800px;margin:0 auto;padding:22px 14px 90px}
+
+/* glass primitives */
+.glass{
+  background:var(--glass);
+  backdrop-filter:blur(24px) saturate(1.6);
+  -webkit-backdrop-filter:blur(24px) saturate(1.6);
+  border:1px solid var(--stroke);
+  border-radius:var(--r-lg);
+  box-shadow:var(--shadow);
+}
+.card{
+  background:rgba(255,255,255,.92);
+  border:1px solid var(--edge);
+  border-radius:var(--r-md);
+  box-shadow:0 2px 10px rgba(31,38,64,.05);
+}
+
+/* masthead */
+.masthead{padding:20px 22px 16px;margin-bottom:14px}
+.masthead h1{font-family:"SF Pro Display",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  font-size:26px;font-weight:700;letter-spacing:-.4px;margin:0}
+.masthead .meta{display:flex;flex-wrap:wrap;gap:5px 20px;font-size:12.5px;color:var(--sub);margin-top:6px}
+.masthead .meta b{color:var(--ink);font-variant-numeric:tabular-nums;font-weight:600}
+
+/* stats */
+.statgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(112px,1fr));gap:10px;margin-bottom:14px}
+.stat{padding:12px 14px;border-radius:var(--r-md);
+  transition:transform .18s var(--ease), box-shadow .18s var(--ease)}
+.stat:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(31,38,64,.12)}
+.stat .l{font-size:10.5px;color:var(--sub);text-transform:uppercase;letter-spacing:.7px;font-weight:600}
+.stat .v{font-size:24px;font-weight:700;letter-spacing:-.5px;font-variant-numeric:tabular-nums;margin-top:1px}
+.stat .s{font-size:11px;color:var(--faint)}
+
+/* tab pill */
+.tabbar{position:sticky;top:10px;z-index:40;display:flex;gap:2px;padding:4px;margin-bottom:18px;border-radius:999px}
+.tab{flex:1;min-width:0;padding:9px 4px;text-align:center;font-size:13px;font-weight:500;cursor:pointer;
+  border:none;background:transparent;font-family:inherit;color:var(--sub);border-radius:999px;
+  transition:color .25s var(--ease);white-space:nowrap;position:relative;z-index:2}
+.tab.on{color:var(--ink);font-weight:600}
+
+/* view transitions */
+#view.swap{animation:fadeUp .3s var(--ease)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+}
+
+h2{font-size:17px;font-weight:700;letter-spacing:-.2px;margin:24px 0 4px;display:flex;align-items:baseline;gap:8px}
+h2 .marks{font-size:12px;color:var(--faint);font-weight:400}
+.note{font-size:12.5px;color:var(--sub);margin:0 0 12px}
+
+/* week groups */
+details{margin-bottom:6px}
+summary{cursor:pointer;font-size:15px;font-weight:600;padding:12px 16px;list-style:none;
+  display:flex;align-items:center;gap:10px;border-radius:var(--r-md);
+  transition:background .12s var(--ease)}
+summary::-webkit-details-marker{display:none}
+summary .chev{margin-left:auto;font-size:12px;color:var(--faint);transition:transform .35s var(--ease)}
+details[open] summary .chev{transform:rotate(90deg)}
+summary:hover{background:rgba(255,255,255,.55)}
+.pill{font-size:10.5px;font-weight:600;color:#fff;background:var(--blue);padding:2px 9px;border-radius:999px}
+
+.day-h{font-weight:600;font-size:13px;color:var(--sub);margin:14px 4px 6px;letter-spacing:-.1px}
+.task{display:flex;gap:11px;align-items:flex-start;padding:11px 13px;margin-bottom:7px;
+  border-radius:var(--r-md);
+  transition:opacity .18s var(--ease)}
+
+.task.done{opacity:.45}
+.task.done .t{text-decoration:line-through}
+.task .body{flex:1;min-width:0}
+.task .t{font-size:13.5px}
+.task .m{font-size:11.5px;color:var(--faint);font-variant-numeric:tabular-nums;margin-top:1px}
+.sd{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:7px}
+.del{background:none;border:none;color:var(--faint);cursor:pointer;font-size:16px;padding:0 3px;flex-shrink:0;
+  opacity:0;transition:opacity .25s var(--ease)}
+.task:hover .del,.list-row:hover .del{opacity:1}
+
+/* pretty checkbox */
+input[type=checkbox]{appearance:none;-webkit-appearance:none;width:20px;height:20px;flex-shrink:0;margin-top:1px;
+  border-radius:7px;border:1.5px solid rgba(29,29,31,.25);background:rgba(255,255,255,.8);cursor:pointer;
+  display:grid;place-content:center;transition:background .12s var(--ease), border-color .12s var(--ease), transform .1s var(--ease)}
+input[type=checkbox]:active{transform:scale(.9)}
+input[type=checkbox]::before{content:"";width:11px;height:11px;transform:scale(0);
+  transition:transform .15s var(--ease);
+  clip-path:polygon(14% 44%,0 61%,40% 100%,100% 16%,84% 3%,39% 70%);background:#fff}
+input[type=checkbox]:checked{background:var(--blue);border-color:var(--blue)}
+input[type=checkbox]:checked::before{transform:scale(1)}
+input[type=checkbox]:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+
+/* forms */
+.addrow{display:flex;flex-wrap:wrap;gap:7px;margin:10px 0 4px}
+.addrow input,.addrow select,.frm input,.frm select,textarea{
+  font-family:inherit;font-size:13px;padding:9px 12px;border:1px solid var(--edge);
+  background:rgba(255,255,255,.85);color:var(--ink);border-radius:var(--r-sm);
+  transition:border-color .25s var(--ease), box-shadow .25s var(--ease)}
+.addrow input:focus,.frm input:focus,.frm select:focus,textarea:focus,.addrow select:focus{
+  outline:none;border-color:var(--blue);box-shadow:0 0 0 3.5px rgba(10,132,255,.18)}
+.addrow input[type=text]{flex:1;min-width:150px}
+.addrow input[type=number]{width:74px}
+button.b{font-family:inherit;font-size:13.5px;font-weight:600;padding:9px 18px;border:none;border-radius:999px;
+  background:var(--blue);color:#fff;cursor:pointer;
+  box-shadow:0 3px 10px rgba(10,132,255,.32);
+  transition:transform .2s var(--ease), box-shadow .25s var(--ease), opacity .2s}
+button.b:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(10,132,255,.38)}
+button.b:active{transform:scale(.97)}
+button.b:disabled{opacity:.5;cursor:default;transform:none}
+button.b.ghost{background:rgba(255,255,255,.8);color:var(--ink);box-shadow:0 2px 8px rgba(31,38,64,.08);
+  border:1px solid var(--edge)}
+.frm{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+.frm .full{grid-column:1/-1}
+
+.list-row{display:flex;gap:10px;font-size:12.5px;padding:9px 13px;align-items:baseline;border-radius:var(--r-sm);
+  transition:background .25s var(--ease)}
+.list-row:hover{background:rgba(29,29,31,.035)}
+.ragrow:active{background:rgba(29,29,31,.07)}
+.list-row .grow{flex:1}
+.list-row .num{font-variant-numeric:tabular-nums}
+.scorechip{display:inline-block;font-variant-numeric:tabular-nums;background:rgba(255,255,255,.9);
+  border:1px solid var(--edge);padding:1px 9px;font-size:12px;border-radius:999px;font-weight:600}
+.cw{color:var(--red);font-weight:700;font-size:12px}
+
+/* bars */
+.barwrap{margin:8px 0 12px}
+.barrow{display:flex;align-items:center;gap:9px;margin-bottom:7px;font-size:12.5px}
+.barrow .lab{width:64px;flex-shrink:0;font-weight:500}
+.barrow .track{flex:1;height:12px;background:rgba(29,29,31,.06);border-radius:999px;position:relative;overflow:visible}
+.barrow .fill{height:100%;border-radius:999px;position:absolute;left:0;top:0;
+  transition:width .35s var(--ease);box-shadow:inset 0 0 0 .5px rgba(255,255,255,.4)}
+.barrow .tgt{position:absolute;top:-3px;bottom:-3px;width:2.5px;border-radius:2px;background:var(--ink);opacity:.65}
+.barrow .num{width:88px;flex-shrink:0;text-align:right;font-variant-numeric:tabular-nums;color:var(--sub);font-size:11.5px}
+
+/* coach */
+.coach{padding:16px 18px;margin-bottom:10px;border-radius:var(--r-lg);position:relative;overflow:hidden}
+.coach::before{content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;
+  background:linear-gradient(135deg, rgba(122,111,240,.10), rgba(10,132,255,.07) 45%, transparent 70%)}
+.coach h3{margin:0 0 4px;font-size:16px;font-weight:700;letter-spacing:-.2px;
+  background:linear-gradient(90deg,#7A6FF0,#0A84FF);-webkit-background-clip:text;background-clip:text;color:transparent}
+.coach .out{font-size:13.5px;white-space:pre-wrap;margin-top:12px;position:relative}
+.coach textarea{width:100%;min-height:66px;resize:vertical;position:relative}
+.quick{display:flex;flex-wrap:wrap;gap:7px;margin:10px 0;position:relative}
+.quick button{font-size:12px;font-weight:500;padding:7px 13px;border:1px solid var(--edge);border-radius:999px;
+  background:rgba(255,255,255,.8);cursor:pointer;font-family:inherit;color:var(--ink);
+  transition:transform .2s var(--ease), background .25s var(--ease), box-shadow .25s var(--ease)}
+.quick button:hover{transform:translateY(-1px);background:#fff;box-shadow:0 4px 12px rgba(31,38,64,.1)}
+.thinking{display:inline-block;animation:pulse 1.2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:.35}50%{opacity:1}}
+
+.footer{font-size:11.5px;color:var(--faint);margin-top:28px;padding:14px 18px;border-radius:var(--r-md)}
+@media (max-width:520px){.frm{grid-template-columns:1fr}.tab{font-size:12px}}
+
+/* ================= LAUNCH CONTROL ================= */
+body.bunker{
+  --ink:#B9F5C8; --sub:#6FA97E; --faint:#4A7256;
+  --edge:rgba(120,255,170,.14); --stroke:rgba(120,255,170,.18);
+  --blue:#43E08A; --red:#FF3B30;
+  --glass:rgba(10,18,13,.72); --glass-strong:rgba(10,18,13,.86);
+  --shadow:0 0 0 1px rgba(120,255,170,.06), 0 8px 40px rgba(0,0,0,.6);
+  --physics:#7FB0C8; --math:#FF8A5B; --chem:#43E08A; --spanish:#FFC03A;
+  --history:#D98AE0; --english:#8E9BFF; --buffer:#6FA97E;
+  background:#050907;
+  background-image:
+    linear-gradient(rgba(120,255,170,.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(120,255,170,.045) 1px, transparent 1px),
+    radial-gradient(1200px 700px at 50% -10%, rgba(67,224,138,.10), transparent 60%),
+    radial-gradient(900px 600px at 50% 115%, rgba(255,59,48,.06), transparent 60%);
+  background-size:34px 34px, 34px 34px, 100% 100%, 100% 100%;
+  color:var(--ink);
+  font-family:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,monospace;
+  font-size:14px;
+}
+body.bunker::after{           /* room vignette only — screens carry their own scanlines */
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:95;
+  background:radial-gradient(130% 100% at 50% 42%, transparent 54%, rgba(20,26,30,.42) 100%);
+}
+body.bunker .glass{background:var(--glass);backdrop-filter:blur(10px);border:1px solid var(--stroke);border-radius:4px}
+body.bunker .card{background:rgba(12,22,16,.78);border:1px solid var(--edge);border-radius:3px;box-shadow:none}
+body.bunker .masthead h1{font-family:inherit;font-size:19px;letter-spacing:3px;text-transform:uppercase;
+  color:#DFFFE9;text-shadow:0 0 12px rgba(67,224,138,.5)}
+body.bunker h2{font-family:inherit;font-size:13px;letter-spacing:2.2px;text-transform:uppercase;color:#8FE8AE}
+body.bunker h2 .marks{letter-spacing:.4px;text-transform:none}
+body.bunker .stat .l{color:#5F9A72;letter-spacing:1.4px}
+body.bunker .stat .v{font-family:inherit;font-size:21px;color:#DFFFE9;text-shadow:0 0 10px rgba(67,224,138,.35)}
+body.bunker .tabbar{border-radius:4px;background:rgba(10,18,13,.8)}
+body.bunker .tab{border-radius:2px}
+body.bunker body.bunker .tab.on{color:#DFFFE9}
+body.bunker summary{letter-spacing:1.2px;text-transform:uppercase;font-size:12.5px}
+body.bunker .day-h{letter-spacing:1.6px;text-transform:uppercase;color:#8FE8AE}
+body.bunker input[type=checkbox]{border-radius:2px;border-color:rgba(120,255,170,.35);background:rgba(0,0,0,.4)}
+body.bunker input[type=checkbox]:checked{background:var(--blue);border-color:var(--blue)}
+body.bunker button.b{border-radius:3px;background:rgba(67,224,138,.16);color:#DFFFE9;
+  border:1px solid rgba(67,224,138,.5);box-shadow:none;letter-spacing:1.2px;text-transform:uppercase;font-size:11.5px}
+body.bunker button.b.ghost{background:transparent}
+body.bunker .quick button{border-radius:2px;background:rgba(67,224,138,.08);color:var(--ink);
+  border:1px solid var(--edge);letter-spacing:.8px}
+body.bunker .addrow input,body.bunker .addrow select,body.bunker .frm input,
+body.bunker .frm select,body.bunker textarea{background:rgba(0,0,0,.45);color:var(--ink);
+  border:1px solid var(--edge);border-radius:2px;font-family:inherit}
+body.bunker .pill{background:var(--red);border-radius:2px;letter-spacing:1.2px}
+body.bunker .coach h3{background:none;-webkit-text-fill-color:#8FE8AE;color:#8FE8AE;letter-spacing:2px;text-transform:uppercase}
+body.bunker .coach::before{background:linear-gradient(135deg,rgba(67,224,138,.07),transparent 60%)}
+body.bunker .barrow .track{background:rgba(0,0,0,.5);border:1px solid var(--edge);border-radius:2px}
+body.bunker .barrow .fill{border-radius:0}
+body.bunker .barrow .tgt{background:#DFFFE9}
+body.bunker .scorechip{background:rgba(0,0,0,.4);border-color:var(--edge);border-radius:2px}
+body.bunker .list-row:hover{background:rgba(67,224,138,.07)}
+body.bunker .footer{border-radius:3px}
+
+/* status light */
+.statusbar{display:flex;align-items:center;gap:10px;margin:10px 0 0;padding-top:9px;border-top:1px solid var(--edge)}
+.slight{width:13px;height:13px;border-radius:50%;flex-shrink:0}
+.slight.clear{background:#2ED573;box-shadow:0 0 10px rgba(46,213,115,.8)}
+.slight.alert{background:#FF3B30;animation:beacon 1.15s infinite}
+@keyframes beacon{
+  0%,100%{background:#FF3B30;box-shadow:0 0 4px rgba(255,59,48,.6)}
+  50%{background:#FF6B60;box-shadow:0 0 20px 5px rgba(255,59,48,.85)}
+}
+#statustext{font-size:11.5px;letter-spacing:1.6px;font-weight:600}
+body.bunker #statustext{color:#8FE8AE}
+.slight.alert ~ #statustext{color:var(--red)}
+body.bunker.alertmode{animation:roomglow 2.3s infinite}
+@keyframes roomglow{
+  0%,100%{box-shadow:inset 0 0 120px rgba(255,59,48,0)}
+  50%{box-shadow:inset 0 0 160px rgba(255,59,48,.10)}
+}
+.themebtn{position:absolute;top:16px;right:16px;font-family:inherit;font-size:10.5px;letter-spacing:1.2px;
+  padding:6px 12px;border-radius:999px;cursor:pointer;border:1px solid var(--edge);
+  background:rgba(255,255,255,.7);color:var(--ink);text-transform:uppercase;
+  transition:background .15s var(--ease)}
+body.bunker .themebtn{background:rgba(67,224,138,.12);border-color:rgba(67,224,138,.4);border-radius:3px}
+.masthead{position:relative}
+@media (prefers-reduced-motion:reduce){.slight.alert{animation:none}body.bunker.alertmode{animation:none}}
+
+
+/* ===== brushed steel console panel ===== */
+body.bunker .masthead{
+  padding:26px 22px 24px;
+  border:1px solid rgba(255,255,255,.16);
+  border-radius:3px;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.13) 0%, rgba(255,255,255,0) 22%, rgba(0,0,0,.30) 100%),
+    repeating-linear-gradient(90deg, rgba(255,255,255,.045) 0 1px, rgba(0,0,0,.05) 1px 3px),
+    linear-gradient(112deg,#333B40 0%,#5E686D 14%,#3C4348 27%,#6E787D 43%,#394045 58%,#596368 74%,#333A3F 88%,#4C555A 100%);
+  backdrop-filter:none;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.32),
+    inset 0 -3px 8px rgba(0,0,0,.55),
+    inset 3px 0 8px rgba(0,0,0,.32),
+    inset -3px 0 8px rgba(0,0,0,.32),
+    0 12px 34px rgba(0,0,0,.7);
+}
+body.bunker .masthead::before,
+body.bunker .masthead::after{
+  content:"";position:absolute;left:0;right:0;height:9px;
+  background:repeating-linear-gradient(45deg,#F2C230 0 10px,#15171A 10px 20px);
+  box-shadow:0 0 0 1px rgba(0,0,0,.6) inset;
+}
+body.bunker .masthead::before{top:0}
+body.bunker .masthead::after{bottom:0}
+body.bunker .masthead h1{color:#EDF3F5;text-shadow:0 1px 0 rgba(0,0,0,.8),0 0 18px rgba(120,220,255,.28)}
+body.bunker .masthead .meta{color:#B9C6CB}
+body.bunker .masthead .meta b{color:#EDF3F5}
+body.bunker .statusbar{border-top:1px solid rgba(0,0,0,.45);box-shadow:0 -1px 0 rgba(255,255,255,.10)}
+body.bunker #statustext{color:#D7E4E8}
+body.bunker .themebtn{
+  background:linear-gradient(180deg,#5C666B,#394045);color:#EDF3F5;
+  border:1px solid rgba(255,255,255,.25);border-radius:2px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 2px 5px rgba(0,0,0,.5)}
+/* hazard frame around the whole viewport */
+body.bunker::before{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:97;
+  border:9px solid transparent;
+  border-image:repeating-linear-gradient(45deg,#F2C230 0 11px,#15171A 11px 22px) 9;
+  opacity:.9;
+}
+/* instrument-panel stat cards */
+body.bunker .stat{
+  background:linear-gradient(180deg,rgba(18,28,24,.92),rgba(8,14,11,.95));
+  border:1px solid rgba(255,255,255,.10);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.10), inset 0 -2px 6px rgba(0,0,0,.6);
+}
+
+/* ===== rotating alarm beacon ===== */
+.beacon{position:relative;width:26px;height:26px;flex-shrink:0}
+.beacon .dome{
+  position:absolute;inset:0;border-radius:50%;
+  background:radial-gradient(circle at 34% 28%, #FFC9C2 0%, #FF6B5E 26%, #C21F13 62%, #6E0F08 100%);
+  box-shadow:inset 0 -3px 6px rgba(0,0,0,.6), inset 0 2px 4px rgba(255,255,255,.5), 0 0 0 2px rgba(0,0,0,.45);
+}
+.beacon .dome::after{
+  content:"";position:absolute;left:20%;top:12%;width:34%;height:24%;border-radius:50%;
+  background:linear-gradient(180deg,rgba(255,255,255,.85),rgba(255,255,255,0));
+}
+.beacon .sweep{
+  position:absolute;inset:-26px;border-radius:50%;pointer-events:none;opacity:0;
+  background:conic-gradient(from 0deg,
+    rgba(255,45,25,.62) 0deg, rgba(255,45,25,.06) 34deg, transparent 62deg,
+    transparent 180deg, rgba(255,45,25,.62) 180deg, rgba(255,45,25,.06) 214deg, transparent 242deg);
+  transition:opacity .25s var(--ease);
+  filter:blur(1px);
+}
+.beacon.spin .sweep{opacity:1;animation:beaconspin .95s linear infinite}
+.beacon.spin .dome{animation:beaconglow .95s linear infinite}
+@keyframes beaconspin{to{transform:rotate(360deg)}}
+@keyframes beaconglow{
+  0%,100%{box-shadow:inset 0 -3px 6px rgba(0,0,0,.6), inset 0 2px 4px rgba(255,255,255,.5), 0 0 6px rgba(255,45,25,.5), 0 0 0 2px rgba(0,0,0,.45)}
+  50%{box-shadow:inset 0 -3px 6px rgba(0,0,0,.5), inset 0 2px 4px rgba(255,255,255,.7), 0 0 26px 8px rgba(255,45,25,.9), 0 0 0 2px rgba(0,0,0,.45)}
+}
+.beacon.idlealert .dome{animation:beaconglow 1.5s ease-in-out infinite}
+.beacon.clear .dome{background:radial-gradient(circle at 34% 28%, #DFFFE9 0%, #59E88F 26%, #16924E 62%, #08421F 100%)}
+#alarmwash{position:fixed;inset:0;pointer-events:none;z-index:96;opacity:0}
+@media (prefers-reduced-motion:reduce){
+  .beacon.spin .sweep,.beacon.spin .dome,.beacon.idlealert .dome{animation:none}
+  #alarmwash.on{animation:none}
+}
+
+
+/* ===== riveted steel bulkhead: SVG plate tile ===== */
+body.bunker{
+  background-color:#AEB4B8;
+  background-image:
+    radial-gradient(1200px 620px at 50% -12%, rgba(255,255,255,.34), transparent 62%),
+    radial-gradient(900px 500px at 18% 108%, rgba(0,0,0,.16), transparent 60%),
+    url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20width%3D'240'%20height%3D'240'%3E%0A%3Cdefs%3E%0A%3CradialGradient%20id%3D'r'%20cx%3D'38%25'%20cy%3D'32%25'%20r%3D'75%25'%3E%0A%3Cstop%20offset%3D'0'%20stop-color%3D'%23FAFCFC'%2F%3E%3Cstop%20offset%3D'.35'%20stop-color%3D'%23CDD3D6'%2F%3E%0A%3Cstop%20offset%3D'.72'%20stop-color%3D'%23989FA4'%2F%3E%3Cstop%20offset%3D'.9'%20stop-color%3D'%23676E73'%2F%3E%0A%3Cstop%20offset%3D'1'%20stop-color%3D'%23464C50'%2F%3E%0A%3C%2FradialGradient%3E%0A%3Cfilter%20id%3D'n'%3E%3CfeTurbulence%20type%3D'fractalNoise'%20baseFrequency%3D'.012%20.015'%20numOctaves%3D'3'%20seed%3D'7'%20result%3D't'%2F%3E%0A%3CfeColorMatrix%20in%3D't'%20type%3D'matrix'%20values%3D'0%200%200%200%200.78%200%200%200%200%200.80%200%200%200%200%200.82%200%200%200%20.55%200'%2F%3E%0A%3CfeComposite%20operator%3D'over'%20in2%3D'SourceGraphic'%2F%3E%3C%2Ffilter%3E%0A%3Cfilter%20id%3D'n2'%3E%3CfeTurbulence%20type%3D'fractalNoise'%20baseFrequency%3D'.09%20.012'%20numOctaves%3D'2'%20seed%3D'3'%20result%3D't'%2F%3E%0A%3CfeColorMatrix%20in%3D't'%20type%3D'matrix'%20values%3D'0%200%200%200%201%200%200%200%200%201%200%200%200%200%201%200%200%200%20.06%200'%2F%3E%0A%3C%2Ffilter%3E%0A%3C%2Fdefs%3E%0A%3Crect%20width%3D'240'%20height%3D'240'%20fill%3D'%23B9BFC3'%2F%3E%0A%3Crect%20width%3D'240'%20height%3D'240'%20fill%3D'%23B9BFC3'%20filter%3D'url(%23n)'%2F%3E%0A%3Crect%20width%3D'240'%20height%3D'240'%20filter%3D'url(%23n2)'%2F%3E%0A%3Crect%20x%3D'0'%20y%3D'0'%20width%3D'240'%20height%3D'2.5'%20fill%3D'%23343A3E'%20opacity%3D'.8'%2F%3E%0A%3Crect%20x%3D'0'%20y%3D'2.5'%20width%3D'240'%20height%3D'1.5'%20fill%3D'%23F2F5F6'%20opacity%3D'.55'%2F%3E%0A%3Crect%20x%3D'0'%20y%3D'0'%20width%3D'2.5'%20height%3D'240'%20fill%3D'%23343A3E'%20opacity%3D'.8'%2F%3E%0A%3Crect%20x%3D'2.5'%20y%3D'0'%20width%3D'1.5'%20height%3D'240'%20fill%3D'%23F2F5F6'%20opacity%3D'.5'%2F%3E%0A%3Cg%3E%0A%3Ccircle%20cx%3D'36'%20cy%3D'16'%20r%3D'5.6'%20fill%3D'rgba(30%2C34%2C38%2C.38)'%20transform%3D'translate(0.8%201.6)'%2F%3E%3Ccircle%20cx%3D'36'%20cy%3D'16'%20r%3D'5'%20fill%3D'url(%23r)'%2F%3E%3Ccircle%20cx%3D'36'%20cy%3D'16'%20r%3D'5'%20fill%3D'none'%20stroke%3D'rgba(40%2C45%2C50%2C.55)'%20stroke-width%3D'.8'%2F%3E%3Cellipse%20cx%3D'34.4'%20cy%3D'14.2'%20rx%3D'2'%20ry%3D'1.3'%20fill%3D'rgba(255%2C255%2C255%2C.85)'%20transform%3D'rotate(-24%2034.4%2014.2)'%2F%3E%0A%3Ccircle%20cx%3D'84'%20cy%3D'16'%20r%3D'5.6'%20fill%3D'rgba(30%2C34%2C38%2C.38)'%20transform%3D'translate(0.8%201.6)'%2F%3E%3Ccircle%20cx%3D'84'%20cy%3D'16'%20r%3D'5'%20fill%3D'url(%23r)'%2F%3E%3Ccircle%20cx%3D'84'%20cy%3D'16'%20r%3D'5'%20fill%3D'none'%20stroke%3D'rgba(40%2C45%2C50%2C.55)'%20stroke-width%3D'.8'%2F%3E%3Cellipse%20cx%3D'82.4'%20cy%3D'14.2'%20rx%3D'2'%20ry%3D'1.3'%20fill%3D'rgba(255%2C255%2C255%2C.85)'%20transform%3D'rotate(-24%2082.4%2014.2)'%2F%3E%0A%3Ccircle%20cx%3D'132'%20cy%3D'16'%20r%3D'5.6'%20fill%3D'rgba(30%2C34%2C38%2C.38)'%20transform%3D'translate(0.8%201.6)'%2F%3E%3Ccircle%20cx%3D'132'%20cy%3D'16'%20r%3D'5'%20fill%3D'url(%23r)'%2F%3E%3Ccircle%20cx%3D'132'%20cy%3D'16'%20r%3D'5'%20fill%3D'none'%20stroke%3D'rgba(40%2C45%2C50%2C.55)'%20stroke-width%3D'.8'%2F%3E%3Cellipse%20cx%3D'130.4'%20cy%3D'14.2'%20rx%3D'2'%20ry%3D'1.3'%20fill%3D'rgba(255%2C255%2C255%2C.85)'%20transform%3D'rotate(-24%20130.4%2014.2)'%2F%3E%0A%3Ccircle%20cx%3D'180'%20cy%3D'16'%20r%3D'5.6'%20fill%3D'rgba(30%2C34%2C38%2C.38)'%20transform%3D'translate(0.8%201.6)'%2F%3E%3Ccircle%20cx%3D'180'%20cy%3D'16'%20r%3D'5'%20fill%3D'url(%23r)'%2F%3E%3Ccircle%20cx%3D'180'%20cy%3D'16'%20r%3D'5'%20fill%3D'none'%20stroke%3D'rgba(40%2C45%2C50%2C.55)'%20stroke-width%3D'.8'%2F%3E%3Cellipse%20cx%3D'178.4'%20cy%3D'14.2'%20rx%3D'2'%20ry%3D'1.3'%20fill%3D'rgba(255%2C255%2C255%2C.85)'%20transform%3D'rotate(-24%20178.4%2014.2)'%2F%3E%0A%3Ccircle%20cx%3D'36'%20cy%3D'224'%20r%3D'5.6'%20fill%3D'rgba(30%2C34%2C38%2C.38)'%20transform%3D'translate(0.8%201.6)'%2F%3E%3Ccircle%20cx%3D'36'%20cy%3D'224'%20r%3D'5'%20fill%3D'url(%23r)'%2F%3E%3Ccircle%20cx%3D'36'%20cy%3D'224'%20r%3D'5'%20fill%3D'none'%20stroke%3D'rgba(40%2C45%2C50%2C.55)'%20stroke-width%3D'.8'%2F%3E%3Cellipse%20cx%3D'34.4'%20cy%3D'222.2'%20rx%3D'2'%20ry%3D'1.3'%20fill%3D'rgba(255%2C255%2C255%2C.85)'%20transform%3D'rotate(-24%2034.4%20222.2)'%2F%3E%0A%3Ccircle%20cx%3D'84'%20cy%3D'224'%20r%3D'5.6'%20fill%3D'rgba(30%2C34%2C38%2C.38)'%20transform%3D'translate(0.8%201.6)'%2F%3E%3Ccircle%20cx%3D'84'%20cy%3D'224'%20r%3D'5'%20fill%3D'url(%23r)'%2F%3E%3Ccircle%20cx%3D'84'%20cy%3D'224'%20r%3D'5'%20fill%3D'none'%20stroke%3D'rgba(40%2C45%2C50%2C.55)'%20stroke-width%3D'.8'%2F%3E%3Cellipse%20cx%3D'82.4'%20cy%3D'222.2'%20rx%3D'2'%20ry%3D'1.3'%20fill%3D'rgba(255%2C255%2C255%2C.85)'%20transform%3D'rotate(-24%2082.4%20222.2)'%2F%3E%0A%3Ccircle%20cx%3D'132'%20cy%3D'224'%20r%3D'5.6'%20fill%3D'rgba(30%2C34%2C38%2C.38)'%20transform%3D'translate(0.8%201.6)'%2F%3E%3Ccircle%20cx%3D'132'%20cy%3D'224'%20r%3D'5'%20fill%3D'url(%23r)'%2F%3E%3Ccircle%20cx%3D'132'%20cy%3D'224'%20r%3D'5'%20fill%3D'none'%20stroke%3D'rgba(40%2C45%2C50%2C.55)'%20stroke-width%3D'.8'%2F%3E%3Cellipse%20cx%3D'130.4'%20cy%3D'222.2'%20rx%3D'2'%20ry%3D'1.3'%20fill%3D'rgba(255%2C255%2C255%2C.85)'%20transform%3D'rotate(-24%20130.4%20222.2)'%2F%3E%0A%3Ccircle%20cx%3D'180'%20cy%3D'224'%20r%3D'5.6'%20fill%3D'rgba(30%2C34%2C38%2C.38)'%20transform%3D'translate(0.8%201.6)'%2F%3E%3Ccircle%20cx%3D'180'%20cy%3D'224'%20r%3D'5'%20fill%3D'url(%23r)'%2F%3E%3Ccircle%20cx%3D'180'%20cy%3D'224'%20r%3D'5'%20fill%3D'none'%20stroke%3D'rgba(40%2C45%2C50%2C.55)'%20stroke-width%3D'.8'%2F%3E%3Cellipse%20cx%3D'178.4'%20cy%3D'222.2'%20rx%3D'2'%20ry%3D'1.3'%20fill%3D'rgba(255%2C255%2C255%2C.85)'%20transform%3D'rotate(-24%20178.4%20222.2)'%2F%3E%0A%3Ccircle%20cx%3D'16'%20cy%3D'36'%20r%3D'5.6'%20fill%3D'rgba(30%2C34%2C38%2C.38)'%20transform%3D'translate(0.8%201.6)'%2F%3E%3Ccircle%20cx%3D'16'%20cy%3D'36'%20r%3D'5'%20fill%3D'url(%23r)'%2F%3E%3Ccircle%20cx%3D'16'%20cy%3D'36'%20r%3D'5'%20fill%3D'none'%20stroke%3D'rgba(40%2C45%2C50%2C.55)'%20stroke-width%3D'.8'%2F%3E%3Cellipse%20cx%3D'14.4'%20cy%3D'34.2'%20rx%3D'2'%20ry%3D'1.3'%20fill%3D'rgba(255%2C255%2C255%2C.85)'%20transform%3D'rotate(-24%2014.4%2034.2)'%2F%3E%0A%3Ccircle%20cx%3D'16'%20cy%3D'84'%20r%3D'5.6'%20fill%3D'rgba(30%2C34%2C38%2C.38)'%20transform%3D'translate(0.8%201.6)'%2F%3E%3Ccircle%20cx%3D'16'%20cy%3D'84'%20r%3D'5'%20fill%3D'url(%23r)'%2F%3E%3Ccircle%20cx%3D'16'%20cy%3D'84'%20r%3D'5'%20fill%3D'none'%20stroke%3D'rgba(40%2C45%2C50%2C.55)'%20stroke-width%3D'.8'%2F%3E%3Cellipse%20cx%3D'14.4'%20cy%3D'82.2'%20rx%3D'2'%20ry%3D'1.3'%20fill%3D'rgba(255%2C255%2C255%2C.85)'%20transform%3D'rotate(-24%2014.4%2082.2)'%2F%3E%0A%3Ccircle%20cx%3D'16'%20cy%3D'132'%20r%3D'5.6'%20fill%3D'rgba(30%2C34%2C38%2C.38)'%20transform%3D'translate(0.8%201.6)'%2F%3E%3Ccircle%20cx%3D'16'%20cy%3D'132'%20r%3D'5'%20fill%3D'url(%23r)'%2F%3E%3Ccircle%20cx%3D'16'%20cy%3D'132'%20r%3D'5'%20fill%3D'none'%20stroke%3D'rgba(40%2C45%2C50%2C.55)'%20stroke-width%3D'.8'%2F%3E%3Cellipse%20cx%3D'14.4'%20cy%3D'130.2'%20rx%3D'2'%20ry%3D'1.3'%20fill%3D'rgba(255%2C255%2C255%2C.85)'%20transform%3D'rotate(-24%2014.4%20130.2)'%2F%3E%0A%3Ccircle%20cx%3D'16'%20cy%3D'180'%20r%3D'5.6'%20fill%3D'rgba(30%2C34%2C38%2C.38)'%20transform%3D'translate(0.8%201.6)'%2F%3E%3Ccircle%20cx%3D'16'%20cy%3D'180'%20r%3D'5'%20fill%3D'url(%23r)'%2F%3E%3Ccircle%20cx%3D'16'%20cy%3D'180'%20r%3D'5'%20fill%3D'none'%20stroke%3D'rgba(40%2C45%2C50%2C.55)'%20stroke-width%3D'.8'%2F%3E%3Cellipse%20cx%3D'14.4'%20cy%3D'178.2'%20rx%3D'2'%20ry%3D'1.3'%20fill%3D'rgba(255%2C255%2C255%2C.85)'%20transform%3D'rotate(-24%2014.4%20178.2)'%2F%3E%0A%3Ccircle%20cx%3D'224'%20cy%3D'36'%20r%3D'5.6'%20fill%3D'rgba(30%2C34%2C38%2C.38)'%20transform%3D'translate(0.8%201.6)'%2F%3E%3Ccircle%20cx%3D'224'%20cy%3D'36'%20r%3D'5'%20fill%3D'url(%23r)'%2F%3E%3Ccircle%20cx%3D'224'%20cy%3D'36'%20r%3D'5'%20fill%3D'none'%20stroke%3D'rgba(40%2C45%2C50%2C.55)'%20stroke-width%3D'.8'%2F%3E%3Cellipse%20cx%3D'222.4'%20cy%3D'34.2'%20rx%3D'2'%20ry%3D'1.3'%20fill%3D'rgba(255%2C255%2C255%2C.85)'%20transform%3D'rotate(-24%20222.4%2034.2)'%2F%3E%0A%3Ccircle%20cx%3D'224'%20cy%3D'84'%20r%3D'5.6'%20fill%3D'rgba(30%2C34%2C38%2C.38)'%20transform%3D'translate(0.8%201.6)'%2F%3E%3Ccircle%20cx%3D'224'%20cy%3D'84'%20r%3D'5'%20fill%3D'url(%23r)'%2F%3E%3Ccircle%20cx%3D'224'%20cy%3D'84'%20r%3D'5'%20fill%3D'none'%20stroke%3D'rgba(40%2C45%2C50%2C.55)'%20stroke-width%3D'.8'%2F%3E%3Cellipse%20cx%3D'222.4'%20cy%3D'82.2'%20rx%3D'2'%20ry%3D'1.3'%20fill%3D'rgba(255%2C255%2C255%2C.85)'%20transform%3D'rotate(-24%20222.4%2082.2)'%2F%3E%0A%3Ccircle%20cx%3D'224'%20cy%3D'132'%20r%3D'5.6'%20fill%3D'rgba(30%2C34%2C38%2C.38)'%20transform%3D'translate(0.8%201.6)'%2F%3E%3Ccircle%20cx%3D'224'%20cy%3D'132'%20r%3D'5'%20fill%3D'url(%23r)'%2F%3E%3Ccircle%20cx%3D'224'%20cy%3D'132'%20r%3D'5'%20fill%3D'none'%20stroke%3D'rgba(40%2C45%2C50%2C.55)'%20stroke-width%3D'.8'%2F%3E%3Cellipse%20cx%3D'222.4'%20cy%3D'130.2'%20rx%3D'2'%20ry%3D'1.3'%20fill%3D'rgba(255%2C255%2C255%2C.85)'%20transform%3D'rotate(-24%20222.4%20130.2)'%2F%3E%0A%3Ccircle%20cx%3D'224'%20cy%3D'180'%20r%3D'5.6'%20fill%3D'rgba(30%2C34%2C38%2C.38)'%20transform%3D'translate(0.8%201.6)'%2F%3E%3Ccircle%20cx%3D'224'%20cy%3D'180'%20r%3D'5'%20fill%3D'url(%23r)'%2F%3E%3Ccircle%20cx%3D'224'%20cy%3D'180'%20r%3D'5'%20fill%3D'none'%20stroke%3D'rgba(40%2C45%2C50%2C.55)'%20stroke-width%3D'.8'%2F%3E%3Cellipse%20cx%3D'222.4'%20cy%3D'178.2'%20rx%3D'2'%20ry%3D'1.3'%20fill%3D'rgba(255%2C255%2C255%2C.85)'%20transform%3D'rotate(-24%20222.4%20178.2)'%2F%3E%0A%3Ccircle%20cx%3D'16'%20cy%3D'16'%20r%3D'5.6'%20fill%3D'rgba(30%2C34%2C38%2C.38)'%20transform%3D'translate(0.8%201.6)'%2F%3E%3Ccircle%20cx%3D'16'%20cy%3D'16'%20r%3D'5'%20fill%3D'url(%23r)'%2F%3E%3Ccircle%20cx%3D'16'%20cy%3D'16'%20r%3D'5'%20fill%3D'none'%20stroke%3D'rgba(40%2C45%2C50%2C.55)'%20stroke-width%3D'.8'%2F%3E%3Cellipse%20cx%3D'14.4'%20cy%3D'14.2'%20rx%3D'2'%20ry%3D'1.3'%20fill%3D'rgba(255%2C255%2C255%2C.85)'%20transform%3D'rotate(-24%2014.4%2014.2)'%2F%3E%0A%3Ccircle%20cx%3D'224'%20cy%3D'16'%20r%3D'5.6'%20fill%3D'rgba(30%2C34%2C38%2C.38)'%20transform%3D'translate(0.8%201.6)'%2F%3E%3Ccircle%20cx%3D'224'%20cy%3D'16'%20r%3D'5'%20fill%3D'url(%23r)'%2F%3E%3Ccircle%20cx%3D'224'%20cy%3D'16'%20r%3D'5'%20fill%3D'none'%20stroke%3D'rgba(40%2C45%2C50%2C.55)'%20stroke-width%3D'.8'%2F%3E%3Cellipse%20cx%3D'222.4'%20cy%3D'14.2'%20rx%3D'2'%20ry%3D'1.3'%20fill%3D'rgba(255%2C255%2C255%2C.85)'%20transform%3D'rotate(-24%20222.4%2014.2)'%2F%3E%0A%3Ccircle%20cx%3D'16'%20cy%3D'224'%20r%3D'5.6'%20fill%3D'rgba(30%2C34%2C38%2C.38)'%20transform%3D'translate(0.8%201.6)'%2F%3E%3Ccircle%20cx%3D'16'%20cy%3D'224'%20r%3D'5'%20fill%3D'url(%23r)'%2F%3E%3Ccircle%20cx%3D'16'%20cy%3D'224'%20r%3D'5'%20fill%3D'none'%20stroke%3D'rgba(40%2C45%2C50%2C.55)'%20stroke-width%3D'.8'%2F%3E%3Cellipse%20cx%3D'14.4'%20cy%3D'222.2'%20rx%3D'2'%20ry%3D'1.3'%20fill%3D'rgba(255%2C255%2C255%2C.85)'%20transform%3D'rotate(-24%2014.4%20222.2)'%2F%3E%0A%3Ccircle%20cx%3D'224'%20cy%3D'224'%20r%3D'5.6'%20fill%3D'rgba(30%2C34%2C38%2C.38)'%20transform%3D'translate(0.8%201.6)'%2F%3E%3Ccircle%20cx%3D'224'%20cy%3D'224'%20r%3D'5'%20fill%3D'url(%23r)'%2F%3E%3Ccircle%20cx%3D'224'%20cy%3D'224'%20r%3D'5'%20fill%3D'none'%20stroke%3D'rgba(40%2C45%2C50%2C.55)'%20stroke-width%3D'.8'%2F%3E%3Cellipse%20cx%3D'222.4'%20cy%3D'222.2'%20rx%3D'2'%20ry%3D'1.3'%20fill%3D'rgba(255%2C255%2C255%2C.85)'%20transform%3D'rotate(-24%20222.4%20222.2)'%2F%3E%0A%3C%2Fg%3E%0A%3C%2Fsvg%3E");
+  background-size:100% 100%, 100% 100%, 240px 240px;
+  background-attachment:fixed;
+  color:var(--ink);
+  font-family:ui-monospace,'SF Mono',SFMono-Regular,Menlo,Consolas,monospace;
+  font-size:14px;
+}
+
+/* text that sits directly on bare metal = stencilled label */
+body.bunker #view > h2,
+body.bunker .masthead ~ * > h2{
+  color:#242A2E;
+  text-shadow:0 1px 0 rgba(255,255,255,.55), 0 -1px 0 rgba(0,0,0,.18);
+}
+body.bunker #view > h2 .marks{color:#4C5459;text-shadow:0 1px 0 rgba(255,255,255,.5)}
+body.bunker #view > .note{color:#343B40;text-shadow:0 1px 0 rgba(255,255,255,.45)}
+body.bunker #view > .note b{color:#1B2124}
+body.bunker #view > .quick button{
+  background:linear-gradient(180deg,#DDE1E4,#B7BDC1);color:#22282C;
+  border:1px solid rgba(0,0,0,.45);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.75), 0 2px 4px rgba(0,0,0,.35);
+}
+body.bunker #view > .quick button:hover{background:linear-gradient(180deg,#EAEEF0,#C3C9CD)}
+
+/* ===== every panel becomes a little CRT screen ===== */
+body.bunker .card,
+body.bunker .glass:not(.masthead){
+  position:relative;
+  background:
+    radial-gradient(115% 130% at 50% 0%, rgba(80,150,120,.14), transparent 62%),
+    linear-gradient(180deg, #0B1410 0%, #060C09 55%, #0A120E 100%);
+  border:1px solid rgba(0,0,0,.85);
+  border-radius:12px / 14px;
+  box-shadow:
+    inset 0 0 22px rgba(0,0,0,.9),
+    inset 0 0 0 1px rgba(140,255,190,.07),
+    0 0 0 3px #2C3338,
+    0 0 0 4px rgba(255,255,255,.14),
+    0 0 0 7px #23292D,
+    0 6px 16px rgba(0,0,0,.6);
+  overflow:hidden;
+}
+/* curved glass sheen */
+body.bunker .card::before,
+body.bunker .glass:not(.masthead)::before{
+  content:"";position:absolute;inset:0;pointer-events:none;z-index:3;border-radius:inherit;
+  background:
+    linear-gradient(158deg, rgba(255,255,255,.10) 0%, rgba(255,255,255,.02) 26%, transparent 46%),
+    radial-gradient(130% 100% at 50% 50%, transparent 58%, rgba(0,0,0,.55) 100%);
+}
+/* scanlines inside each screen */
+body.bunker .card::after,
+body.bunker .glass:not(.masthead)::after{
+  content:"";position:absolute;inset:0;pointer-events:none;z-index:2;border-radius:inherit;
+  background:repeating-linear-gradient(to bottom, rgba(0,0,0,.22) 0 1px, transparent 1px 3px);
+  opacity:.55;
+}
+body.bunker .card > *,
+body.bunker .glass:not(.masthead) > *{position:relative;z-index:4}
+
+/* task rows are small screens too — keep them lighter so lists stay readable */
+body.bunker .task.card{
+  border-radius:8px;
+  overflow:visible;
+  box-shadow:
+    inset 0 0 14px rgba(0,0,0,.8),
+    inset 0 0 0 1px rgba(140,255,190,.06),
+    0 0 0 2px #2C3338,
+    0 0 0 3px rgba(255,255,255,.10),
+    0 3px 8px rgba(0,0,0,.5);
+}
+body.bunker .task.card::after{opacity:.35}
+body.bunker .stat{
+  border-radius:10px;
+  background:
+    radial-gradient(115% 130% at 50% 0%, rgba(80,150,120,.15), transparent 60%),
+    linear-gradient(180deg,#0B1410,#060C09);
+  box-shadow:
+    inset 0 0 18px rgba(0,0,0,.9),
+    0 0 0 3px #2C3338, 0 0 0 4px rgba(255,255,255,.14), 0 0 0 6px #23292D,
+    0 5px 14px rgba(0,0,0,.6);
+}
+body.bunker .tabbar{
+  background:linear-gradient(180deg,#4A5257,#333A3F);
+  border:1px solid rgba(255,255,255,.16);border-radius:5px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.28), inset 0 -3px 7px rgba(0,0,0,.55), 0 6px 18px rgba(0,0,0,.6);
+  backdrop-filter:none;
+}
+body.bunker .tab{color:#C2CFD4}
+body.bunker .tab.on{color:#DFFFE9}
+body.bunker /* inputs = recessed panel slots */
+body.bunker .addrow input,body.bunker .addrow select,body.bunker .frm input,
+body.bunker .frm select,body.bunker textarea{
+  background:#050A07;border:1px solid rgba(0,0,0,.85);border-radius:3px;
+  box-shadow:inset 0 2px 6px rgba(0,0,0,.85), 0 0 0 1px rgba(255,255,255,.1);
+}
+body.bunker .footer{background:linear-gradient(180deg,#0B1410,#060C09)}
+
+
+body.bunker .card, body.bunker .stat{animation:crton .5s var(--ease)}
+@keyframes crton{
+  0%{opacity:0;filter:brightness(2.4) saturate(.2)}
+  8%{opacity:1}
+  20%{filter:brightness(.75)}
+  34%{filter:brightness(1.5)}
+  100%{filter:none}
+}
+body.bunker #statustext{transition:color .3s}
+body.bunker .masthead{overflow:hidden}
+body.bunker .masthead .shine{
+  position:absolute;top:-40%;bottom:-40%;width:34%;left:-45%;pointer-events:none;z-index:5;
+  background:linear-gradient(105deg, transparent 0%, rgba(255,255,255,.24) 45%, rgba(255,255,255,.42) 50%, rgba(255,255,255,.24) 55%, transparent 100%);
+  transform:skewX(-14deg);
+  animation:panelsweep 9s var(--ease) infinite;
+}
+@keyframes panelsweep{
+  0%,72%{left:-45%}
+  92%,100%{left:130%}
+}
+#alarmwash.on{animation:washsweep .95s linear 3}
+@keyframes washsweep{
+  0%{opacity:0;background:radial-gradient(60% 45% at 12% 0%, rgba(255,45,25,.34), transparent 70%)}
+  25%{opacity:1;background:radial-gradient(60% 45% at 40% 0%, rgba(255,45,25,.34), transparent 70%)}
+  50%{opacity:1;background:radial-gradient(60% 45% at 65% 0%, rgba(255,45,25,.34), transparent 70%)}
+  75%{opacity:1;background:radial-gradient(60% 45% at 88% 0%, rgba(255,45,25,.30), transparent 70%)}
+  100%{opacity:0;background:radial-gradient(60% 45% at 110% 0%, rgba(255,45,25,.2), transparent 70%)}
+}
+body.bunker input[type=checkbox]{
+  border-radius:3px;border:1px solid rgba(0,0,0,.7);
+  background:linear-gradient(180deg,#20272B,#0C1114);
+  box-shadow:inset 0 1px 2px rgba(0,0,0,.8), 0 1px 0 rgba(255,255,255,.15);
+}
+body.bunker input[type=checkbox]:checked{
+  background:linear-gradient(180deg,#4EF29A,#1E9B5C);
+  border-color:#0C4A2A;
+  box-shadow:0 0 12px rgba(67,224,138,.7), inset 0 1px 0 rgba(255,255,255,.5);
+}
+@media (prefers-reduced-motion:reduce){
+  body.bunker .card,body.bunker .stat{animation:none}
+  body.bunker .masthead .shine{animation:none}
+}
+.task .t{cursor:pointer}
+.task .xtra{
+  display:none;font-size:12px;color:var(--sub);margin-top:5px;
+  padding:7px 10px;border-left:2px solid var(--edge);
+}
+.task.open .xtra{display:block;animation:xtraIn .22s var(--ease)}
+@keyframes xtraIn{from{opacity:0;transform:translateY(-3px)}to{opacity:1;transform:none}}
+.task .caret{font-size:10px;color:var(--faint);margin-left:5px;transition:transform .2s var(--ease);display:inline-block}
+.task.open .caret{transform:rotate(90deg)}
+body.bunker .task .xtra{border-left-color:rgba(140,255,190,.25);color:#8FB8A0}
+
+
+/* status beacon is a Launch Control feature only \u2014 clean UI stays clean */
+.statusbar{display:none}
+body.bunker .statusbar{display:flex}
+
+/* tab bar: identical geometry in both modes, only the finish differs */
+.tabbar{padding:4px}
+.tab{padding:9px 6px;font-size:12.5px;letter-spacing:0;text-transform:none;line-height:1.2}
+body.bunker .tab{font-size:12.5px;letter-spacing:.6px;text-transform:uppercase}
+
+
+/* tab bar: no measured thumb, so nothing can drift */
+.tabbar{display:flex;gap:3px;padding:4px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.tabbar::-webkit-scrollbar{display:none}
+.tab{flex:1 1 0;min-width:64px;padding:9px 6px;font-size:12.5px;letter-spacing:0;text-transform:none;
+  line-height:1.2;border:none;background:transparent;color:var(--sub);font-family:inherit;
+  border-radius:999px;cursor:pointer;white-space:nowrap;
+  transition:background .18s var(--ease), color .18s var(--ease), box-shadow .18s var(--ease)}
+.tab:hover{color:var(--ink)}
+.tab.on{color:var(--ink);font-weight:600;background:rgba(255,255,255,.95);
+  box-shadow:0 2px 8px rgba(31,38,64,.14), inset 0 0 0 .5px rgba(29,29,31,.05)}
+body.bunker .tab{border-radius:3px;letter-spacing:.6px;text-transform:uppercase;color:#A9B8BE}
+body.bunker .tab.on{
+  color:#DFFFE9;
+  background:linear-gradient(180deg,rgba(67,224,138,.28),rgba(18,58,40,.55));
+  box-shadow:inset 0 0 0 1px rgba(67,224,138,.6), inset 0 1px 0 rgba(255,255,255,.22), 0 0 14px rgba(67,224,138,.28);
+}
+
+
+/* ===== big rotating beacon lamp, mounted on the bulkhead ===== */
+.beaconbay{display:none}
+body.bunker .beaconbay{
+  display:flex;align-items:flex-end;gap:18px;margin:2px 0 20px;padding:0 6px;position:relative;
+}
+.lamp{position:relative;width:96px;height:112px;flex-shrink:0}
+/* glow thrown onto the steel behind */
+.lamp .wallglow{
+  position:absolute;left:50%;top:-46px;width:340px;height:250px;transform:translateX(-50%);
+  border-radius:50%;pointer-events:none;z-index:0;opacity:.18;
+  background:radial-gradient(circle, rgba(255,52,30,.95) 0%, rgba(255,52,30,.34) 34%, transparent 68%);
+  filter:blur(14px);transition:opacity .4s var(--ease);
+}
+/* two rotating light cones */
+.lamp .beams{
+  position:absolute;left:50%;top:16px;width:420px;height:420px;transform:translateX(-50%);
+  pointer-events:none;z-index:0;opacity:0;transition:opacity .35s var(--ease);
+  background:conic-gradient(from 0deg,
+    rgba(255,58,32,.55) 0deg, rgba(255,58,32,.10) 26deg, transparent 52deg,
+    transparent 180deg, rgba(255,58,32,.55) 180deg, rgba(255,58,32,.10) 206deg, transparent 232deg);
+  filter:blur(6px);
+  -webkit-mask-image:radial-gradient(circle, #000 8%, rgba(0,0,0,.75) 34%, transparent 70%);
+  mask-image:radial-gradient(circle, #000 8%, rgba(0,0,0,.75) 34%, transparent 70%);
+}
+/* red dome */
+.lamp .dome{
+  position:absolute;left:3px;right:3px;top:4px;height:80px;z-index:2;overflow:hidden;
+  border-radius:47% 47% 14% 14% / 62% 62% 10% 10%;
+  background:
+    linear-gradient(180deg, rgba(255,120,100,.55) 0%, rgba(196,20,10,.42) 42%, rgba(120,8,4,.62) 100%),
+    radial-gradient(120% 90% at 50% 120%, rgba(255,70,40,.5), transparent 60%);
+  box-shadow:
+    inset 0 2px 10px rgba(255,180,160,.55),
+    inset 0 -14px 26px rgba(90,4,0,.75),
+    inset 8px 0 18px rgba(120,10,4,.5),
+    inset -8px 0 18px rgba(120,10,4,.5),
+    0 0 0 1px rgba(60,4,2,.7),
+    0 10px 22px rgba(0,0,0,.6);
+  transition:filter .35s var(--ease);
+  filter:saturate(.55) brightness(.55);
+}
+/* the rotating reflector behind the bulb */
+.lamp .reflector{
+  position:absolute;left:50%;top:52%;width:150px;height:150px;margin:-75px 0 0 -75px;
+  background:conic-gradient(from 0deg, rgba(255,190,170,.85) 0deg, rgba(255,120,90,.1) 30deg,
+    transparent 60deg, transparent 180deg, rgba(255,190,170,.85) 180deg, rgba(255,120,90,.1) 210deg, transparent 240deg);
+  opacity:0;transition:opacity .3s var(--ease);filter:blur(3px);
+}
+/* filament bulb */
+.lamp .bulb{
+  position:absolute;left:50%;top:44%;width:30px;height:38px;margin:-19px 0 0 -15px;
+  border-radius:50% 50% 46% 46%;
+  background:radial-gradient(circle at 50% 42%, #FFF3EE 0%, #FFC7B4 26%, rgba(255,120,90,.55) 52%, rgba(180,30,15,.25) 78%, transparent 100%);
+  box-shadow:0 0 10px rgba(255,160,130,.5);
+  opacity:.35;transition:opacity .3s var(--ease), box-shadow .3s var(--ease);
+}
+/* horizontal moulding lines on the dome */
+.lamp .ribs{
+  position:absolute;inset:0;pointer-events:none;
+  background:repeating-linear-gradient(180deg, rgba(255,255,255,.07) 0 1px, transparent 1px 11px);
+}
+/* glass specular */
+.lamp .gloss{
+  position:absolute;inset:0;pointer-events:none;border-radius:inherit;
+  background:
+    linear-gradient(148deg, rgba(255,255,255,.42) 0%, rgba(255,255,255,.10) 18%, transparent 38%),
+    radial-gradient(60% 26% at 26% 12%, rgba(255,255,255,.55), transparent 70%);
+}
+/* black ribbed base */
+.lamp .base{
+  position:absolute;left:0;right:0;bottom:6px;height:32px;z-index:3;border-radius:5px 5px 7px 7px;
+  background:
+    repeating-linear-gradient(90deg, rgba(255,255,255,.05) 0 1px, transparent 1px 5px),
+    linear-gradient(180deg,#3A3D40 0%,#17191B 34%,#0B0C0D 78%,#232629 100%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.22), inset 0 -3px 7px rgba(0,0,0,.9), 0 8px 16px rgba(0,0,0,.7);
+}
+.lamp .rocker{
+  position:absolute;left:50%;bottom:9px;width:20px;height:12px;margin-left:-10px;border-radius:2px;
+  background:linear-gradient(180deg,#E6E9EA,#9BA1A5);
+  box-shadow:inset 0 -2px 3px rgba(0,0,0,.45), 0 0 0 2px #0A0B0C, 0 1px 2px rgba(0,0,0,.8);
+}
+/* bracket bolting it to the wall */
+.lamp .mount{
+  position:absolute;left:12px;right:12px;bottom:0;height:7px;z-index:1;border-radius:2px;
+  background:linear-gradient(180deg,#8A9296,#4C5357);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.4), 0 3px 6px rgba(0,0,0,.6);
+}
+.bayreadout{
+  flex:1;min-width:0;padding:9px 14px;border-radius:3px;align-self:center;
+  background:linear-gradient(180deg,#0B1410,#060C09);
+  border:1px solid rgba(0,0,0,.8);
+  box-shadow:inset 0 0 16px rgba(0,0,0,.9), 0 0 0 2px #2C3338, 0 0 0 3px rgba(255,255,255,.12), 0 4px 10px rgba(0,0,0,.6);
+}
+body.bunker #statustext{font-size:12px;letter-spacing:1.8px;font-weight:700;color:#8FE8AE}
+
+/* --- STATES --- */
+/* work outstanding: lamp lit, slow rotation */
+.lamp.idlealert .dome{filter:saturate(1.25) brightness(1.12)}
+.lamp.idlealert .bulb{opacity:1;box-shadow:0 0 22px rgba(255,150,120,.9)}
+.lamp.idlealert .reflector{opacity:.8;animation:lampspin 2.6s linear infinite}
+.lamp.idlealert .beams{opacity:.5;animation:lampspin 2.6s linear infinite}
+.lamp.idlealert .wallglow{opacity:.5;animation:wallbreathe 2.6s ease-in-out infinite}
+/* alarm: everything faster and brighter */
+.lamp.spin .dome{filter:saturate(1.5) brightness(1.4)}
+.lamp.spin .bulb{opacity:1;box-shadow:0 0 34px rgba(255,190,160,1)}
+.lamp.spin .reflector{opacity:1;animation:lampspin .85s linear infinite}
+.lamp.spin .beams{opacity:1;animation:lampspin .85s linear infinite}
+.lamp.spin .wallglow{opacity:.95;animation:wallbreathe .85s ease-in-out infinite}
+/* all clear: lamp off */
+.lamp.clear .wallglow{opacity:0}
+@keyframes lampspin{to{transform:translateX(-50%) rotate(360deg)}}
+@keyframes wallbreathe{0%,100%{opacity:.34}50%{opacity:.8}}
+@media (prefers-reduced-motion:reduce){
+  .lamp .reflector,.lamp .beams,.lamp .wallglow{animation:none!important}
+}
+@media (max-width:520px){
+  .lamp{width:76px;height:92px}
+  .lamp .dome{height:64px}
+  .lamp .base{height:26px}
+}
+
+
+/* ===== brass odometer counter, bolted to the bulkhead ===== */
+.odo{display:flex;flex-direction:column;align-items:center;gap:7px;flex-shrink:0}
+.odo-plate{
+  font-size:9px;letter-spacing:1.6px;font-weight:700;color:#2A2E31;
+  padding:4px 12px;border-radius:2px;
+  background:linear-gradient(180deg,#E4E7E9,#A9B0B4);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.8), 0 2px 4px rgba(0,0,0,.55), 0 0 0 1px rgba(0,0,0,.5);
+}
+.odo-body{
+  position:relative;padding:11px 13px;border-radius:9px;
+  background:linear-gradient(158deg,#E8C766 0%,#B98F2E 22%,#F2DC94 40%,#9C742A 62%,#DDBB58 82%,#A87F2C 100%);
+  box-shadow:
+    inset 0 2px 0 rgba(255,246,205,.85),
+    inset 0 -3px 6px rgba(80,55,8,.75),
+    0 0 0 1px rgba(60,42,8,.85),
+    0 8px 18px rgba(0,0,0,.65);
+}
+.odo-window{
+  position:relative;display:flex;gap:3px;padding:5px 7px;border-radius:4px;overflow:hidden;
+  background:linear-gradient(180deg,#0A0B0C,#17191B 45%,#0A0B0C);
+  box-shadow:inset 0 3px 8px rgba(0,0,0,.95), inset 0 -3px 8px rgba(0,0,0,.95), 0 0 0 1px rgba(0,0,0,.9);
+}
+.digit{height:44px;width:29px;overflow:hidden;border-radius:2px;
+  background:linear-gradient(180deg,#1C1E20,#F2F3F4 18%,#FDFDFD 50%,#EDEEEF 82%,#1C1E20);
+  box-shadow:inset 0 0 0 1px rgba(0,0,0,.6);}
+.strip{display:flex;flex-direction:column;transition:transform .62s cubic-bezier(.26,1.36,.36,1)}
+.strip span{height:44px;line-height:44px;text-align:center;font-size:27px;font-weight:700;
+  font-family:ui-monospace,"SF Mono",Menlo,monospace;color:#15171A;
+  text-shadow:0 1px 0 rgba(255,255,255,.7)}
+.odo-split{position:absolute;left:7px;right:7px;top:50%;height:1.5px;pointer-events:none;
+  background:rgba(0,0,0,.55);box-shadow:0 1px 0 rgba(255,255,255,.28)}
+.odo-glass{position:absolute;inset:0;pointer-events:none;border-radius:4px;
+  background:linear-gradient(160deg, rgba(255,255,255,.26) 0%, rgba(255,255,255,.05) 26%, transparent 46%)}
+.odo-bolts i{position:absolute;width:7px;height:7px;border-radius:50%;
+  background:radial-gradient(circle at 36% 30%,#FFF7D2 0%,#C9A342 45%,#7A5C18 100%);
+  box-shadow:0 1px 2px rgba(0,0,0,.7), inset 0 -1px 1px rgba(60,42,8,.7)}
+.odo-bolts i:nth-child(1){left:4px;top:4px}
+.odo-bolts i:nth-child(2){right:4px;top:4px}
+.odo-bolts i:nth-child(3){left:4px;bottom:4px}
+.odo-bolts i:nth-child(4){right:4px;bottom:4px}
+.odo-sub{font-size:9.5px;letter-spacing:1.5px;font-weight:700;color:#8FE8AE;text-align:center}
+.odo.alert .odo-sub{color:#FF6B60}
+.odo.alert .digit{background:linear-gradient(180deg,#2A1210,#FFE2DE 18%,#FFF3F1 50%,#FFDDD8 82%,#2A1210)}
+.odo.alert .strip span{color:#5E0E06}
+.odo.rolling .odo-body{animation:odoknock .3s var(--ease)}
+@keyframes odoknock{0%,100%{transform:none}40%{transform:translateY(1.5px)}}
+
+/* ===== breathing room between wall-mounted screens ===== */
+body.bunker .statgrid{gap:16px;margin-bottom:20px}
+body.bunker .card{margin-bottom:14px}
+body.bunker .task.card{margin-bottom:11px}
+body.bunker details.card{margin-bottom:16px}
+body.bunker #view > h2{margin-top:34px;margin-bottom:8px}
+body.bunker .day-h{margin:20px 4px 9px}
+body.bunker .tabbar{margin-bottom:24px}
+body.bunker .masthead{margin-bottom:22px}
+body.bunker .beaconbay{gap:26px;margin:6px 0 26px}
+body.bunker .list-row{padding-top:8px;padding-bottom:8px}
+body.bunker .footer{margin-top:34px}
+@media (max-width:520px){
+  body.bunker .beaconbay{gap:14px}
+  .digit{width:24px;height:38px}
+  .strip span{height:38px;line-height:38px;font-size:22px}
+}
+
+
+/* consistent gaps on every page */
+body.bunker #view{padding-top:4px}
+body.bunker .day-h{margin:26px 4px 10px}
+body.bunker .day-h:first-child{margin-top:6px}
+body.bunker details.card{margin-bottom:18px}
+body.bunker details.card > div{padding-bottom:10px !important}
+body.bunker .card{margin-bottom:16px}
+body.bunker .task.card{margin-bottom:12px}
+body.bunker .list-row{padding-top:9px;padding-bottom:9px}
+body.bunker .barwrap{margin:12px 0 6px}
+body.bunker .barrow{margin-bottom:10px}
+body.bunker .quick{margin:4px 0 16px}
+body.bunker .frm{gap:12px;margin-bottom:16px}
+body.bunker .addrow{gap:10px;margin:14px 0 8px}
+body.bunker summary{padding:13px 14px}
+/* same rhythm, lighter, in the clean theme */
+#view .day-h{margin:18px 4px 7px}
+#view details.card{margin-bottom:12px}
+#view .task.card{margin-bottom:9px}
+
+
+/* today / overdue panels */
+.todayhead{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+.todaydate{font-size:11px;font-weight:700;letter-spacing:1.6px;color:var(--sub)}
+.todaycount{font-size:11.5px;font-weight:600;color:var(--red)}
+.todaycount.clearcount{color:var(--chem)}
+.todaycard{border-left:3px solid var(--blue)}
+.overduecard{border-left:3px solid var(--spanish)}
+body.bunker .todaycard{box-shadow:inset 0 0 22px rgba(0,0,0,.9), inset 0 0 0 1px rgba(140,255,190,.14), 0 0 0 3px #2C3338, 0 0 0 4px rgba(255,255,255,.14), 0 0 0 7px #23292D, 0 6px 16px rgba(0,0,0,.6), 0 0 26px rgba(67,224,138,.16)}
+body.bunker .overduecard{box-shadow:inset 0 0 22px rgba(0,0,0,.9), inset 0 0 0 1px rgba(255,190,60,.2), 0 0 0 3px #2C3338, 0 0 0 4px rgba(255,255,255,.14), 0 0 0 7px #23292D, 0 6px 16px rgba(0,0,0,.6)}
+/* day states */
+.day-h.daypast{opacity:.42}
+.day-h.dayfuture{opacity:.72}
+.day-h.daynow{color:var(--blue)}
+body.bunker .day-h.daynow{color:#7DF3B4}
+.nowtag{font-size:9px;font-weight:700;letter-spacing:1.2px;color:#fff;background:var(--blue);
+  padding:2px 7px;border-radius:999px;margin-left:8px;vertical-align:middle}
+body.bunker .nowtag{background:#1E9B5C;border-radius:2px}
+.odtag{font-size:9px;font-weight:700;letter-spacing:1px;color:#fff;background:var(--spanish);
+  padding:2px 7px;border-radius:999px;margin-left:8px;vertical-align:middle}
+body.bunker .odtag{border-radius:2px}
+
+</style>
+</head>
+<body>
+<div id="alarmwash"></div>
+<div class="wrap">
+  <div class="beaconbay" id="beaconbay">
+    <div class="lamp clear" id="statuslight">
+      <div class="wallglow"></div>
+      <div class="beams"></div>
+      <div class="dome">
+        <div class="reflector"></div>
+        <div class="bulb"></div>
+        <div class="ribs"></div>
+        <div class="gloss"></div>
+      </div>
+      <div class="base"><span class="rocker"></span></div>
+      <div class="mount"></div>
+    </div>
+    <div class="odo" id="odo">
+      <div class="odo-plate" id="odoplate">BLOCKS OUTSTANDING</div>
+      <div class="odo-body">
+        <div class="odo-window">
+          <div class="digit"><div class="strip" id="odo0"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span></div></div>
+          <div class="digit"><div class="strip" id="odo1"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span></div></div>
+          <div class="odo-split"></div>
+          <div class="odo-glass"></div>
+        </div>
+        <div class="odo-bolts"><i></i><i></i><i></i><i></i></div>
+      </div>
+    </div>
+  </div>
+  <div class="masthead glass">
+    <button class="themebtn" id="themebtn" onclick="tglTheme()">Launch Control</button>
+    <span class="shine"></span>
+    <h1>Mock Control</h1>
+    <div class="meta">
+      <span>Candidate <b>Tom</b></span>
+      <span>Mocks <b>7 Sep</b> · <b id="days-left">–</b> days</span>
+      <span>Finals <b>29 Oct</b> · <b id="days-final">–</b> days</span>
+      <span>Mocks are the <b>checkpoint</b>, not the target</span>
+    </div>
+    
+  </div>
+
+  <div class="statgrid" id="stats"></div>
+
+  <div class="tabbar glass" id="tabbar" style="position:sticky"></div>
+
+  <div id="view"></div>
+
+  <div class="footer card">
+    Rust rule: your first pass back on an old topic takes ~1.5× the printed estimate — normal, log the real time and the Coach adjusts.
+    Data saves to this artifact's storage. The Coach needs this page open inside Claude.
+    <div style="margin-top:8px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+      <span id="planv" style="font-size:11px"></span>
+      <button class="b ghost" style="height:28px;padding:0 12px;font-size:12px" onclick="forceReseed()">Reload latest plan</button>
+      <button class="b ghost" style="height:28px;padding:0 12px;font-size:12px" onclick="wipeAll()">Wipe everything</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ================= data ================= */
+const SUBJ = {physics:'Physics',math:'Maths',chem:'Chem',spanish:'Spanish',history:'History',english:'English',buffer:'Buffer'};
+const SCOL = {physics:'var(--physics)',math:'var(--math)',chem:'var(--chem)',spanish:'var(--spanish)',history:'var(--history)',english:'var(--english)',buffer:'var(--buffer)'};
+const TARGETS = {physics:28,math:30,chem:26,history:12,spanish:3,english:6};
+
+const SEED_TASKS = [
+{wk:'W1',day:'Wed 19 Aug',blk:'A',s:'english',t:'P2 \u2014 plan 3 essays on your works, write 1 timed 60 min',m:90,rec:'essay'},
+{wk:'W1',day:'Wed 19 Aug',blk:'B',s:'math',t:'Binomial theorem 1.9 + HL 1.10 extended binomial \u2014 your stated weak spot. RV easy\u2192medium',m:60,rec:'proc'},
+{wk:'W1',day:'Wed 19 Aug',blk:'C',s:'physics',t:'HL booklet MCQ Q1\u201315 \u2014 timed 25, flag confidence on every one',m:30,rec:'mcq'},
+{wk:'W1',day:'Thu 20 Aug',blk:'A',s:'chem',t:'Mark today\u2019s class Paper 2 \u2014 strand tally + error log',m:60,rec:'mark'},
+{wk:'W1',day:'Thu 20 Aug',blk:'B',s:'english',t:'P2 \u2014 three final essay plans + markband checklist. Exam tomorrow',m:45,rec:'essay'},
+{wk:'W1',day:'Thu 20 Aug',blk:'C',s:'math',t:'HL 1.15 proof by induction \u2014 the 4-step skeleton, then 5 proofs of different types',m:45,rec:'format'},
+{wk:'W1',day:'Thu 20 Aug',blk:'D',s:'physics',t:'Mark HL MCQ Q1\u201315 \u2014 why was each wrong distractor tempting?',m:30,rec:'mark'},
+{wk:'W1',day:'Fri 21 Aug',blk:'A',s:'physics',t:'SL Section A: Paper 1B data + Paper 2 short answer \u2014 timed 90. Theme A needs the most work',m:90,rec:'phys'},
+{wk:'W1',day:'Fri 21 Aug',blk:'B',s:'math',t:'Functions sweep 2.1\u20132.11 \u2014 domain/range, composite, inverse, transformations. Breadth pass, RV easy tier',m:60,rec:'concept'},
+{wk:'W1',day:'Fri 21 Aug',blk:'C',s:'physics',t:'Mark Section A 1B+P2 + error log',m:30,rec:'mark'},
+{wk:'W1',day:'Fri 21 Aug',blk:'D',s:'chem',t:'Two gaps, 25 min each \u2014 pH/pOH (an acid can never exceed pH 7, route via pOH) AND the reactivity series (displacement tables: rows are the metal, columns the solution)',m:60,rec:'chemfix'},
+{wk:'W1',day:'Sat 22 Aug',blk:'A',s:'math',t:'BENCHMARK: RV mock Paper 1, no calculator \u2014 timed 2h',m:120,rec:'paper'},
+{wk:'W1',day:'Sun 23 Aug',blk:'C',s:'math',t:'Mark yesterday\u2019s Paper 1 first thing \u2014 rank every topic worst\u2192best. This sets the maths order for the fortnight',m:60,rec:'mark'},
+{wk:'W1',day:'Sun 23 Aug',blk:'A',s:'spanish',t:'Pr\u00e1ctica IO, 19:00\u201319:45 \u2014 19:00 repasar frases + subjuntivo \u00b7 19:05 practicar Organizaci\u00f3n social + Identidades \u00b7 19:20 descanso \u00b7 19:23 practicar Experiencias + Ingenio humano \u00b7 19:35 grabarte + revisar Spanglish',m:45,rec:'io'},
+{wk:'W1',day:'Sun 23 Aug',blk:'F',s:'math',t:'HL 2.12\u20132.13 factor/remainder + rational functions, then 2.14\u20132.16 inequalities and modulus. 45 min each',m:90,rec:'proc'},
+{wk:'W1',day:'Sun 23 Aug',blk:'D',s:'physics',t:'Two quick fixes \u2014 buoyancy (balance drop IS the upthrust, depends on volume) AND average power (F = m(g+a), average velocity not final). 15 min each then questions',m:45,rec:'chemfix'},
+{wk:'W1',day:'Sun 23 Aug',blk:'E',s:'buffer',t:'Buffer \u2014 whatever slipped. Nothing slipped? \u2192 more maths',m:60,rec:'buffer'},
+{wk:'W2',day:'Mon 24 Aug',blk:'A',s:'physics',t:'HL booklet MCQ Q16\u201325 \u2014 B.4 Thermodynamics: entropy, first law, p\u2013V cycles, Carnot. + mark',m:60,rec:'mcq'},
+{wk:'W2',day:'Mon 24 Aug',blk:'B',s:'spanish',t:'Frases y vocabulario, 16:00\u201317:00 \u2014 sentence starters (opening, opinion, linking, disagreeing, buying time) \u00b7 vocab weakest theme first, then the other three \u00b7 question follow-up shapes',m:60,rec:'io'},
+{wk:'W2',day:'Mon 24 Aug',blk:'H',s:'spanish',t:'2 simulacros, tema m\u00e1s d\u00e9bil, 17:00\u201317:40 \u2014 run 1 full length using today\u2019s starters/vocab \u00b7 2 min naming what you reached for and didn\u2019t have \u00b7 run 2 sin apuntes, same theme, closed book. Run 2 should feel easier than run 1 \u2014 if not, the gap is fluency/nerves, not vocab',m:40,rec:'io'},
+{wk:'W2',day:'Tue 25 Aug',blk:'E',s:'math',t:'Calculus CORE sweep 5.1\u20135.11 \u2014 differentiation rules, tangents and normals, second derivative, optimisation, kinematics, basic integration and areas. Never had a block, and all the HL work sits on top of it',m:60,rec:'concept'},
+{wk:'W2',day:'Tue 25 Aug',blk:'G',s:'math',t:'Trig core sweep 3.1\u20133.8 \u2014 radians, unit circle, identities, solving equations. Breadth pass',m:45,rec:'concept'},
+{wk:'W2',day:'Tue 25 Aug',blk:'A',s:'chem',t:'BENCHMARK: Paper 2, an old-syllabus session \u2014 timed 75',m:90,rec:'paper'},
+{wk:'W2',day:'Tue 25 Aug',blk:'B',s:'chem',t:'Mark it \u2014 full answers + error log',m:45,rec:'mark'},
+{wk:'W2',day:'Sat 29 Aug',blk:'C',s:'math',t:'Stats sweep 4.1\u20134.12 \u2014 regression, probability rules, binomial and normal distributions. Breadth pass',m:45,rec:'concept'},
+{wk:'W2',day:'Sun 30 Aug',blk:'A',s:'math',t:'HL 3.12\u20133.18 vectors AND planes, one pass \u2014 dot, cross, lines, planes, the intersection classification table. You scored 7 here six weeks ago, so this is confirmation not repair. Stop early if it goes fine',m:60,rec:'concept'},
+{wk:'W2',day:'Sun 30 Aug',blk:'E',s:'history',t:'P3 Topic 13 \u2014 Europe and WWI. Alliance system, July Crisis, Kaiser Wilhelm\u2019s foreign policy, defeat of the Central Powers. Overlaps P2 Topic 11, so it double-counts',m:60,rec:'hist'},
+{wk:'W2',day:'Sun 30 Aug',blk:'B',s:'history',t:'Germany cluster \u2014 Hitler\u2019s rise and the Nazi state. One essay plan',m:60,rec:'hist'},
+{wk:'W2',day:'Sun 30 Aug',blk:'C',s:'physics',t:'SL Section B: Paper 1A multiple choice \u2014 timed 45 + mark',m:75,rec:'phys'},
+{wk:'W2',day:'Sun 30 Aug',blk:'D',s:'physics',t:'SL Section C: Paper 1B + Paper 2 short answer \u2014 timed 90. Moved here after being sick Wed\u2013Fri',m:90,rec:'phys'},
+{wk:'W2',day:'Sun 30 Aug',blk:'F',s:'physics',t:'Mark Section C 1B+P2 + error log',m:30,rec:'mark'},
+{wk:'W3',day:'Mon 31 Aug',blk:'C',s:'math',t:'Functions second pass 2.1\u20132.16 \u2014 mixed RV set across the whole topic. Untested ground, unlike vectors',m:45,rec:'proc'},
+{wk:'W3',day:'Mon 31 Aug',blk:'S3',s:'chem',t:'Bonding sweep \u2014 VSEPR shapes and bond angles (your 3-strike gap), then properties of ionic solids',m:90,rec:'chemfix'},
+{wk:'W3',day:'Mon 31 Aug',blk:'D',s:'history',t:'Italy cluster \u2014 Mussolini and the fascist state',m:45,rec:'hist'},
+{wk:'W3',day:'Mon 31 Aug',blk:'E',s:'physics',t:'SL Section C: Paper 1A multiple choice, timed 45. Theme C is your second weakest. Moved here after being sick this week',m:60,rec:'phys'},
+{wk:'W3',day:'Mon 31 Aug',blk:'I',s:'physics',t:'Mark Section C 1A + HL MCQ Q31\u201345',m:45,rec:'mcq'},
+{wk:'W3',day:'Mon 31 Aug',blk:'G',s:'chem',t:'Energetics triage \u2014 one card, three enthalpy types: bond enthalpy (broken minus formed), formation, combustion. 4 of your 13 red topics. Moved from earlier this week',m:30,rec:'chemfix'},
+{wk:'W3',day:'Mon 31 Aug',blk:'H',s:'chem',t:'The five new-syllabus topics no past paper can test \u2014 fossil fuel evaluation, biofuels, fuel cells, atom economy, chromatography and Rf. Notes, then 10 self-written questions',m:60,rec:'chemfix'},
+{wk:'W3',day:'Tue 1 Sep',blk:'B',s:'math',t:'HL 1.16 systems of linear equations + 1.11 partial fractions',m:90,rec:'proc'},
+{wk:'W3',day:'Tue 1 Sep',blk:'S3',s:'physics',t:'SL Section B: Paper 1B + Paper 2 short answer \u2014 timed + mark',m:90,rec:'phys'},
+{wk:'W3',day:'Tue 1 Sep',blk:'A',s:'chem',t:'Equilibrium \u2014 Kc, Le Ch\u00e2telier, reaction quotient. Count moles of gas each side first',m:90,rec:'chemfix'},
+{wk:'W3',day:'Tue 1 Sep',blk:'C',s:'chem',t:'BENCHMARK: Paper 2, next old-syllabus session \u2014 timed 75. Moved here after being sick this week',m:75,rec:'paper'},
+{wk:'W3',day:'Tue 1 Sep',blk:'D',s:'chem',t:'Mark it + close the single worst thing it exposed',m:45,rec:'mark'},
+{wk:'W3',day:'Tue 1 Sep',blk:'E',s:'history',t:'China cluster \u2014 Mao and the Chinese Civil War. Timeline, then one P2 essay plan. Moved here after being sick this week',m:90,rec:'hist'},
+{wk:'W3',day:'Wed 2 Sep',blk:'C',s:'math',t:'HL 5.12\u20135.13 first principles, limits, L\u2019H\u00f4pital \u2014 concept pass then RV easy',m:90,rec:'concept'},
+{wk:'W3',day:'Wed 2 Sep',blk:'D',s:'math',t:'HL 5.14 implicit differentiation and related rates \u2014 RV easy\u2192medium',m:60,rec:'proc'},
+{wk:'W3',day:'Wed 2 Sep',blk:'S1',s:'physics',t:'SL Section D: Paper 1A + 1B \u2014 timed 90',m:90,rec:'phys'},
+{wk:'W3',day:'Wed 2 Sep',blk:'S2',s:'chem',t:'Paper 1, an old-syllabus session \u2014 timed 45 then mark 45',m:90,rec:'paper'},
+{wk:'W3',day:'Wed 2 Sep',blk:'A',s:'history',t:'Paper 1 source technique \u2014 OPCVL and compare/contrast drills',m:90,rec:'hist'},
+{wk:'W3',day:'Wed 2 Sep',blk:'B',s:'physics',t:'Mark Section D + HL MCQ Q46\u201360',m:45,rec:'mcq'},
+{wk:'W3',day:'Thu 3 Sep',blk:'E',s:'math',t:'8.45 SHARP \u2014 BENCHMARK: full timed maths paper',m:120,rec:'paper'},
+{wk:'W3',day:'Thu 3 Sep',blk:'B',s:'math',t:'Mark it and rank every topic worst\u2192best',m:60,rec:'mark'},
+{wk:'W3',day:'Thu 3 Sep',blk:'F',s:'math',t:'Rework everything you got wrong this morning \u2014 closed book',m:45,rec:'proc'},
+{wk:'W3',day:'Thu 3 Sep',blk:'S1',s:'chem',t:'8.45 SHARP \u2014 BENCHMARK: May 2025 Paper 1 (on-syllabus), timed 90',m:90,rec:'paper'},
+{wk:'W3',day:'Thu 3 Sep',blk:'S4',s:'chem',t:'Mark it \u2014 strand tally, confident-wrong count, then close the worst gap',m:90,rec:'mark'},
+{wk:'W3',day:'Thu 3 Sep',blk:'A',s:'physics',t:'SL Section A: Paper 2 short answer, re-sit under timing. A is priority one',m:90,rec:'phys'},
+{wk:'W3',day:'Fri 4 Sep',blk:'A',s:'math',t:'HL 5.17 volumes of revolution + 5.18 differential equations \u2014 45 min each',m:90,rec:'proc'},
+{wk:'W3',day:'Fri 4 Sep',blk:'S1',s:'physics',t:'8.45 SHARP \u2014 BENCHMARK: Physics Paper 1 simulation, 1a+1b, full 2h',m:120,rec:'paper'},
+{wk:'W3',day:'Fri 4 Sep',blk:'S2',s:'physics',t:'Mark the simulation + error log',m:60,rec:'mark'},
+{wk:'W3',day:'Fri 4 Sep',blk:'S3',s:'chem',t:'Paper 2, another old-syllabus session \u2014 timed 75',m:75,rec:'paper'},
+{wk:'W3',day:'Fri 4 Sep',blk:'B',s:'chem',t:'Mark Paper 2 + error log',m:45,rec:'mark'},
+{wk:'W3',day:'Fri 4 Sep',blk:'C',s:'english',t:'Light: annotate one unseen text, no essay',m:30,rec:'essay'},
+{wk:'W3',day:'Sat 5 Sep',blk:'S5',s:'math',t:'HL 5.19 Maclaurin series + HL 1.12\u20131.14 complex numbers and De Moivre \u2014 45 min each',m:90,rec:'concept'},
+{wk:'W3',day:'Sat 5 Sep',blk:'B',s:'math',t:'HL 4.13\u20134.14 Bayes and random variable properties \u2014 quick win, high yield',m:45,rec:'proc'},
+{wk:'W3',day:'Sat 5 Sep',blk:'C',s:'math',t:'Algebra CORE sweep 1.1\u20131.8 \u2014 standard form, arithmetic and geometric sequences and series, logs, exponent laws, infinite GP sum. Breadth pass, RV easy tier. Deferred from the week you were sick',m:45,rec:'proc'},
+{wk:'W3',day:'Sat 5 Sep',blk:'D',s:'math',t:'HL 3.9\u20133.11 reciprocal trig, compound angle identities, inverse circular functions. Deferred from the week you were sick',m:45,rec:'proc'},
+{wk:'W3',day:'Sat 5 Sep',blk:'E',s:'math',t:'HL 5.15\u20135.16 integration by substitution and by parts \u2014 2 worked, then RV easy\u2192hard. Recombined into one session; deferred from the week you were sick',m:90,rec:'proc'},
+{wk:'W3',day:'Sat 5 Sep',blk:'F',s:'physics',t:'HL booklet MCQ Q26, 27, 29 \u2014 C.1/C.3 HL extensions (single-slit diffraction, diffraction grating orders, SHM velocity\u2013time equation). Deferred from the week you were sick',m:30,rec:'mcq'},
+{wk:'W3',day:'Sat 5 Sep',blk:'G',s:'physics',t:'HL booklet MCQ Q61\u201369 \u2014 Theme D fields tail: escape speed variants, gravitational/electric potential, equipotentials. Sit + check',m:25,rec:'mcq'},
+{wk:'W3',day:'Sat 5 Sep',blk:'H',s:'physics',t:'HL booklet MCQ Q70\u201386 \u2014 D.4 Electromagnetic Induction, HL-only. 17 questions, the single largest gap in the whole booklet \u2014 never scheduled until now. Timed sit',m:35,rec:'mcq'},
+{wk:'W3',day:'Sun 6 Sep',blk:'H',s:'math',t:'Mixed RV set across every topic touched so far \u2014 medium tier, no notes',m:60,rec:'proc'},
+{wk:'W3',day:'Sun 6 Sep',blk:'A',s:'physics',t:'SL Section E: Paper 1A + 1B \u2014 timed 90. You scored 73% on the nuclear SL test, so this is confirmation. HL nuclear was 63%, so give the HL-flagged questions the attention',m:90,rec:'phys'},
+{wk:'W3',day:'Sun 6 Sep',blk:'B',s:'history',t:'One timed P1 source paper (60) + mark',m:75,rec:'hist'},
+{wk:'W3',day:'Sun 6 Sep',blk:'C',s:'english',t:'P1 annotation warm-up \u2014 exam tomorrow 8.45',m:60,rec:'essay'},
+{wk:'W3',day:'Sun 6 Sep',blk:'E',s:'buffer',t:'Buffer \u2014 anything slipped from week 3. Keep it light',m:45,rec:'buffer'},
+{wk:'W3',day:'Sun 6 Sep',blk:'D',s:'physics',t:'Mark yesterday\u2019s D.4 Induction MCQ (Q70\u201386) \u2014 same next-day pattern as your very first HL MCQ block',m:30,rec:'mark'},
+{wk:'W3',day:'Sun 6 Sep',blk:'I',s:'physics',t:'HL booklet MCQ Q87\u2013100 \u2014 E.2 Quantum (Compton, de Broglie, photoelectric) + E.1/E.3 review. Your HL E test was 64% two weeks ago \u2014 this is the follow-up. Timed sit',m:35,rec:'mcq'},
+{wk:'W3',day:'Sun 6 Sep',blk:'J',s:'physics',t:'Mark Q87\u2013100 \u2014 flag confident-wrong answers specifically, given the 64%',m:25,rec:'mark'},
+{wk:'EX',day:'Mon 7 Sep',blk:'G',s:'math',t:'BENCHMARK: RV mock Paper 2, calculator \u2014 timed 2h',m:120,rec:'paper'},
+{wk:'EX',day:'Mon 7 Sep',blk:'F',s:'math',t:'Mark it + error log',m:60,rec:'mark'},
+{wk:'EX',day:'Mon 7 Sep',blk:'A',s:'chem',t:'Error log end-to-end \u2014 read every entry, count the categories',m:75,rec:'mark'},
+{wk:'EX',day:'Mon 7 Sep',blk:'B',s:'chem',t:'Redo weakest-strand questions closed book. Chem P1 tomorrow 8.45',m:75,rec:'chemfix'},
+{wk:'EX',day:'Mon 7 Sep',blk:'C',s:'history',t:'Light: P1 source technique refresher \u2014 P1 tomorrow afternoon',m:45,rec:'hist'},
+{wk:'EX',day:'Tue 8 Sep',blk:'E',s:'math',t:'Formula booklet self-test + 20 min on your worst topic. STOP BY 6PM',m:45,rec:'proc'},
+{wk:'EX',day:'Tue 8 Sep',blk:'D',s:'spanish',t:'The five themes \u2014 identities, experiences, human ingenuity, social organisation, sharing the planet. One vocabulary sheet per theme, 10 min each',m:50,rec:'lang'},
+{wk:'EX',day:'Tue 8 Sep',blk:'A',s:'spanish',t:'Writing \u2014 one timed task in a text type you avoid',m:75,rec:'lang'},
+{wk:'EX',day:'Tue 8 Sep',blk:'B',s:'spanish',t:'Reading comprehension \u2014 one past paper section',m:45,rec:'lang'},
+{wk:'EX',day:'Wed 9 Sep',blk:'C',s:'math',t:'Light \u2014 15 mixed RV questions, easy tier. Keeps maths ticking through the exam block',m:45,rec:'proc'},
+{wk:'EX',day:'Wed 9 Sep',blk:'A',s:'physics',t:'LIGHT: flagged HL MCQ redo + one Paper 1B data set. Physics P1 tomorrow',m:75,rec:'mcq'},
+{wk:'EX',day:'Thu 10 Sep',blk:'D',s:'math',t:'Formula booklet self-test + 10 mixed questions \u2014 Maths P1 tomorrow afternoon',m:45,rec:'proc'},
+{wk:'EX',day:'Thu 10 Sep',blk:'A',s:'history',t:'P2 essay plans \u2014 two on authoritarian states, two on causes/effects of war',m:90,rec:'essay'},
+{wk:'EX',day:'Thu 10 Sep',blk:'B',s:'english',t:'P2 \u2014 revisit your works, two comparative essay plans',m:60,rec:'essay'},
+{wk:'EX',day:'Fri 11 Sep',blk:'C',s:'math',t:'Light \u2014 10 questions on your worst topic from the last benchmark',m:45,rec:'proc'},
+{wk:'EX',day:'Fri 11 Sep',blk:'A',s:'buffer',t:'Rest. Optional: 30 min mined chem questions on your weakest strand',m:60,rec:'buffer'},
+{wk:'EX',day:'Sat 12 Sep',blk:'D',s:'math',t:'Light: 12 mixed RV questions, medium tier',m:45,rec:'proc'},
+{wk:'EX',day:'Sat 12 Sep',blk:'A',s:'chem',t:'BENCHMARK: May 2025 Paper 2 (on-syllabus) \u2014 timed 90',m:90,rec:'paper'},
+{wk:'EX',day:'Sat 12 Sep',blk:'B',s:'chem',t:'Mark it + error log. Chem P2 is Monday',m:60,rec:'mark'},
+{wk:'EX',day:'Sat 12 Sep',blk:'C',s:'history',t:'P3 Topic 14 Hitler\u2019s Germany \u2014 plan two, write one timed 45',m:90,rec:'essay'},
+{wk:'EX',day:'Sun 13 Sep',blk:'A',s:'math',t:'Light \u2014 formula booklet self-test only. Rest day otherwise',m:45,rec:'proc'},
+{wk:'EX',day:'Sun 13 Sep',blk:'B',s:'history',t:'P3 Topic 15 \u2014 Paris treaties and appeasement. Plans plus one timed essay',m:90,rec:'essay'},
+{wk:'EX',day:'Sun 13 Sep',blk:'C',s:'physics',t:'HL long answer \u2014 one chunk, marked. D.4 Induction and E.2 Quantum had zero MCQ coverage until this week and quantum sat at 64% \u2014 start there unless your error log says otherwise',m:60,rec:'proc'},
+{wk:'EX',day:'Sun 13 Sep',blk:'D',s:'history',t:'Mark the P3 essay against the markbands',m:45,rec:'mark'},
+{wk:'EX',day:'Mon 14 Sep',blk:'E',s:'math',t:'Mixed RV set \u2014 calculator techniques from the error log',m:60,rec:'proc'},
+{wk:'EX',day:'Mon 14 Sep',blk:'A',s:'history',t:'P3 timed essay plans across all three topics. P3 tomorrow 8.45',m:90,rec:'essay'},
+{wk:'EX',day:'Tue 15 Sep',blk:'C',s:'math',t:'P2 practice \u2014 the techniques your error log flags most',m:90,rec:'proc'},
+{wk:'EX',day:'Tue 15 Sep',blk:'A',s:'physics',t:'HL long answer \u2014 topics your error log flags most. D.4 Induction and E.2 Quantum are the likely candidates given this week\u2019s diagnostic. Physics P2 tomorrow',m:90,rec:'proc'},
+{wk:'EX',day:'Tue 15 Sep',blk:'B',s:'spanish',t:'One past listening section \u2014 exam tomorrow afternoon',m:30,rec:'lang'},
+{wk:'EX',day:'Wed 16 Sep',blk:'A',s:'math',t:'Light \u2014 error-log techniques only. Maths P2 tomorrow afternoon, stop early',m:60,rec:'proc'},
+];;;;;;;;;
+
+const CHECKLISTS = {
+ W1:[
+  {id:'w1a',t:'Physics HL booklet: MCQ Q1\u201315 + mark',s:'physics'},
+  {id:'w1b',t:'Physics HL booklet: MCQ Q16\u201330 + mark',s:'physics'},
+  {id:'w1c',t:'Chem: mole \u2192 mass \u2192 particle-count conversions, then mined stoichiometry questions',s:'chem'},
+  {id:'w1d',t:'Chem: atomic structure \u2192 periodicity recall page (isotopes, configurations, trends)',s:'chem'},
+  {id:'w1e',t:'History: China cluster dates and names',s:'history'},
+  {id:'w1f',t:'Maths: formula booklet self-test \u2014 cover it and write what you can',s:'math'},
+ ],
+ W2:[
+  {id:'w2a',t:'Chem Paper 1, an old-syllabus session \u2014 timed 45 at lunch, mark in a chem period',s:'chem'},
+  {id:'w2b',t:'Physics HL booklet: MCQ Q31\u201345 + mark',s:'physics'},
+  {id:'w2c',t:'Physics HL booklet: MCQ Q46\u201360 + mark',s:'physics'},
+  {id:'w2d',t:'Chem: buoyancy of concepts you keep missing \u2014 pick one strand, 10 mined questions',s:'chem'},
+  {id:'w2e',t:'History: Germany cluster dates and names',s:'history'},
+  {id:'w2f',t:'Maths: RV 1.10\u20131.11 permutations and partial fractions',s:'math'},
+  {id:'w2g',t:'Error log review + 5 closed-book redos, any subject',s:'buffer'},
+ ],
+ W3:[
+  {id:'w3a',t:'TUE 8.45 sharp: full timed maths paper + mark after',s:'math'},
+  {id:'w3b',t:'THU 8.45 sharp: Chem 2025 Paper 1 timed + mark after',s:'chem'},
+  {id:'w3c',t:'FRI 8.45 sharp: Physics Paper 1 simulation, 1a+1b, full 2h + mark',s:'physics'},
+  {id:'w3d',t:'Chem Paper 1 #5 \u2014 timed 45',s:'chem'},
+  {id:'w3e',t:'Chem Paper 2, another old-syllabus session \u2014 timed 75 + mark',s:'chem'},
+  {id:'w3f',t:'Physics HL booklet: finish all remaining MCQ (to Q100)',s:'physics'},
+  {id:'w3g',t:'Physics SL booklet: Section D and E, whatever the evenings didn\u2019t cover',s:'physics'},
+  {id:'w3h',t:'Maths: RV 2.14\u20132.16 inequalities and modulus',s:'math'},
+  {id:'w3i',t:'Maths: RV 4.13\u20134.14 Bayes and RV properties \u2014 quick win',s:'math'},
+  {id:'w3j',t:'History: Italy cluster + treaties/appeasement notes',s:'history'},
+  {id:'w3k',t:'Spanish: one writing task + one reading section',s:'spanish'},
+ ],
+ EX:[
+  {id:'exa',t:'Between exams: error-log skims only \u2014 no new content at school',s:'buffer'},
+ ]
+};
+
+
+const SEED_TOPICS = [
+ {s:'math',g:'1 Number & Algebra',t:'1.1 Standard form',rag:0},
+ {s:'math',g:'1 Number & Algebra',t:'1.2 Arithmetic sequences & series',rag:0},
+ {s:'math',g:'1 Number & Algebra',t:'1.3 Geometric sequences & series',rag:0},
+ {s:'math',g:'1 Number & Algebra',t:'1.4 Financial applications: compound interest, depreciation',rag:0},
+ {s:'math',g:'1 Number & Algebra',t:'1.5 Introduction to logarithms',rag:0},
+ {s:'math',g:'1 Number & Algebra',t:'1.6 Simple proof',rag:0},
+ {s:'math',g:'1 Number & Algebra',t:'1.7 Laws of exponents and logs',rag:0},
+ {s:'math',g:'1 Number & Algebra',t:'1.8 Sum of infinite geometric sequence',rag:0},
+ {s:'math',g:'1 Number & Algebra',t:'1.9 Binomial theorem, n integer',rag:0},
+ {s:'math',g:'1 Number & Algebra HL',t:'HL 1.10 Permutations, combinations, binomial with negative/fractional indices',rag:0},
+ {s:'math',g:'1 Number & Algebra HL',t:'HL 1.11 Partial fractions',rag:0},
+ {s:'math',g:'1 Number & Algebra HL',t:'HL 1.12 Complex numbers: Cartesian form & Argand diagram',rag:0},
+ {s:'math',g:'1 Number & Algebra HL',t:'HL 1.13 Polar and Euler form',rag:0},
+ {s:'math',g:'1 Number & Algebra HL',t:'HL 1.14 Complex roots, conjugates, De Moivre, powers & roots',rag:0},
+ {s:'math',g:'1 Number & Algebra HL',t:'HL 1.15 Proof by induction, contradiction, counterexample',rag:0},
+ {s:'math',g:'1 Number & Algebra HL',t:'HL 1.16 Systems of linear equations',rag:0},
+ {s:'math',g:'2 Functions',t:'2.1 Straight lines, parallel & perpendicular',rag:0},
+ {s:'math',g:'2 Functions',t:'2.2 Functions, domain, range, inverse as reflection',rag:0},
+ {s:'math',g:'2 Functions',t:'2.3 Graphing',rag:0},
+ {s:'math',g:'2 Functions',t:'2.4 Key features of graphs, intersections by technology',rag:0},
+ {s:'math',g:'2 Functions',t:'2.5 Composite functions, identity, finding inverse',rag:0},
+ {s:'math',g:'2 Functions',t:'2.6 Quadratic function',rag:0},
+ {s:'math',g:'2 Functions',t:'2.7 Quadratic equations & inequalities, discriminant',rag:0},
+ {s:'math',g:'2 Functions',t:'2.8 Reciprocal & rational functions, asymptotes',rag:0},
+ {s:'math',g:'2 Functions',t:'2.9 Exponential & logarithmic functions',rag:0},
+ {s:'math',g:'2 Functions',t:'2.10 Solving equations graphically & analytically',rag:0},
+ {s:'math',g:'2 Functions',t:'2.11 Transformation of functions',rag:0},
+ {s:'math',g:'2 Functions HL',t:'HL 2.12 Factor & remainder theorems, sum/product of roots',rag:0},
+ {s:'math',g:'2 Functions HL',t:'HL 2.13 Rational functions',rag:0},
+ {s:'math',g:'2 Functions HL',t:'HL 2.14 Odd & even functions, self-inverse, domain restriction',rag:0},
+ {s:'math',g:'2 Functions HL',t:'HL 2.15 Solutions of inequalities',rag:0},
+ {s:'math',g:'2 Functions HL',t:'HL 2.16 Graphing modulus equations & inequalities',rag:0},
+ {s:'math',g:'3 Geometry & Trigonometry',t:'3.1 3D space: volume, angles, distance, midpoints',rag:0},
+ {s:'math',g:'3 Geometry & Trigonometry',t:'3.2 2D & 3D trig, sine rule, cosine rule, area',rag:0},
+ {s:'math',g:'3 Geometry & Trigonometry',t:'3.3 Angles of elevation/depression, bearings',rag:0},
+ {s:'math',g:'3 Geometry & Trigonometry',t:'3.4 Radians, arcs, sectors',rag:0},
+ {s:'math',g:'3 Geometry & Trigonometry',t:'3.5 Unit circle, exact ratios, ambiguous case',rag:0},
+ {s:'math',g:'3 Geometry & Trigonometry',t:'3.6 Pythagorean identity, double angles',rag:0},
+ {s:'math',g:'3 Geometry & Trigonometry',t:'3.7 Circular functions: graphs, composites, transformations',rag:0},
+ {s:'math',g:'3 Geometry & Trigonometry',t:'3.8 Solving trigonometric equations',rag:0},
+ {s:'math',g:'3 Geometry & Trig HL',t:'HL 3.9 Reciprocal trig ratios, their identities, inverse circular functions',rag:0},
+ {s:'math',g:'3 Geometry & Trig HL',t:'HL 3.10 Compound angle identities',rag:0},
+ {s:'math',g:'3 Geometry & Trig HL',t:'HL 3.11 Relationships between trig functions',rag:0},
+ {s:'math',g:'3 Geometry & Trig HL',t:'HL 3.12 Vector definitions',rag:3},
+ {s:'math',g:'3 Geometry & Trig HL',t:'HL 3.13 Scalar (dot) product',rag:3},
+ {s:'math',g:'3 Geometry & Trig HL',t:'HL 3.14 Vector equation of a line',rag:3},
+ {s:'math',g:'3 Geometry & Trig HL',t:'HL 3.15 Classification of lines',rag:3},
+ {s:'math',g:'3 Geometry & Trig HL',t:'HL 3.16 Vector (cross) product',rag:3},
+ {s:'math',g:'3 Geometry & Trig HL',t:'HL 3.17 Vector equations of a plane',rag:3},
+ {s:'math',g:'3 Geometry & Trig HL',t:'HL 3.18 Intersections of lines and planes',rag:3},
+ {s:'math',g:'4 Statistics & Probability',t:'4.1 Concepts, reliability, sampling',rag:0},
+ {s:'math',g:'4 Statistics & Probability',t:'4.2 Histograms, cumulative frequency, box plots',rag:0},
+ {s:'math',g:'4 Statistics & Probability',t:'4.3 Mean, median, mode, grouped data, SD, quartiles, IQR',rag:0},
+ {s:'math',g:'4 Statistics & Probability',t:'4.4 Pearson, scatter, regression y on x',rag:0},
+ {s:'math',g:'4 Statistics & Probability',t:'4.5 Probability concepts, expected numbers',rag:0},
+ {s:'math',g:'4 Statistics & Probability',t:'4.6 Combined, mutually exclusive, conditional, independence',rag:0},
+ {s:'math',g:'4 Statistics & Probability',t:'4.7 Discrete random variables',rag:0},
+ {s:'math',g:'4 Statistics & Probability',t:'4.8 Binomial distribution',rag:0},
+ {s:'math',g:'4 Statistics & Probability',t:'4.9 Normal distribution',rag:0},
+ {s:'math',g:'4 Statistics & Probability',t:'4.10 Regression line x on y',rag:0},
+ {s:'math',g:'4 Statistics & Probability',t:'4.11 Conditional & independent probability, test for independence',rag:0},
+ {s:'math',g:'4 Statistics & Probability',t:'4.12 z-values, inverse normal',rag:0},
+ {s:'math',g:'4 Stats & Prob HL',t:'HL 4.13 Bayes theorem',rag:0},
+ {s:'math',g:'4 Stats & Prob HL',t:'HL 4.14 Properties of discrete & continuous RVs',rag:0},
+ {s:'math',g:'5 Calculus',t:'5.1 Introduction to differential calculus',rag:0},
+ {s:'math',g:'5 Calculus',t:'5.2 Increasing & decreasing functions',rag:0},
+ {s:'math',g:'5 Calculus',t:'5.3 Differentiation of polynomials, n in Z',rag:0},
+ {s:'math',g:'5 Calculus',t:'5.4 Tangents and normals',rag:0},
+ {s:'math',g:'5 Calculus',t:'5.5 Introduction to integration, area under curve',rag:0},
+ {s:'math',g:'5 Calculus',t:'5.6 Differentiation n in Q; chain, product, quotient',rag:0},
+ {s:'math',g:'5 Calculus',t:'5.7 The second derivative',rag:0},
+ {s:'math',g:'5 Calculus',t:'5.8 Max/min, optimisation, points of inflexion',rag:0},
+ {s:'math',g:'5 Calculus',t:'5.9 Kinematics problems',rag:0},
+ {s:'math',g:'5 Calculus',t:'5.10 Indefinite integration, reverse chain, substitution',rag:0},
+ {s:'math',g:'5 Calculus',t:'5.11 Definite integrals, areas between curves',rag:0},
+ {s:'math',g:'5 Calculus HL',t:'HL 5.12 First principles, higher derivatives',rag:0},
+ {s:'math',g:'5 Calculus HL',t:'HL 5.13 Limits and L’Hôpital’s rule',rag:0},
+ {s:'math',g:'5 Calculus HL',t:'HL 5.14 Implicit functions, related rates, optimisation',rag:0},
+ {s:'math',g:'5 Calculus HL',t:'HL 5.15 Further derivatives & their integrals, partial fractions',rag:0},
+ {s:'math',g:'5 Calculus HL',t:'HL 5.16 Integration by substitution, parts, repeated parts',rag:0},
+ {s:'math',g:'5 Calculus HL',t:'HL 5.17 Areas onto y-axis, volumes of revolution',rag:0},
+ {s:'math',g:'5 Calculus HL',t:'HL 5.18 First-order DEs: Euler, separable, integrating factor, homogeneous',rag:0},
+ {s:'math',g:'5 Calculus HL',t:'HL 5.19 Maclaurin series',rag:0},
+ {s:'physics',g:'A.1 Kinematics',t:'Displacement, velocity, acceleration; instantaneous vs average',rag:0},
+ {s:'physics',g:'A.1 Kinematics',t:'SUVAT equations & their conditions',rag:0},
+ {s:'physics',g:'A.1 Kinematics',t:'Motion graphs: gradients and areas',rag:0},
+ {s:'physics',g:'A.1 Kinematics',t:'Projectile motion, independence of components',rag:0},
+ {s:'physics',g:'A.1 Kinematics',t:'Fluid resistance & terminal speed',rag:0},
+ {s:'physics',g:'A.2 Forces & momentum',t:'Newton’s three laws',rag:0},
+ {s:'physics',g:'A.2 Forces & momentum',t:'Free-body diagrams & translational equilibrium',rag:0},
+ {s:'physics',g:'A.2 Forces & momentum',t:'Friction: static and dynamic',rag:0},
+ {s:'physics',g:'A.2 Forces & momentum',t:'Buoyancy & Archimedes’ principle ★known gap',rag:0},
+ {s:'physics',g:'A.2 Forces & momentum',t:'Viscous drag & Stokes’ law',rag:0},
+ {s:'physics',g:'A.2 Forces & momentum',t:'Hooke’s law',rag:0},
+ {s:'physics',g:'A.2 Forces & momentum',t:'Momentum and impulse; F–t graphs',rag:0},
+ {s:'physics',g:'A.2 Forces & momentum',t:'Conservation of momentum',rag:0},
+ {s:'physics',g:'A.2 Forces & momentum',t:'Elastic/inelastic collisions & explosions',rag:0},
+ {s:'physics',g:'A.2 Forces & momentum',t:'Circular motion, centripetal force',rag:0},
+ {s:'physics',g:'A.3 Work, energy & power',t:'Work, F–d graphs',rag:0},
+ {s:'physics',g:'A.3 Work, energy & power',t:'Kinetic energy',rag:0},
+ {s:'physics',g:'A.3 Work, energy & power',t:'Gravitational potential energy',rag:0},
+ {s:'physics',g:'A.3 Work, energy & power',t:'Elastic potential energy',rag:0},
+ {s:'physics',g:'A.3 Work, energy & power',t:'Conservation of energy, Sankey diagrams',rag:0},
+ {s:'physics',g:'A.3 Work, energy & power',t:'Power and efficiency ★known gap',rag:0},
+ {s:'physics',g:'A.3 Work, energy & power',t:'Energy density & specific energy',rag:0},
+ {s:'physics',g:'A.4 Rigid body HL',t:'Torque and couples',rag:0},
+ {s:'physics',g:'A.4 Rigid body HL',t:'Rotational equilibrium',rag:0},
+ {s:'physics',g:'A.4 Rigid body HL',t:'Moment of inertia',rag:0},
+ {s:'physics',g:'A.4 Rigid body HL',t:'Rotational kinematics equations',rag:0},
+ {s:'physics',g:'A.4 Rigid body HL',t:'Newton’s second law for rotation',rag:0},
+ {s:'physics',g:'A.4 Rigid body HL',t:'Angular momentum & conservation',rag:0},
+ {s:'physics',g:'A.4 Rigid body HL',t:'Rotational kinetic energy, rolling',rag:0},
+ {s:'physics',g:'A.4 Rigid body HL',t:'Angular impulse',rag:0},
+ {s:'physics',g:'A.5 Relativity HL',t:'Reference frames & Galilean relativity',rag:0},
+ {s:'physics',g:'A.5 Relativity HL',t:'Postulates of special relativity',rag:0},
+ {s:'physics',g:'A.5 Relativity HL',t:'Lorentz transformations & gamma',rag:0},
+ {s:'physics',g:'A.5 Relativity HL',t:'Time dilation & proper time',rag:0},
+ {s:'physics',g:'A.5 Relativity HL',t:'Length contraction & proper length',rag:0},
+ {s:'physics',g:'A.5 Relativity HL',t:'Relativity of simultaneity',rag:0},
+ {s:'physics',g:'A.5 Relativity HL',t:'Spacetime interval & diagrams',rag:0},
+ {s:'physics',g:'A.5 Relativity HL',t:'Muon decay experiment',rag:0},
+ {s:'physics',g:'A.5 Relativity HL',t:'Relativistic velocity addition',rag:0},
+ {s:'physics',g:'A.5 Relativity HL',t:'Twin paradox',rag:0},
+ {s:'physics',g:'B.1 Thermal energy',t:'Molecular model, density',rag:0},
+ {s:'physics',g:'B.1 Thermal energy',t:'Temperature, kelvin, internal energy',rag:0},
+ {s:'physics',g:'B.1 Thermal energy',t:'Specific heat capacity',rag:0},
+ {s:'physics',g:'B.1 Thermal energy',t:'Latent heat & phase change',rag:0},
+ {s:'physics',g:'B.1 Thermal energy',t:'Conduction & thermal conductivity',rag:0},
+ {s:'physics',g:'B.1 Thermal energy',t:'Convection',rag:0},
+ {s:'physics',g:'B.1 Thermal energy',t:'Black bodies, emissivity, Stefan–Boltzmann',rag:0},
+ {s:'physics',g:'B.1 Thermal energy',t:'Wien’s displacement law',rag:0},
+ {s:'physics',g:'B.1 Thermal energy',t:'Luminosity & apparent brightness',rag:0},
+ {s:'physics',g:'B.2 Greenhouse effect',t:'Solar constant and the S/4 factor',rag:0},
+ {s:'physics',g:'B.2 Greenhouse effect',t:'Albedo',rag:0},
+ {s:'physics',g:'B.2 Greenhouse effect',t:'Emissivity',rag:0},
+ {s:'physics',g:'B.2 Greenhouse effect',t:'Greenhouse gases & the IR mechanism',rag:0},
+ {s:'physics',g:'B.2 Greenhouse effect',t:'Energy balance climate models',rag:0},
+ {s:'physics',g:'B.3 Gas laws',t:'Mole, Avogadro constant',rag:0},
+ {s:'physics',g:'B.3 Gas laws',t:'Ideal gas equation, both forms',rag:0},
+ {s:'physics',g:'B.3 Gas laws',t:'Boyle, Charles, Gay-Lussac & their graphs',rag:0},
+ {s:'physics',g:'B.3 Gas laws',t:'Kinetic theory assumptions',rag:0},
+ {s:'physics',g:'B.3 Gas laws',t:'Average KE and temperature',rag:0},
+ {s:'physics',g:'B.3 Gas laws',t:'Internal energy of a monatomic ideal gas',rag:0},
+ {s:'physics',g:'B.3 Gas laws',t:'Real vs ideal gas behaviour',rag:0},
+ {s:'physics',g:'B.4 Thermodynamics HL',t:'First law and sign conventions',rag:0},
+ {s:'physics',g:'B.4 Thermodynamics HL',t:'Work done by a gas, p–V area',rag:0},
+ {s:'physics',g:'B.4 Thermodynamics HL',t:'Isovolumetric, isobaric, isothermal, adiabatic',rag:0},
+ {s:'physics',g:'B.4 Thermodynamics HL',t:'Adiabatic relation for monatomic gas',rag:0},
+ {s:'physics',g:'B.4 Thermodynamics HL',t:'Entropy and its interpretation',rag:0},
+ {s:'physics',g:'B.4 Thermodynamics HL',t:'Second law & irreversibility',rag:0},
+ {s:'physics',g:'B.4 Thermodynamics HL',t:'Cyclic processes and heat engines',rag:0},
+ {s:'physics',g:'B.4 Thermodynamics HL',t:'Thermal & Carnot efficiency',rag:0},
+ {s:'physics',g:'B.5 Current & circuits',t:'Charge, current, drift speed',rag:0},
+ {s:'physics',g:'B.5 Current & circuits',t:'emf vs potential difference',rag:0},
+ {s:'physics',g:'B.5 Current & circuits',t:'Ohm’s law, ohmic vs non-ohmic',rag:0},
+ {s:'physics',g:'B.5 Current & circuits',t:'Resistivity',rag:0},
+ {s:'physics',g:'B.5 Current & circuits',t:'I–V characteristics: resistor, lamp, diode',rag:0},
+ {s:'physics',g:'B.5 Current & circuits',t:'Thermistors and LDRs',rag:0},
+ {s:'physics',g:'B.5 Current & circuits',t:'Electrical power and energy',rag:0},
+ {s:'physics',g:'B.5 Current & circuits',t:'Series and parallel resistors',rag:0},
+ {s:'physics',g:'B.5 Current & circuits',t:'Kirchhoff’s laws',rag:0},
+ {s:'physics',g:'B.5 Current & circuits',t:'Potential dividers',rag:0},
+ {s:'physics',g:'B.5 Current & circuits',t:'Internal resistance & terminal pd',rag:0},
+ {s:'physics',g:'B.5 Current & circuits',t:'Cells and discharge',rag:0},
+ {s:'physics',g:'C.1 SHM',t:'Defining condition a = −ω²x',rag:0},
+ {s:'physics',g:'C.1 SHM',t:'Amplitude, period, frequency, phase',rag:0},
+ {s:'physics',g:'C.1 SHM',t:'Mass–spring and pendulum periods',rag:0},
+ {s:'physics',g:'C.1 SHM',t:'x, v, a graphs and phase relationships',rag:0},
+ {s:'physics',g:'C.1 SHM',t:'Energy in SHM',rag:0},
+ {s:'physics',g:'C.1 SHM',t:'HL: full x, v, a equations',rag:0},
+ {s:'physics',g:'C.1 SHM',t:'HL: velocity as a function of displacement',rag:0},
+ {s:'physics',g:'C.2 Wave model',t:'Transverse vs longitudinal',rag:0},
+ {s:'physics',g:'C.2 Wave model',t:'Wave quantities and c = fλ',rag:0},
+ {s:'physics',g:'C.2 Wave model',t:'Wavefronts and rays',rag:0},
+ {s:'physics',g:'C.2 Wave model',t:'Displacement–distance vs displacement–time graphs',rag:0},
+ {s:'physics',g:'C.2 Wave model',t:'Sound as a longitudinal wave',rag:0},
+ {s:'physics',g:'C.2 Wave model',t:'The electromagnetic spectrum',rag:0},
+ {s:'physics',g:'C.3 Wave phenomena',t:'Reflection & phase change',rag:0},
+ {s:'physics',g:'C.3 Wave phenomena',t:'Refraction and Snell’s law',rag:0},
+ {s:'physics',g:'C.3 Wave phenomena',t:'Critical angle & total internal reflection',rag:0},
+ {s:'physics',g:'C.3 Wave phenomena',t:'Diffraction',rag:0},
+ {s:'physics',g:'C.3 Wave phenomena',t:'Superposition, path & phase difference',rag:0},
+ {s:'physics',g:'C.3 Wave phenomena',t:'Young’s double slit, fringe spacing',rag:0},
+ {s:'physics',g:'C.3 Wave phenomena',t:'Coherence',rag:0},
+ {s:'physics',g:'C.3 Wave phenomena',t:'HL: single-slit diffraction',rag:0},
+ {s:'physics',g:'C.3 Wave phenomena',t:'HL: diffraction gratings',rag:0},
+ {s:'physics',g:'C.3 Wave phenomena',t:'HL: thin-film interference',rag:0},
+ {s:'physics',g:'C.4 Standing waves',t:'Formation from two travelling waves',rag:0},
+ {s:'physics',g:'C.4 Standing waves',t:'Nodes and antinodes',rag:0},
+ {s:'physics',g:'C.4 Standing waves',t:'Differences from travelling waves',rag:0},
+ {s:'physics',g:'C.4 Standing waves',t:'Harmonics on a string',rag:0},
+ {s:'physics',g:'C.4 Standing waves',t:'Pipes: open–open and open–closed',rag:0},
+ {s:'physics',g:'C.4 Standing waves',t:'Natural frequency & resonance',rag:0},
+ {s:'physics',g:'C.4 Standing waves',t:'Damping: light, critical, heavy',rag:0},
+ {s:'physics',g:'C.4 Standing waves',t:'HL: Q factor',rag:0},
+ {s:'physics',g:'C.5 Doppler effect',t:'Qualitative cause',rag:0},
+ {s:'physics',g:'C.5 Doppler effect',t:'Moving source',rag:0},
+ {s:'physics',g:'C.5 Doppler effect',t:'Moving observer',rag:0},
+ {s:'physics',g:'C.5 Doppler effect',t:'HL: Doppler for light, redshift',rag:0},
+ {s:'physics',g:'C.5 Doppler effect',t:'Applications: radar, ultrasound, galaxies',rag:0},
+ {s:'physics',g:'D.1 Gravitational fields',t:'Newton’s law of gravitation',rag:0},
+ {s:'physics',g:'D.1 Gravitational fields',t:'Gravitational field strength & lines',rag:0},
+ {s:'physics',g:'D.1 Gravitational fields',t:'Orbital motion and speed',rag:0},
+ {s:'physics',g:'D.1 Gravitational fields',t:'Kepler’s three laws',rag:0},
+ {s:'physics',g:'D.1 Gravitational fields',t:'HL: gravitational potential energy',rag:0},
+ {s:'physics',g:'D.1 Gravitational fields',t:'HL: gravitational potential & equipotentials',rag:0},
+ {s:'physics',g:'D.1 Gravitational fields',t:'HL: field as potential gradient',rag:0},
+ {s:'physics',g:'D.1 Gravitational fields',t:'HL: escape speed',rag:0},
+ {s:'physics',g:'D.1 Gravitational fields',t:'HL: total orbital energy',rag:0},
+ {s:'physics',g:'D.2 Electric & magnetic fields',t:'Charge, conservation, charging methods',rag:0},
+ {s:'physics',g:'D.2 Electric & magnetic fields',t:'Coulomb’s law & permittivity',rag:0},
+ {s:'physics',g:'D.2 Electric & magnetic fields',t:'Electric field strength & patterns',rag:0},
+ {s:'physics',g:'D.2 Electric & magnetic fields',t:'Uniform field between plates',rag:0},
+ {s:'physics',g:'D.2 Electric & magnetic fields',t:'HL: electric potential & PE',rag:0},
+ {s:'physics',g:'D.2 Electric & magnetic fields',t:'HL: field as potential gradient',rag:0},
+ {s:'physics',g:'D.2 Electric & magnetic fields',t:'Magnetic field patterns',rag:0},
+ {s:'physics',g:'D.2 Electric & magnetic fields',t:'Right-hand rules',rag:0},
+ {s:'physics',g:'D.2 Electric & magnetic fields',t:'Force on a current-carrying conductor',rag:0},
+ {s:'physics',g:'D.3 Motion in EM fields',t:'Force on a moving charge',rag:0},
+ {s:'physics',g:'D.3 Motion in EM fields',t:'Circular paths, r = mv/qB',rag:0},
+ {s:'physics',g:'D.3 Motion in EM fields',t:'Motion in a uniform electric field',rag:0},
+ {s:'physics',g:'D.3 Motion in EM fields',t:'Work done through a pd, the electronvolt',rag:0},
+ {s:'physics',g:'D.3 Motion in EM fields',t:'Force between parallel wires',rag:0},
+ {s:'physics',g:'D.3 Motion in EM fields',t:'Applications: mass spectrometer, velocity selector',rag:0},
+ {s:'physics',g:'D.4 Induction HL',t:'Magnetic flux and flux linkage',rag:0},
+ {s:'physics',g:'D.4 Induction HL',t:'Faraday’s law',rag:0},
+ {s:'physics',g:'D.4 Induction HL',t:'Lenz’s law',rag:0},
+ {s:'physics',g:'D.4 Induction HL',t:'emf in a moving conductor',rag:0},
+ {s:'physics',g:'D.4 Induction HL',t:'AC generator & sinusoidal emf',rag:0},
+ {s:'physics',g:'E.1 Structure of the atom',t:'Geiger–Marsden–Rutherford experiment',rag:3},
+ {s:'physics',g:'E.1 Structure of the atom',t:'Nuclear notation & isotopes',rag:3},
+ {s:'physics',g:'E.1 Structure of the atom',t:'Emission and absorption spectra',rag:3},
+ {s:'physics',g:'E.1 Structure of the atom',t:'Discrete energy levels & photons',rag:3},
+ {s:'physics',g:'E.1 Structure of the atom',t:'HL: nuclear radius and density',rag:2},
+ {s:'physics',g:'E.1 Structure of the atom',t:'HL: Bohr model & quantised angular momentum',rag:2},
+ {s:'physics',g:'E.2 Quantum physics HL',t:'Photoelectric effect & the four observations',rag:2},
+ {s:'physics',g:'E.2 Quantum physics HL',t:'Work function & threshold frequency',rag:2},
+ {s:'physics',g:'E.2 Quantum physics HL',t:'Stopping voltage, determining h',rag:2},
+ {s:'physics',g:'E.2 Quantum physics HL',t:'Photon momentum',rag:2},
+ {s:'physics',g:'E.2 Quantum physics HL',t:'Compton scattering',rag:2},
+ {s:'physics',g:'E.2 Quantum physics HL',t:'de Broglie wavelength',rag:2},
+ {s:'physics',g:'E.2 Quantum physics HL',t:'Electron diffraction evidence',rag:2},
+ {s:'physics',g:'E.2 Quantum physics HL',t:'Heisenberg uncertainty principle',rag:2},
+ {s:'physics',g:'E.2 Quantum physics HL',t:'Wave function & probability',rag:2},
+ {s:'physics',g:'E.3 Radioactive decay',t:'Strong nuclear force & stability',rag:3},
+ {s:'physics',g:'E.3 Radioactive decay',t:'Mass defect & the unified mass unit',rag:3},
+ {s:'physics',g:'E.3 Radioactive decay',t:'Binding energy per nucleon curve',rag:3},
+ {s:'physics',g:'E.3 Radioactive decay',t:'Alpha, beta±, gamma decay',rag:3},
+ {s:'physics',g:'E.3 Radioactive decay',t:'Balanced decay equations',rag:3},
+ {s:'physics',g:'E.3 Radioactive decay',t:'Neutrinos & the beta energy spectrum',rag:3},
+ {s:'physics',g:'E.3 Radioactive decay',t:'Half-life, activity, decay curves',rag:3},
+ {s:'physics',g:'E.3 Radioactive decay',t:'Background radiation',rag:3},
+ {s:'physics',g:'E.3 Radioactive decay',t:'HL: decay constant & exponential law',rag:2},
+ {s:'physics',g:'E.3 Radioactive decay',t:'HL: gamma attenuation',rag:2},
+ {s:'physics',g:'E.4 Fission',t:'Induced fission & neutron capture',rag:3},
+ {s:'physics',g:'E.4 Fission',t:'Chain reactions & critical mass',rag:3},
+ {s:'physics',g:'E.4 Fission',t:'Reactor components and their roles',rag:3},
+ {s:'physics',g:'E.4 Fission',t:'Moderator vs control rods',rag:3},
+ {s:'physics',g:'E.4 Fission',t:'Fuel enrichment, Pu-239',rag:3},
+ {s:'physics',g:'E.4 Fission',t:'Nuclear waste',rag:3},
+ {s:'physics',g:'E.5 Fusion & stars',t:'Fusion conditions & the pp chain',rag:3},
+ {s:'physics',g:'E.5 Fusion & stars',t:'Stellar equilibrium',rag:3},
+ {s:'physics',g:'E.5 Fusion & stars',t:'Luminosity vs apparent brightness',rag:3},
+ {s:'physics',g:'E.5 Fusion & stars',t:'Stellar parallax & the parsec',rag:3},
+ {s:'physics',g:'E.5 Fusion & stars',t:'The HR diagram',rag:3},
+ {s:'physics',g:'E.5 Fusion & stars',t:'Mass–luminosity relation',rag:3},
+ {s:'physics',g:'E.5 Fusion & stars',t:'Stellar evolution pathways',rag:3},
+ {s:'physics',g:'E.5 Fusion & stars',t:'Chandrasekhar limit & remnants',rag:3},
+ {s:'physics',g:'Tools & uncertainties',t:'SI units, prefixes, homogeneity',rag:0},
+ {s:'physics',g:'Tools & uncertainties',t:'Significant figures',rag:0},
+ {s:'physics',g:'Tools & uncertainties',t:'Random vs systematic error',rag:0},
+ {s:'physics',g:'Tools & uncertainties',t:'Absolute, fractional, percentage uncertainty',rag:0},
+ {s:'physics',g:'Tools & uncertainties',t:'Propagation rules',rag:0},
+ {s:'physics',g:'Tools & uncertainties',t:'Error bars, best & worst fit lines',rag:0},
+ {s:'physics',g:'Tools & uncertainties',t:'Graph linearisation',rag:0},
+ {s:'physics',g:'Tools & uncertainties',t:'Interpreting gradients physically',rag:0},
+ {s:'chem',g:'S1.1 Particulate nature',t:'States of matter & kinetic model',rag:0},
+ {s:'chem',g:'S1.1 Particulate nature',t:'Temperature, kelvin scale',rag:0},
+ {s:'chem',g:'S1.1 Particulate nature',t:'Changes of state, heating curves',rag:0},
+ {s:'chem',g:'S1.2 The nuclear atom',t:'Subatomic particles & nuclear model',rag:3},
+ {s:'chem',g:'S1.2 The nuclear atom',t:'Isotopes & relative atomic mass',rag:2},
+ {s:'chem',g:'S1.2 The nuclear atom',t:'Mass spectra interpretation',rag:1},
+ {s:'chem',g:'S1.3 Electron configurations',t:'Emission spectra & energy levels',rag:0},
+ {s:'chem',g:'S1.3 Electron configurations',t:'Electron configuration (Aufbau, Hund, Pauli)',rag:3},
+ {s:'chem',g:'S1.3 Electron configurations',t:'Ionisation energy as evidence',rag:0},
+ {s:'chem',g:'S1.4 The mole',t:'Mole & Avogadro constant',rag:2},
+ {s:'chem',g:'S1.4 The mole',t:'Molar mass calculations',rag:3},
+ {s:'chem',g:'S1.4 The mole',t:'Empirical & molecular formulae',rag:0},
+ {s:'chem',g:'S1.4 The mole',t:'Concentration & solutions',rag:3},
+ {s:'chem',g:'S1.4 The mole',t:'Limiting reagent',rag:0},
+ {s:'chem',g:'S1.4 The mole',t:'Theoretical & percentage yield',rag:0},
+ {s:'chem',g:'S1.5 Ideal gases',t:'Ideal gas equation',rag:0},
+ {s:'chem',g:'S1.5 Ideal gases',t:'Gas law relationships & graphs',rag:0},
+ {s:'chem',g:'S1.5 Ideal gases',t:'Molar volume at STP',rag:3},
+ {s:'chem',g:'S1.5 Ideal gases',t:'Real vs ideal gas deviations',rag:3},
+ {s:'chem',g:'S2.1 Ionic model',t:'Ion formation & charges',rag:2},
+ {s:'chem',g:'S2.1 Ionic model',t:'Ionic bonding & lattice structure',rag:2},
+ {s:'chem',g:'S2.1 Ionic model',t:'Properties of ionic compounds',rag:1},
+ {s:'chem',g:'S2.1 Ionic model',t:'Lattice enthalpy trends',rag:0},
+ {s:'chem',g:'S2.2 Covalent model',t:'Covalent bond formation',rag:0},
+ {s:'chem',g:'S2.2 Covalent model',t:'Lewis (electron dot) structures',rag:3},
+ {s:'chem',g:'S2.2 Covalent model',t:'Bond length, strength, multiple bonds',rag:0},
+ {s:'chem',g:'S2.2 Covalent model',t:'VSEPR shapes',rag:1},
+ {s:'chem',g:'S2.2 Covalent model',t:'Bond angles & lone pair repulsion',rag:1},
+ {s:'chem',g:'S2.2 Covalent model',t:'Bond & molecular polarity',rag:0},
+ {s:'chem',g:'S2.2 Covalent model',t:'Intermolecular forces: London, dipole, H-bonding',rag:3},
+ {s:'chem',g:'S2.2 Covalent model',t:'Giant covalent structures',rag:0},
+ {s:'chem',g:'S2.2 Covalent model',t:'Chromatography & Rf values ★new syllabus',rag:0},
+ {s:'chem',g:'S2.3 Metallic model',t:'Metallic bonding',rag:3},
+ {s:'chem',g:'S2.3 Metallic model',t:'Properties of metals',rag:3},
+ {s:'chem',g:'S2.3 Metallic model',t:'Alloys',rag:3},
+ {s:'chem',g:'S2.4 Models to materials',t:'The bonding triangle',rag:0},
+ {s:'chem',g:'S2.4 Models to materials',t:'Addition polymers',rag:3},
+ {s:'chem',g:'S2.4 Models to materials',t:'Condensation polymers',rag:0},
+ {s:'chem',g:'S2.4 Models to materials',t:'Structure–property relationships',rag:0},
+ {s:'chem',g:'S3.1 Periodic table',t:'Arrangement: periods, groups, blocks',rag:0},
+ {s:'chem',g:'S3.1 Periodic table',t:'Periodic trends: atomic radius, IE, electronegativity',rag:3},
+ {s:'chem',g:'S3.1 Periodic table',t:'Group 1 and group 17 trends',rag:2},
+ {s:'chem',g:'S3.1 Periodic table',t:'Oxides across period 3',rag:2},
+ {s:'chem',g:'S3.1 Periodic table',t:'Transition metals: variable oxidation states, colour, catalysis',rag:2},
+ {s:'chem',g:'S3.2 Organic classification',t:'Functional groups & homologous series',rag:3},
+ {s:'chem',g:'S3.2 Organic classification',t:'IUPAC nomenclature',rag:3},
+ {s:'chem',g:'S3.2 Organic classification',t:'Structural isomers',rag:0},
+ {s:'chem',g:'S3.2 Organic classification',t:'Physical property trends',rag:0},
+ {s:'chem',g:'R1.1 Enthalpy changes',t:'Exothermic vs endothermic, enthalpy diagrams',rag:3},
+ {s:'chem',g:'R1.1 Enthalpy changes',t:'Calorimetry and q = mcΔT',rag:3},
+ {s:'chem',g:'R1.1 Enthalpy changes',t:'Bond enthalpy calculations',rag:1},
+ {s:'chem',g:'R1.2 Energy cycles',t:'Hess’s law',rag:1},
+ {s:'chem',g:'R1.2 Energy cycles',t:'Enthalpy of formation',rag:1},
+ {s:'chem',g:'R1.2 Energy cycles',t:'Enthalpy of combustion',rag:1},
+ {s:'chem',g:'R1.3 Energy from fuels',t:'Fossil fuel evaluation ★new syllabus',rag:0},
+ {s:'chem',g:'R1.3 Energy from fuels',t:'Biofuels ★new syllabus',rag:0},
+ {s:'chem',g:'R1.3 Energy from fuels',t:'Fuel cells & half-equations ★new syllabus',rag:0},
+ {s:'chem',g:'R1.3 Energy from fuels',t:'Specific energy & energy density',rag:0},
+ {s:'chem',g:'R1.3 Energy from fuels',t:'Incomplete combustion',rag:0},
+ {s:'chem',g:'R2.1 Amount of change',t:'Balancing equations',rag:3},
+ {s:'chem',g:'R2.1 Amount of change',t:'Mole ratios & stoichiometry',rag:2},
+ {s:'chem',g:'R2.1 Amount of change',t:'Limiting reagent & excess',rag:0},
+ {s:'chem',g:'R2.1 Amount of change',t:'Atom economy ★new syllabus',rag:0},
+ {s:'chem',g:'R2.1 Amount of change',t:'Percentage yield',rag:0},
+ {s:'chem',g:'R2.2 Rate of change',t:'Measuring rate of reaction',rag:3},
+ {s:'chem',g:'R2.2 Rate of change',t:'Collision theory',rag:3},
+ {s:'chem',g:'R2.2 Rate of change',t:'Factors affecting rate',rag:2},
+ {s:'chem',g:'R2.2 Rate of change',t:'Maxwell–Boltzmann distribution',rag:2},
+ {s:'chem',g:'R2.2 Rate of change',t:'Catalysts & activation energy',rag:2},
+ {s:'chem',g:'R2.3 Extent of change',t:'Dynamic equilibrium',rag:0},
+ {s:'chem',g:'R2.3 Extent of change',t:'Equilibrium constant Kc',rag:2},
+ {s:'chem',g:'R2.3 Extent of change',t:'Le Châtelier’s principle',rag:1},
+ {s:'chem',g:'R2.3 Extent of change',t:'Reaction quotient Q',rag:0},
+ {s:'chem',g:'R3.1 Proton transfer',t:'Brønsted–Lowry acids & bases',rag:3},
+ {s:'chem',g:'R3.1 Proton transfer',t:'Conjugate acid–base pairs',rag:3},
+ {s:'chem',g:'R3.1 Proton transfer',t:'Amphiprotic species',rag:3},
+ {s:'chem',g:'R3.1 Proton transfer',t:'Strong vs weak acids and bases',rag:2},
+ {s:'chem',g:'R3.1 Proton transfer',t:'pH, pOH and the scale',rag:1},
+ {s:'chem',g:'R3.1 Proton transfer',t:'Neutralisation and salts',rag:0},
+ {s:'chem',g:'R3.1 Proton transfer',t:'Acid deposition',rag:3},
+ {s:'chem',g:'R3.2 Electron transfer',t:'Oxidation states',rag:3},
+ {s:'chem',g:'R3.2 Electron transfer',t:'Oxidising & reducing agents',rag:3},
+ {s:'chem',g:'R3.2 Electron transfer',t:'Balancing redox equations',rag:3},
+ {s:'chem',g:'R3.2 Electron transfer',t:'Reactivity series & displacement',rag:1},
+ {s:'chem',g:'R3.2 Electron transfer',t:'Voltaic cells',rag:0},
+ {s:'chem',g:'R3.2 Electron transfer',t:'Electrolysis',rag:3},
+ {s:'chem',g:'R3.2 Electron transfer',t:'Combustion as redox',rag:3},
+ {s:'chem',g:'R3.3 Electron sharing',t:'Radical substitution of alkanes',rag:3},
+ {s:'chem',g:'R3.4 Electron-pair sharing',t:'Nucleophilic substitution of halogenoalkanes',rag:0},
+ {s:'chem',g:'R3.4 Electron-pair sharing',t:'Electrophilic addition of alkenes',rag:0},
+ {s:'chem',g:'R3.4 Electron-pair sharing',t:'Addition polymerisation',rag:3},
+ {s:'chem',g:'Tools & uncertainties',t:'Uncertainty in measurement',rag:1},
+ {s:'chem',g:'Tools & uncertainties',t:'Propagation rules',rag:1},
+ {s:'chem',g:'Tools & uncertainties',t:'Significant figures',rag:3},
+ {s:'chem',g:'Tools & uncertainties',t:'Graphs & gradients',rag:3},
+ {s:'history',g:'P1 CS1 Japan: causes',t:'Impact of Japanese nationalism & militarism on foreign policy',rag:1},
+ {s:'history',g:'P1 CS1 Japan: causes',t:'Japanese domestic political & economic issues',rag:1},
+ {s:'history',g:'P1 CS1 Japan: causes',t:'Political instability in China',rag:1},
+ {s:'history',g:'P1 CS1 Japan: events',t:'Invasion of Manchuria & northern China (1931)',rag:2},
+ {s:'history',g:'P1 CS1 Japan: events',t:'Sino-Japanese War (1937–41)',rag:1},
+ {s:'history',g:'P1 CS1 Japan: events',t:'Tripartite Pact, outbreak of war, Pearl Harbor (1941)',rag:1},
+ {s:'history',g:'P1 CS1 Japan: responses',t:'League of Nations and the Lytton report',rag:1},
+ {s:'history',g:'P1 CS1 Japan: responses',t:'Political developments in China — Second United Front',rag:1},
+ {s:'history',g:'P1 CS1 Japan: responses',t:'International response, US initiatives, US–Japan tensions',rag:1},
+ {s:'history',g:'P1 CS2 Germany/Italy: causes',t:'Impact of fascism & Nazism on foreign policy',rag:1},
+ {s:'history',g:'P1 CS2 Germany/Italy: causes',t:'Impact of domestic economic issues on foreign policy',rag:1},
+ {s:'history',g:'P1 CS2 Germany/Italy: causes',t:'Changing diplomatic alignments, end of collective security, appeasement',rag:2},
+ {s:'history',g:'P1 CS2 Germany/Italy: events',t:'German challenges to postwar settlements (1933–38)',rag:1},
+ {s:'history',g:'P1 CS2 Germany/Italy: events',t:'Italian expansion: Abyssinia, Albania, entry into WWII',rag:1},
+ {s:'history',g:'P1 CS2 Germany/Italy: responses',t:'International response to German aggression (1933–38)',rag:1},
+ {s:'history',g:'P1 CS2 Germany/Italy: responses',t:'International response to Italian aggression (1935–36)',rag:1},
+ {s:'history',g:'P1 CS2 Germany/Italy: responses',t:'International response to German & Italian aggression (1940)',rag:1},
+ {s:'history',g:'P2 T10 Authoritarian states',t:'Conditions in which authoritarian states emerged',rag:2},
+ {s:'history',g:'P2 T10 Authoritarian states',t:'Methods used to establish: persuasion, coercion, leaders, ideology, force, propaganda',rag:2},
+ {s:'history',g:'P2 T10 Authoritarian states',t:'Consolidation: legal methods, force, charisma, propaganda',rag:2},
+ {s:'history',g:'P2 T10 Authoritarian states',t:'Nature, extent & treatment of opposition',rag:2},
+ {s:'history',g:'P2 T10 Authoritarian states',t:'Impact of foreign policy on maintenance of power',rag:2},
+ {s:'history',g:'P2 T10 Authoritarian states',t:'Aims & impact of domestic economic, political, cultural, social policies',rag:2},
+ {s:'history',g:'P2 T10 Authoritarian states',t:'Impact of policies on women and minorities',rag:2},
+ {s:'history',g:'P2 T10 Authoritarian states',t:'Extent to which authoritarian control was achieved',rag:2},
+ {s:'history',g:'P2 T11 Causes & effects of wars',t:'Economic, ideological, political, territorial causes',rag:2},
+ {s:'history',g:'P2 T11 Causes & effects of wars',t:'Short- and long-term causes',rag:2},
+ {s:'history',g:'P2 T11 Causes & effects of wars',t:'Types of war: civil, interstate, guerrilla',rag:2},
+ {s:'history',g:'P2 T11 Causes & effects of wars',t:'Technological developments: air, naval, land',rag:1},
+ {s:'history',g:'P2 T11 Causes & effects of wars',t:'Mobilisation of human & economic resources',rag:2},
+ {s:'history',g:'P2 T11 Causes & effects of wars',t:'Influence/involvement of foreign powers',rag:2},
+ {s:'history',g:'P2 T11 Causes & effects of wars',t:'Successes & failures of peace-making',rag:2},
+ {s:'history',g:'P2 T11 Causes & effects of wars',t:'Territorial changes',rag:2},
+ {s:'history',g:'P2 T11 Causes & effects of wars',t:'Political impact, short and long term',rag:2},
+ {s:'history',g:'P2 T11 Causes & effects of wars',t:'Economic, social, demographic impact; role & status of women',rag:2},
+ {s:'history',g:'P3 T13 Europe & WWI',t:'European diplomacy & balance of power after 1871; Congress of Berlin; alliance system',rag:1},
+ {s:'history',g:'P3 T13 Europe & WWI',t:'Foreign policy of Kaiser Wilhelm II',rag:2},
+ {s:'history',g:'P3 T13 Europe & WWI',t:'Causes of WWI: alliances, Ottoman decline, Balkan nationalism, arms race, July Crisis',rag:2},
+ {s:'history',g:'P3 T13 Europe & WWI',t:'Impact of WWI on civilian populations of two countries',rag:1},
+ {s:'history',g:'P3 T13 Europe & WWI',t:'Defeat of Germany & Central Powers: strategy, economics, US entry',rag:1},
+ {s:'history',g:'P3 T14 Inter-war states',t:'Weimar Germany: challenges, Stresemann era, crisis years & rise of Hitler',rag:1},
+ {s:'history',g:'P3 T14 Inter-war states',t:'Hitler’s Germany 1933–39: consolidation, domestic policy, nature of Nazi state, resistance',rag:1},
+ {s:'history',g:'P3 T14 Inter-war states',t:'Italy 1918–39: rise of Mussolini, consolidation, domestic policy, fascist state',rag:1},
+ {s:'history',g:'P3 T14 Inter-war states',t:'Spain 1918–39: Primo de Rivera, Second Republic, causes of Civil War, Franco — reserve depth only',rag:1},
+ {s:'history',g:'P3 T14 Inter-war states',t:'Case study: one other European country in the inter-war years',rag:1},
+ {s:'history',g:'P3 T15 Diplomacy 1919–45',t:'Paris peace treaties 1919–23: aims, issues, responses',rag:1},
+ {s:'history',g:'P3 T15 Diplomacy 1919–45',t:'League of Nations & Europe; collective security; successor states',rag:1},
+ {s:'history',g:'P3 T15 Diplomacy 1919–45',t:'Italian & German foreign policies 1919–41',rag:1},
+ {s:'history',g:'P3 T15 Diplomacy 1919–45',t:'Collective security & appeasement; Chamberlain & Munich',rag:1},
+ {s:'history',g:'P3 T15 Diplomacy 1919–45',t:'Causes of WWII & European conflict 1939–41; wartime alliance; Axis defeat',rag:1},
+ {s:'history',g:'P3 T15 Diplomacy 1919–45',t:'Impact of WWII on civilian populations in two countries',rag:1},
+ {s:'history',g:'Paper 1 technique',t:'Comprehension & message of a source',rag:1},
+ {s:'history',g:'Paper 1 technique',t:'OPCVL: origin, purpose, content, value, limitation',rag:1},
+ {s:'history',g:'Paper 1 technique',t:'Compare and contrast two sources',rag:1},
+ {s:'history',g:'Paper 1 technique',t:'Mini-essay integrating sources and own knowledge',rag:1},
+ {s:'english',g:'Paper 1 unseen',t:'Non-literary text types & conventions',rag:0},
+ {s:'english',g:'Paper 1 unseen',t:'Guided analysis: responding to the question',rag:0},
+ {s:'english',g:'Paper 1 unseen',t:'Stylistic and structural features',rag:0},
+ {s:'english',g:'Paper 1 unseen',t:'Audience, purpose, context',rag:0},
+ {s:'english',g:'Paper 2 comparative',t:'Works studied — knowledge & detail',rag:0},
+ {s:'english',g:'Paper 2 comparative',t:'Comparative essay structure',rag:0},
+ {s:'english',g:'Paper 2 comparative',t:'Thematic links across works',rag:0},
+ {s:'english',g:'Paper 2 comparative',t:'Integrating textual evidence',rag:0},
+ {s:'spanish',g:'Paper 1 writing',t:'Text types: blog, email, article, speech, review, report',rag:0},
+ {s:'spanish',g:'Paper 1 writing',t:'Register & audience',rag:0},
+ {s:'spanish',g:'Paper 1 writing',t:'Range of tenses & structures',rag:0},
+ {s:'spanish',g:'Paper 1 writing',t:'Connectors and cohesion',rag:0},
+ {s:'spanish',g:'Paper 2 receptive',t:'Reading comprehension strategies',rag:0},
+ {s:'spanish',g:'Paper 2 receptive',t:'Listening comprehension strategies',rag:0},
+ {s:'spanish',g:'Themes',t:'Identities',rag:0},
+ {s:'spanish',g:'Themes',t:'Experiences',rag:0},
+ {s:'spanish',g:'Themes',t:'Human ingenuity',rag:0},
+ {s:'spanish',g:'Themes',t:'Social organisation',rag:0},
+ {s:'spanish',g:'Themes',t:'Sharing the planet',rag:0},
+ {s:'spanish',g:'Individual oral',t:'Visual stimulus description & analysis',rag:0},
+ {s:'spanish',g:'Individual oral',t:'Linking stimulus to a theme',rag:0},
+ {s:'spanish',g:'Individual oral',t:'Follow-up discussion fluency',rag:0}
+];
+
+
+const COVERAGE = [
+ // Physics SL booklet — 5 sections x 3 parts
+ {s:'physics',g:'SL booklet',t:'A 1a MCQ'},{s:'physics',g:'SL booklet',t:'A 1b data'},{s:'physics',g:'SL booklet',t:'A P2 short answer'},
+ {s:'physics',g:'SL booklet',t:'B 1a MCQ'},{s:'physics',g:'SL booklet',t:'B 1b data'},{s:'physics',g:'SL booklet',t:'B P2 short answer'},
+ {s:'physics',g:'SL booklet',t:'C 1a MCQ'},{s:'physics',g:'SL booklet',t:'C 1b data'},{s:'physics',g:'SL booklet',t:'C P2 short answer'},
+ {s:'physics',g:'SL booklet',t:'D 1a MCQ'},{s:'physics',g:'SL booklet',t:'D 1b data'},{s:'physics',g:'SL booklet',t:'D P2 short answer'},
+ {s:'physics',g:'SL booklet',t:'E 1a MCQ'},{s:'physics',g:'SL booklet',t:'E 1b data'},{s:'physics',g:'SL booklet',t:'E P2 short answer'},
+ // Physics HL booklet — 100 MCQ in 7 blocks + long answer in 8 chunks
+ {s:'physics',g:'HL booklet',t:'HL MCQ 1–15'},{s:'physics',g:'HL booklet',t:'HL MCQ 16–30'},{s:'physics',g:'HL booklet',t:'HL MCQ 31–45'},
+ {s:'physics',g:'HL booklet',t:'HL MCQ 46–60'},{s:'physics',g:'HL booklet',t:'HL MCQ 61–75'},{s:'physics',g:'HL booklet',t:'HL MCQ 76–90'},
+ {s:'physics',g:'HL booklet',t:'HL MCQ 91–100'},
+ {s:'physics',g:'HL booklet',t:'HL long answer pp.1–4'},{s:'physics',g:'HL booklet',t:'HL long answer pp.5–8'},
+ {s:'physics',g:'HL booklet',t:'HL long answer pp.9–12'},{s:'physics',g:'HL booklet',t:'HL long answer pp.13–16'},
+ {s:'physics',g:'HL booklet',t:'HL long answer pp.17–20'},{s:'physics',g:'HL booklet',t:'HL long answer pp.21–24'},
+ {s:'physics',g:'HL booklet',t:'HL long answer pp.25–28'},{s:'physics',g:'HL booklet',t:'HL long answer pp.29–32'},
+ // Chemistry past papers — sessions alternate May/Nov by year. Target 5 of each before mocks
+ {s:'chem',g:'Paper 1 — old syllabus',t:'May 2021 P1'},
+ {s:'chem',g:'Paper 1 — old syllabus',t:'Nov 2021 P1'},
+ {s:'chem',g:'Paper 1 — old syllabus',t:'May 2022 P1'},
+ {s:'chem',g:'Paper 1 — old syllabus',t:'Nov 2022 P1'},
+ {s:'chem',g:'Paper 1 — old syllabus',t:'May 2023 P1'},
+ {s:'chem',g:'Paper 1 — old syllabus',t:'Nov 2023 P1'},
+ {s:'chem',g:'Paper 1 — old syllabus',t:'May 2024 P1'},
+ {s:'chem',g:'Paper 1 — old syllabus',t:'Nov 2024 P1'},
+ {s:'chem',g:'Paper 1 — CURRENT syllabus',t:'May 2025 P1 ★ on-syllabus'},
+ {s:'chem',g:'Paper 1 — CURRENT syllabus',t:'Nov 2025 P1 ★★ same syllabus AND same session — RESERVE for October'},
+ {s:'chem',g:'Paper 2 — old syllabus',t:'May 2021 P2'},
+ {s:'chem',g:'Paper 2 — old syllabus',t:'Nov 2021 P2'},
+ {s:'chem',g:'Paper 2 — old syllabus',t:'May 2022 P2'},
+ {s:'chem',g:'Paper 2 — old syllabus',t:'Nov 2022 P2'},
+ {s:'chem',g:'Paper 2 — old syllabus',t:'May 2023 P2'},
+ {s:'chem',g:'Paper 2 — old syllabus',t:'Nov 2023 P2'},
+ {s:'chem',g:'Paper 2 — old syllabus',t:'May 2024 P2'},
+ {s:'chem',g:'Paper 2 — old syllabus',t:'Nov 2024 P2'},
+ {s:'chem',g:'Paper 2 — CURRENT syllabus',t:'May 2025 P2 ★ on-syllabus'},
+ {s:'chem',g:'Paper 2 — CURRENT syllabus',t:'Nov 2025 P2 ★★ same syllabus AND same session — RESERVE for October'},
+ // Maths — SL core grouped (mostly secure); HL extensions itemised (the real target)
+ {s:'math',g:'SL core (mostly secure)',t:'Number & algebra 1.1–1.9'},
+ {s:'math',g:'SL core (mostly secure)',t:'Functions 2.1–2.11'},
+ {s:'math',g:'SL core (mostly secure)',t:'Trig 3.1–3.8'},
+ {s:'math',g:'SL core (mostly secure)',t:'Stats & probability 4.1–4.12'},
+ {s:'math',g:'SL core (mostly secure)',t:'Calculus 5.1–5.11'},
+ {s:'math',g:'HL Number & Algebra',t:'1.10 Permutations, combinations, extended binomial'},
+ {s:'math',g:'HL Number & Algebra',t:'1.11 Partial fractions'},
+ {s:'math',g:'HL Number & Algebra',t:'1.12–1.14 Complex numbers, De Moivre, roots'},
+ {s:'math',g:'HL Number & Algebra',t:'1.15 Proof by induction & contradiction ★cheap marks'},
+ {s:'math',g:'HL Number & Algebra',t:'1.16 Systems of linear equations'},
+ {s:'math',g:'HL Functions',t:'2.12–2.13 Factor/remainder, rational functions'},
+ {s:'math',g:'HL Functions',t:'2.14–2.16 Odd/even, inequalities, modulus'},
+ {s:'math',g:'HL Trig & Vectors',t:'3.9–3.11 Reciprocal trig, compound angles'},
+ {s:'math',g:'HL Trig & Vectors',t:'3.12–3.16 Vectors: dot, cross, lines'},
+ {s:'math',g:'HL Trig & Vectors',t:'3.17–3.18 Planes & intersections'},
+ {s:'math',g:'HL Stats',t:'4.13–4.14 Bayes, random variable properties ★quick win'},
+ {s:'math',g:'HL Calculus ★biggest block',t:'5.12–5.13 First principles, limits, L’Hôpital'},
+ {s:'math',g:'HL Calculus ★biggest block',t:'5.14 Implicit differentiation & related rates'},
+ {s:'math',g:'HL Calculus ★biggest block',t:'5.15–5.16 Integration by substitution & parts'},
+ {s:'math',g:'HL Calculus ★biggest block',t:'5.17 Volumes of revolution'},
+ {s:'math',g:'HL Calculus ★biggest block',t:'5.18 Differential equations'},
+ {s:'math',g:'HL Calculus ★biggest block',t:'5.19 Maclaurin series'},
+ // History clusters
+ {s:'history',g:'Clusters',t:'China (Mao + CCW) — triple-counts'},
+ {s:'history',g:'Clusters',t:'Germany (Hitler) — triple-counts'},
+ {s:'history',g:'Clusters',t:'Italy (Mussolini)'},
+ {s:'history',g:'Clusters',t:'WWI (T11 + T13)'},
+ {s:'history',g:'Clusters',t:'Treaties & appeasement (T15)'},
+ {s:'history',g:'Clusters',t:'Spain — reserve depth only'},
+ {s:'history',g:'Clusters',t:'P1 source technique'},
+ // English / Spanish
+ {s:'english',g:'Papers',t:'P1 unseen practice'},{s:'english',g:'Papers',t:'P2 essay practice'},
+ {s:'spanish',g:'Papers',t:'IO (Tue 25 Aug)'},{s:'spanish',g:'Papers',t:'Writing + reading pass'},{s:'spanish',g:'Papers',t:'Listening pass'},
+];
+
+
+const RECIPES = {
+ paper:{n:'Benchmark paper',x:'Runs to its own length — the 90-min cap does not apply',st:[
+  [3,'Set up: pen, timer visible, data booklet, phone in another room'],
+  [0,'TIMED RUN — full paper length. Flag \u2713 / ? / \u2717 on every question as you go. Stop when the timer stops, mid-sentence if needed'],
+  [10,'Break. Leave the room. Do not look at answers'],
+  [15,'Second colour, untimed: finish everything you couldn\u2019t reach'],
+  [40,'Mark against the scheme. Write the FULL correct answer for anything wrong'],
+  [10,'Error log: one line per mistake with its category'],
+  [5,'Log the paper in this app \u2014 score, out of, confident-wrong count']]},
+ mark:{n:'Marking session',x:'Marking is where the learning is \u2014 never skip it',st:[
+  [15,'Second colour, untimed: finish anything left'],
+  [30,'Mark against the scheme, full correct answers written out'],
+  [10,'Error log with categories'],
+  [5,'Update Cover + Topics RAG for what this exposed']]},
+ proc:{n:'Maths \u2014 procedural',x:'Integration by parts/substitution, implicit, related rates, partial fractions, volumes, trig identities. Motor skill: volume beats thinking',st:[
+  [10,'Two worked examples \u2014 copy them out, understand each line'],
+  [10,'Cover them. Reproduce both from scratch'],
+  [30,'RV easy \u2192 medium, ~10 questions. Check EACH one immediately, not at the end'],
+  [5,'Break'],
+  [25,'RV hard, ~5 questions'],
+  [10,'Write the method as a 3-line recipe card. Log any errors']]},
+ concept:{n:'Maths \u2014 conceptual',x:'Complex numbers, differential equations, Maclaurin, limits/L\u2019H\u00f4pital. Questions-first fails here',st:[
+  [20,'Concept pass: RV video or notes. Take notes as you go'],
+  [10,'Close everything. Write down all you remember \u2014 the recall pass'],
+  [10,'Reopen and fill only the gaps that exposed'],
+  [30,'Worked examples, then RV easy tier'],
+  [15,'RV medium tier'],
+  [5,'One-page summary sheet in your own words']]},
+ format:{n:'Maths \u2014 format/proof',x:'Induction, contradiction. The skeleton earns marks almost regardless of the algebra inside it',st:[
+  [15,'Learn the skeleton: base case \u2192 assume n=k \u2192 prove n=k+1 \u2192 conclude. Write it out'],
+  [20,'Two worked proofs following the skeleton exactly'],
+  [30,'5\u20136 proofs solo across DIFFERENT types: series, divisibility, inequality, derivatives'],
+  [10,'Mark them. Note precisely where the skeleton slipped']]},
+ chemfix:{n:'Chem \u2014 concept rebuild',x:'For a topic a paper has already exposed',st:[
+  [15,'Blank-page recall: everything you know on this topic, no notes'],
+  [20,'Open notes \u2014 fill ONLY the gaps the recall exposed'],
+  [5,'Break'],
+  [30,'10 mined MCQ on that topic, closed book'],
+  [15,'Mark + write full correct answers'],
+  [5,'Update Topics RAG \u2014 rate on this evidence, not on feel']]},
+ phys:{n:'Physics \u2014 timed section',x:'No internal structure. The uninterrupted run IS the exercise',st:[
+  [3,'Set up, timer visible, formula booklet'],
+  [0,'Straight timed run at the printed length. \u2713 / ? / \u2717 on every question'],
+  [10,'Second colour untimed if time in the block'],
+  [0,'Marking is a SEPARATE block \u2014 tomorrow at school with a teacher in the room is better']]},
+ mcq:{n:'MCQ block + mark',x:'Fits a 60\u201375 min Block B neatly',st:[
+  [25,'~15 questions timed at 1.5 min each. Flag confidence on every one'],
+  [20,'Mark. For each wrong answer work out why the distractor was tempting'],
+  [10,'Error log + Cover tick'],
+  [10,'Redo the two worst, closed book']]},
+ hist:{n:'History \u2014 cluster build',x:'Dates and names, then apply them',st:[
+  [20,'Timeline from memory, then fill gaps from notes'],
+  [30,'One full essay plan: thesis, 3 arguments, evidence under each'],
+  [20,'Write the introduction and ONE body paragraph only'],
+  [5,'Check against the markband descriptors']]},
+ essay:{n:'Essay practice',x:'History P2/P3, English P1/P2. Planning is the skill that fails when an essay comes out mediocre',st:[
+  [15,'Plan TWO essays \u2014 outlines only, no prose'],
+  [45,'Write ONE, timed at the real allowance'],
+  [15,'Self-mark against markbands. Be harsh: orange\u2192yellow is structure, yellow\u2192green is evidence + counter-argument'],
+  [15,'Rewrite your weakest paragraph']]},
+ io:{n:'Spanish IO rehearsal',x:'Replicate the real conditions exactly',st:[
+  [15,'Pick a stimulus. 15 min prep, exactly as in the exam'],
+  [10,'Present 4 min + take follow-up questions. RECORD IT'],
+  [15,'Listen back. Note every hesitation, error, and missing structure'],
+  [20,'Fix the vocabulary and structures you just identified'],
+  [25,'Second run, recorded. Compare to the first'],
+  [5,'Write your top 3 fixes for next time']]},
+ lang:{n:'Spanish \u2014 paper practice',x:'',st:[
+  [45,'One timed task at the real allowance'],
+  [25,'Mark against the criteria \u2014 or list every structure you avoided using'],
+  [20,'Drill the 5 structures you dodged']]},
+ buffer:{n:'Buffer',x:'Deliberately unplanned',st:[
+  [5,'Look at what actually slipped this week'],
+  [0,'Do that. If genuinely nothing slipped \u2192 Maths HL Calculus'],
+  [5,'Log what it became']]}
+};
+
+const MONTHS={Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};
+const WD=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+// "Mon 25 Aug" -> "Tue 25 Aug" if the weekday is wrong for that date
+function normaliseDay(label){
+  if(typeof label!=='string') return null;
+  const m=label.trim().match(/^([A-Za-z]{3})\s+(\d{1,2})\s+([A-Za-z]{3})$/);
+  if(!m) return null;
+  const mo=MONTHS[m[3][0].toUpperCase()+m[3].slice(1,3).toLowerCase()];
+  if(mo===undefined) return null;
+  const d=new Date(2026,mo,+m[2]);
+  return WD[d.getDay()]+' '+(+m[2])+' '+m[3][0].toUpperCase()+m[3].slice(1,3).toLowerCase();
+}
+function validDay(label){
+  const fixed=normaliseDay(label);
+  return (fixed && DAY_ORDER.indexOf(fixed)>-1) ? fixed : null;
+}
+const BUFFER_DAY={W1:'Sun 23 Aug',W2:'Sun 30 Aug',W3:'Sun 6 Sep',EX:'Fri 11 Sep'};
+const DAY_ORDER=[]; SEED_TASKS.forEach(t=>{ if(DAY_ORDER.indexOf(t.day)<0) DAY_ORDER.push(t.day); });
+
+/* ================= state ================= */
+const SKEY='mock-control-state';
+const PLAN_VERSION=32;   // bump whenever SEED_TASKS / COVERAGE change
+window.state=null;
+let state={tasks:null,checks:{},sessions:[],papers:[],tab:null,topics:null};
+let mem=null;
+
+async function load(){
+  try{const r=await window.storage.get(SKEY); if(r&&r.value){state=JSON.parse(r.value);}}
+  catch(e){ if(mem) state=mem; }
+  // rebuild the plan when the seed changes, carrying over completed ticks by task text
+  if(!state.tasks || state.planV!==PLAN_VERSION){
+    const prev={}; (state.tasks||[]).forEach(t=>{ prev[t.origT||t.t]={done:t.done,doneAt:t.doneAt,
+      slipped:t.slipped,origDay:t.origDay,origBlk:t.origBlk,day:t.day,blk:t.blk,
+      edited:t.edited,t:t.t,m:t.m,s:t.s}; });
+    const del=new Set(state.deleted||[]);
+    const customs=(state.tasks||[]).filter(t=>t.custom);
+    state.tasks=SEED_TASKS.filter(t=>!del.has(t.t)).map((t,i)=>{
+      const o=prev[t.t]||{};
+      return {id:'t'+i,...t,
+        done:!!o.done, doneAt:o.doneAt||null,
+        slipped:!!o.slipped,
+        day:o.slipped?o.day:(o.edited&&o.day?o.day:t.day),
+        blk:o.slipped?o.blk:(o.edited&&o.blk?o.blk:t.blk),
+        origDay:o.origDay, origBlk:o.origBlk,
+        t:(o.edited&&o.t)?o.t:t.t,
+        m:(o.edited&&o.m)?o.m:t.m,
+        s:(o.edited&&o.s)?o.s:t.s,
+        edited:!!o.edited, origT:o.edited?t.t:undefined};
+    }).concat(customs);
+    // coverage ids shift with the seed, so remap by item text
+    const oldCov=state.cov||{}; const covByText={};
+    (state.covText||[]).forEach((txt,i)=>{ if(oldCov['c'+i]) covByText[txt]=true; });
+    state.cov={}; COVERAGE.forEach((c,i)=>{ if(covByText[c.t]) state.cov['c'+i]=true; });
+    state.covText=COVERAGE.map(c=>c.t);
+    state.planV=PLAN_VERSION;
+  }
+  if(!state.covText) state.covText=COVERAGE.map(c=>c.t);
+  // repair tasks sitting on a day that does not exist (bad weekday prefix, phantom date)
+  state.orphans=0;
+  (state.tasks||[]).forEach(t=>{
+    if(DAY_ORDER.indexOf(t.day)>-1) return;
+    const fixed=validDay(t.day);
+    if(fixed){ t.day=fixed; state.orphans++; }
+    else { t.day=BUFFER_DAY[t.wk]||BUFFER_DAY.EX; t.orphaned=true; state.orphans++; }
+  });
+  if(!state.checks) state.checks={};
+  if(!state.sessions) state.sessions=[];
+  if(!state.papers) state.papers=[];
+  if(!state.topics || state.topics.length!==SEED_TOPICS.length || state.topicsV!==PLAN_VERSION){
+    // A rating YOU set carries a date stamp (cyc sets dt). Those always win.
+    // Ratings with no stamp came from the seed, so they take the newest seed value.
+    const mine={}; (state.topics||[]).forEach(o=>{ if(o.dt) mine[o.t]={rag:o.rag,dt:o.dt}; });
+    state.topics=SEED_TOPICS.map((t,i)=>{
+      const carry=mine[t.t];
+      return {id:'p'+i,...t,rag:carry?carry.rag:(t.rag||0),dt:carry?carry.dt:null};
+    });
+    state.topicsV=PLAN_VERSION;
+  }
+  if(!state.cov){ state.cov={}; state.cov['c0']=true; }
+}
+let saveTimer=null;
+function save(){            // instant: paint never waits on storage
+  mem=state; window.state=state;
+  clearTimeout(saveTimer);
+  saveTimer=setTimeout(()=>{ try{window.storage.set(SKEY,JSON.stringify(state));}catch(e){} },250);
+}
+
+/* ================= helpers ================= */
+function curWeek(){
+  const n=new Date();
+  const d=(y,mo,da)=>new Date(y,mo,da);
+  if(n<d(2026,7,24))return'W1';
+  if(n<d(2026,7,31))return'W2';
+  if(n<d(2026,8,7))return'W3';
+  return'EX';
+}
+function daysLeft(){
+  const ms=new Date(2026,8,7)-new Date();
+  return Math.max(0,Math.ceil(ms/86400000));
+}
+function daysFinal(){
+  const ms=new Date(2026,9,29)-new Date();   // Thu 29 Oct = Spanish B P1, first final
+  return Math.max(0,Math.ceil(ms/86400000));
+}
+function doneMinBySubj(){
+  const o={}; Object.keys(SUBJ).forEach(s=>o[s]=0);
+  state.tasks.forEach(t=>{if(t.done)o[t.s]=(o[t.s]||0)+t.m;});
+  state.sessions.forEach(s=>{o[s.s]=(o[s.s]||0)+ +s.m;});
+  return o;
+}
+function esc(x){return String(x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+
+/* ================= views ================= */
+const TABS=[['plan','Plan'],['recipes','Recipes'],['school','School'],['cover','Cover'],['topics','Topics'],['log','Log it'],['stats','Stats'],['coach','Coach']];
+
+function renderStats(){
+  const dm=doneMinBySubj();
+  const totDone=Object.values(dm).reduce((a,b)=>a+b,0)/60;
+  const totTgt=Object.values(TARGETS).reduce((a,b)=>a+b,0);
+  const wk=curWeek();
+  const wkTasks=state.tasks.filter(t=>t.wk===wk);
+  const wkDone=wkTasks.filter(t=>t.done).length;
+  const papers=state.papers.length;
+  const cw=state.papers.reduce((a,p)=>a+(+p.cw||0),0);
+  document.getElementById('stats').innerHTML=
+   `<div class="stat card"><div class="l">Hours logged</div><div class="v">${totDone.toFixed(1)}</div><div class="s">${totTgt} h to mocks</div></div>
+    <div class="stat card"><div class="l">${wk==='EX'?'Exam block':'This week'}</div><div class="v">${wkDone}/${wkTasks.length}</div><div class="s">anchors done</div></div>
+    <div class="stat card"><div class="l">Papers sat</div><div class="v">${papers}</div><div class="s">logged with scores</div></div>
+    <div class="stat card"><div class="l">Confident-wrong</div><div class="v" style="color:var(--red)">${cw}</div><div class="s">found so far — good</div></div>`;
+  document.getElementById('days-left').textContent=daysLeft();
+  const df=document.getElementById('days-final'); if(df) df.textContent=daysFinal();
+}
+
+function vPlan(){
+  const wk=curWeek();
+  const tLbl=todayLabel(), tTasks=todayTasks(), tRem=tTasks.filter(x=>!x.done), od=overdueTasks();
+  let h='';
+  if(state.orphans){
+    h+=`<div class="card" style="padding:10px 14px;margin-bottom:12px;border-left:3px solid var(--spanish)">
+      <div class="note" style="margin:0"><b>${state.orphans} task${state.orphans>1?'s':''} moved</b> \u2014 ${state.orphans>1?'they were':'it was'} on a date that isn\u2019t in the plan (usually a wrong weekday from the Coach). Now placed on the correct day.</div></div>`;
+    state.orphans=0;
+  }
+  if(tTasks.length){
+    h+=`<div class="card todaycard" style="padding:14px 16px;margin-bottom:14px">
+      <div class="todayhead"><span class="todaydate">TODAY \u00b7 ${tLbl.toUpperCase()}</span>
+      <span class="todaycount ${tRem.length?'':'clearcount'}" id="todaycount">${tRem.length?tRem.length+' of '+tTasks.length+' left':'day complete'}</span></div>`;
+    tTasks.forEach(t=>{
+      h+=`<div class="task card ${t.done?'done':''}" data-tid="${t.id}" style="margin-bottom:8px">
+        <input type="checkbox" ${t.done?'checked':''} onchange="tgl('${t.id}')">
+        <div class="body"><div class="t"><span class="sd" style="background:${SCOL[t.s]}"></span>${esc(t.t.split(' \u2014 ')[0])}</div>
+        <div class="m">${t.blk?(t.blk[0]==='S'?'School '+t.blk+' \u00b7 ':'Block '+t.blk+' \u00b7 '):''}${SUBJ[t.s]} \u00b7 ~${t.m} min</div></div>
+        <button class="del" title="Slip to weekend buffer" onclick="slip('${t.id}')">\u2192</button></div>`;
+    });
+    h+=`</div>`;
+  }
+  if(od.length){
+    h+=`<div class="card overduecard" id="overduecard" style="padding:12px 16px;margin-bottom:16px">
+      <div class="todayhead"><span class="todaydate" id="overduecount" style="color:var(--spanish)">${od.length} BLOCK${od.length>1?'S':''} OVERDUE</span>
+      <button class="b ghost" style="height:26px;padding:0 11px;font-size:11px" onclick="slipAllOverdue()">Slip all to buffer</button></div>
+      <div class="note" id="overduelist" style="margin:6px 0 0">${od.slice(0,6).map(t=>esc(t.day+' \u00b7 '+SUBJ[t.s]+': '+t.t.split(' \u2014 ')[0])).join('<br>')}${od.length>6?'<br>\u2026and '+(od.length-6)+' more':''}</div>
+    </div>`;
+  }
+  h+=`<h2>Evening anchors</h2>
+  <details class="card" style="padding:2px 10px 4px;margin-bottom:12px"><summary style="font-size:12.5px;padding:8px 4px">How this plan works<span class="chev">\u203a</span></summary>
+  <div class="note" style="padding:2px 4px 8px">
+  <b>One set of anchors per night</b> \u2014 that\u2019s the whole evening plan.<br><br>
+  <b>RV</b> = Revision Village; the numbers are IB syllabus codes from your AA HL syllabus (1.15 = proof by induction, 5.16 = integration by parts/substitution, 5.14 = implicit &amp; related rates). Open that subtopic in the Questionbank and work easy\u2192medium\u2192hard.<br><br>
+  <b>\u2192</b> on any task slips it to that week\u2019s weekend buffer; <b>\u21a9</b> puts it back.<br><br>
+  <b>Target is 6/10 on everything, not 9/10 on some.</b> These are mocks. Stop a topic when you can reliably get the standard marks and move on — breadth beats polish. If a fix takes 20 minutes, use the other 25 on a second gap.<br><b>Doing and marking are separate blocks.</b> A timed paper is one block; marking it is the next. Nothing runs past ~90 min on a single subject in a sitting \u2014 except a benchmark paper longer than 90 min, which runs contiguously. Subjects rotate so no slot repeats two days running. Week 3 adds <b>School S1\u2013S3</b> in the free classes. School work lives in the School tab.
+  </div></details>`;
+  ['W1','W2','W3','EX'].forEach(w=>{
+    const ts=state.tasks.filter(t=>t.wk===w);
+    if(!ts.length)return;
+    const open=(w===wk);
+    h+=`<details ${open?'open':''} class="card" style="padding:2px 6px 6px"><summary>
+      ${{W1:'Week 1 · 17–23 Aug',W2:'Week 2 · 24–30 Aug',W3:'Week 3 · 31 Aug–6 Sep · free classes',EX:'Exam fortnight · 7–17 Sep'}[w]}
+      ${open?'<span class="pill">now</span>':''}<span class="chev">›</span></summary><div style="padding:0 8px 6px">`;
+    const allDays=DAY_ORDER.slice();
+    ts.forEach(t=>{ if(allDays.indexOf(t.day)<0) allDays.push(t.day); });
+    allDays.forEach(day=>{
+      const dtsAll=ts.filter(t=>t.day===day);
+      if(!dtsAll.length) return;
+      const dts=dtsAll.filter(t=>!t.slipped);
+      const slipHere=dtsAll.filter(t=>t.slipped);
+      const mins=dtsAll.reduce((a,t)=>a+t.m,0);
+      h+=`<div class="day-h">${day}<span style="font-weight:400;color:var(--faint);margin-left:6px">${dts.length} blocks · ${(mins/60).toFixed(1)}h</span></div>`;
+      const renderTask=(t)=>{
+      h+=`<div class="task card ${t.done?'done':''}" data-tid="${t.id}" ${t.slipped?'style="border-left:3px solid var(--spanish)"':''}>
+        <input type="checkbox" ${t.done?'checked':''} onchange="tgl('${t.id}')">
+        <div class="body">${(()=>{
+          const ix=t.t.indexOf(' \u2014 ');
+          const head=ix>0?t.t.slice(0,ix):t.t, rest=ix>0?t.t.slice(ix+3):'';
+          const meta=(t.blk?(t.blk[0]==='S'?'School '+t.blk+' \u00b7 ':'Block '+t.blk+' \u00b7 '):'')+SUBJ[t.s]+' \u00b7 ~'+t.m+' min'+(t.rec&&RECIPES[t.rec]?' \u00b7 '+RECIPES[t.rec].n:'');
+          const rp=t.rec&&RECIPES[t.rec];
+          const steps=rp?rp.st.map(x=>`<div style="padding:2px 0">${x[0]?'<b>'+x[0]+' min</b> \u00b7 ':''}${esc(x[1])}</div>`).join(''):'';
+          const detail=(rest?`<div style="margin-bottom:6px">${esc(rest)}</div>`:'')
+            + (rp?`<div style="opacity:.75;font-size:11.5px"><b>${esc(rp.n)}</b>${steps}</div>`:'');
+          return `<div class="t" onclick="xtra(event,'${t.id}')"><span class="sd" style="background:${SCOL[t.s]}"></span>${t.slipped?'<span style="color:var(--spanish);font-weight:600">\u21b3 slipped \u00b7 </span>':''}${esc(head)}<span class="caret">\u25b6</span></div>
+          <div class="m">${meta}</div>
+          ${detail?`<div class="xtra">${detail}</div>`:''}`;
+        })()}</div>
+        <button class="del" title="${t.slipped?'Move back':'Slip to weekend buffer'}" onclick="slip('${t.id}')">${t.slipped?'\u21a9':'\u2192'}</button>
+        <button class="del" onclick="delTask('${t.id}')">\u00d7</button></div>`;
+      };
+      dts.forEach(renderTask);
+      if(slipHere.length){
+        const smin=slipHere.reduce((a,t)=>a+t.m,0);
+        h+=`<details class="card slipbox" open style="padding:2px 10px 4px;margin:6px 0 10px">
+          <summary style="font-size:12.5px;padding:9px 4px;color:var(--spanish)">
+            \u21b3 Slipped here \u00b7 ${slipHere.length} block${slipHere.length>1?'s':''} \u00b7 ${(smin/60).toFixed(1)}h
+            <span class="chev">\u203a</span></summary><div style="padding:0 2px 6px">`;
+        slipHere.forEach(renderTask);
+        h+=`</div></details>`;
+      }
+    });
+    h+=`</div></details>`;
+  });
+  h+=`<h2>Add a task</h2><div class="addrow">
+    <select id="nt-wk"><option>W1</option><option>W2</option><option>W3</option><option>EX</option></select>
+    <input type="text" id="nt-day" placeholder="Day (e.g. Wed 19 Aug)" style="width:135px">
+    <select id="nt-s">${Object.keys(SUBJ).map(s=>`<option value="${s}">${SUBJ[s]}</option>`).join('')}</select>
+    <input type="number" id="nt-m" value="60" min="10">
+    <input type="text" id="nt-t" placeholder="Specific task — verb + deliverable">
+    <button class="b" onclick="addTask()">Add</button></div>`;
+  h+=finalsHTML();
+  return h;
+}
+
+
+const FINALS=[
+ ['Thu 29 Oct','PM','Spanish B P1 + P2 Reading','spanish'],
+ ['Fri 30 Oct','AM','Spanish B P2 Listening','spanish'],
+ ['Mon 2 Nov','PM','History P1 (1h) + History P2 (1h30) \u2014 same session','history'],
+ ['Tue 3 Nov','AM','History HL P3 (2h30)','history'],
+ ['Wed 4 Nov','PM','Physics HL P1, 1a+1b (2h)','physics'],
+ ['Thu 5 Nov','AM','Physics HL P2 (2h30)','physics'],
+ ['Thu 5 Nov','PM','English A L&L P1','english'],
+ ['Fri 6 Nov','AM','English A L&L P2 (1h45)','english'],
+ ['Mon 9 Nov','PM','Maths AA HL P1 (2h)','math'],
+ ['Tue 10 Nov','AM','Maths AA HL P2 (2h)','math'],
+ ['Wed 11 Nov','PM','Chemistry SL P1, 1a+1b (1h30)','chem'],
+ ['Thu 12 Nov','AM','Chemistry SL P2 (1h30)','chem'],
+ ['Fri 13 Nov','PM','Maths AA HL P3 (1h15) \u2014 last exam','math'],
+];
+function finalsHTML(){
+  let h=`<details class="card" style="padding:2px 6px 6px;margin-top:16px"><summary>November finals \u2014 your 13 papers<span class="chev">\u203a</span></summary><div style="padding:0 8px 8px">
+  <p class="note">Likely start times 10.00 / 14.00 (zone A+12) \u2014 confirm your school\u2019s zone. Note the order is nothing like your mocks.</p>`;
+  FINALS.forEach(f=>{
+    h+=`<div class="list-row"><span class="sd" style="background:${SCOL[f[3]]}"></span>
+      <span style="width:78px;font-weight:600">${f[0]}</span>
+      <span class="num" style="width:28px;color:var(--faint)">${f[1]}</span>
+      <span class="grow">${f[2]}</span></div>`;
+  });
+  h+=`</div></details>`;
+  return h;
+}
+
+function vSchool(){
+  const wk=curWeek();
+  const items=CHECKLISTS[wk]||[];
+  const wkChecks=state.checks[wk]||{};
+  const done=items.filter(i=>wkChecks[i.id]).length;
+  let h='';
+  items.forEach(i=>{
+    const c=!!wkChecks[i.id];
+    h+=`<div class="task card ${c?'done':''}" data-cid="${i.id}"><input type="checkbox" ${c?'checked':''} onchange="tglCheck('${wk}','${i.id}')">
+      <div class="body"><div class="t"><span class="sd" style="background:${SCOL[i.s]}"></span>${esc(i.t)}</div></div></div>`;
+  });
+  if(wk!=='W3') h+=`<p class="note" style="margin-top:12px">Week 3 has free classes — its checklist is bigger and includes the three 8.45 timed papers. It unlocks automatically.</p>`;
+  return h;
+}
+
+function vLog(){
+  let h=`<div class="card" style="padding:12px 16px;margin-bottom:14px">
+    <b>Held in reserve for October</b>
+    <div class="note" style="margin:4px 0 0">Chem 2025 Paper 2 · one full old chem paper set · Physics HL long-answer back half. Don\u2019t spend these before mocks \u2014 they\u2019re the only clean material left for the finals run.</div></div>
+  <h2>Log a session <span class="marks">anything not on the plan — school work, extra time</span></h2>
+  <div class="frm">
+    <select id="ls-s">${Object.keys(SUBJ).map(s=>`<option value="${s}">${SUBJ[s]}</option>`).join('')}</select>
+    <input type="number" id="ls-m" placeholder="Minutes" min="5">
+    <input class="full" type="text" id="ls-n" placeholder="What you did (e.g. HL MCQ block 2, 12/15)">
+    <button class="b full" onclick="addSession()">Log session</button>
+  </div>
+  <h2>Log a paper <span class="marks">every timed paper, marked, goes here</span></h2>
+  <div class="frm">
+    <select id="lp-s">${Object.keys(SUBJ).map(s=>`<option value="${s}">${SUBJ[s]}</option>`).join('')}</select>
+    <input type="text" id="lp-n" placeholder="Paper (e.g. Physics SL Sec A MCQ)">
+    <input type="number" id="lp-sc" placeholder="Score">
+    <input type="number" id="lp-tot" placeholder="Out of">
+    <input type="number" id="lp-cw" placeholder="Confident-wrong count">
+    <input type="text" id="lp-note" placeholder="Note (e.g. buoyancy gap)">
+    <button class="b full" onclick="addPaper()">Log paper</button>
+  </div>`;
+  if(state.papers.length){
+    h+=`<h2>Papers</h2><div class="card" style="padding:4px 2px">`;
+    state.papers.slice().reverse().forEach((p,ri)=>{
+      const i=state.papers.length-1-ri;
+      h+=`<div class="list-row"><span class="sd" style="background:${SCOL[p.s]}"></span>
+        <span class="grow">${esc(p.n)}${p.note?` — <i>${esc(p.note)}</i>`:''}</span>
+        <span class="scorechip">${p.sc}/${p.tot}</span>
+        ${+p.cw?`<span class="cw">${p.cw} CW</span>`:''}
+        <button class="del" onclick="delPaper(${i})">×</button></div>`;
+    });
+    h+=`</div>`;
+  }
+  if(state.sessions.length){
+    h+=`<h2>Sessions</h2><div class="card" style="padding:4px 2px">`;
+    state.sessions.slice(-15).reverse().forEach((s,ri)=>{
+      const i=state.sessions.length-1-ri;
+      h+=`<div class="list-row"><span class="sd" style="background:${SCOL[s.s]}"></span>
+        <span class="grow">${esc(s.n||SUBJ[s.s])}</span><span class="num">${s.m} min</span>
+        <button class="del" onclick="delSession(${i})">×</button></div>`;
+    });
+    h+=`</div>`;
+  }
+  return h;
+}
+
+
+function weekHours(offset){
+  const now=new Date(); const day=(now.getDay()+6)%7;
+  const start=new Date(now); start.setHours(0,0,0,0); start.setDate(now.getDate()-day-7*offset);
+  const end=new Date(start); end.setDate(start.getDate()+7);
+  let m=0;
+  state.sessions.forEach(x=>{const d=new Date(x.d); if(d>=start&&d<end) m+=+x.m;});
+  state.tasks.forEach(t=>{if(t.done&&t.doneAt){const d=new Date(t.doneAt); if(d>=start&&d<end) m+=t.m;}});
+  return m/60;
+}
+
+function vStats(){
+  const dm=doneMinBySubj();
+  let h=`<h2>Hours vs target <span class="marks">dark tick = target</span></h2><div class="card" style="padding:14px 16px"><div class="barwrap">`;
+  Object.keys(TARGETS).forEach(s=>{
+    const done=dm[s]/60, tgt=TARGETS[s];
+    const max=Math.max(tgt*1.25,done,1);
+    h+=`<div class="barrow"><span class="lab">${SUBJ[s]}</span>
+      <span class="track"><span class="fill" style="width:${Math.min(100,done/max*100)}%;background:${SCOL[s]}"></span>
+      <span class="tgt" style="left:${tgt/max*100}%"></span></span>
+      <span class="num">${done.toFixed(1)} / ${tgt} h</span></div>`;
+  });
+  h+=`</div></div>`;
+  const tw=weekHours(0), lw=weekHours(1);
+  h+=`<div class="card" style="padding:12px 16px;margin-bottom:8px"><b>Beat your own record</b>
+    <div style="font-size:13px;margin-top:4px">This week <b style="font-variant-numeric:tabular-nums">${tw.toFixed(1)} h</b> · last week <b style="font-variant-numeric:tabular-nums">${lw.toFixed(1)} h</b>
+    ${lw>0?(tw>=lw?` — <span style="color:var(--chem);font-weight:600">ahead</span>`:` — <span style="color:var(--red);font-weight:600">${(lw-tw).toFixed(1)} h behind your record</span>`):''}</div>
+    <div class="note" style="margin:2px 0 0">Compete with last week, not with anyone else. (Only dated work counts, so this starts building from today.)</div></div>`;
+  const byS={};
+  state.papers.forEach(p=>{(byS[p.s]=byS[p.s]||[]).push(p);});
+  if(Object.keys(byS).length){
+    h+=`<h2>Paper scores</h2>`;
+    Object.keys(byS).forEach(s=>{
+      h+=`<div class="card" style="padding:12px 16px;margin-bottom:8px"><b>${SUBJ[s]}</b><div class="barwrap" style="margin-top:8px">`;
+      byS[s].forEach(p=>{
+        const pct=p.tot? (p.sc/p.tot*100):0;
+        h+=`<div class="barrow"><span class="lab" style="width:150px;font-size:11.5px">${esc(p.n)}</span>
+          <span class="track"><span class="fill" style="width:${pct}%;background:${SCOL[s]}"></span></span>
+          <span class="num">${p.sc}/${p.tot}${+p.cw?` · <span class="cw">${p.cw}CW</span>`:''}</span></div>`;
+      });
+      h+=`</div></div>`;
+    });
+  }
+  h+=`<p class="note">Confident-wrong (CW) is the number that matters most: wrongs you felt sure about. If CW isn\u2019t falling paper-on-paper within a subject, revision isn\u2019t landing where the gaps are — ask the Coach.</p>`;
+  return h;
+}
+
+
+const RAG=[{c:'rgba(29,29,31,.12)',l:'—'},{c:'var(--red)',l:'R'},{c:'var(--spanish)',l:'A'},{c:'var(--chem)',l:'G'}];
+function vTopics(){
+  const hg=!!state.hideGreen;
+  let h=`<div class="quick" style="margin:0 0 4px"><button onclick="tglHideGreen()" style="${hg?'background:var(--ink);color:#fff;border-color:var(--ink)':''}">${hg?'Showing R/A/unrated only':'Hide green'}</button></div>`;
+  ['math','physics','chem','history','english','spanish'].forEach(sub=>{
+    const ts=state.topics.filter(t=>t.s===sub);
+    if(!ts.length)return;
+    const c=[0,0,0,0]; ts.forEach(t=>c[t.rag||0]++);
+    const pctG=Math.round(c[3]/ts.length*100);
+    const isOpen=(state.openSub===sub);
+    h+=`<details class="card" ${isOpen?'open':''} ontoggle="if(this.open)state.openSub='${sub}';else if(state.openSub==='${sub}')state.openSub=null;" style="padding:2px 6px 6px;margin-bottom:8px"><summary onclick="setOpenSub(event,'${sub}')">
+      ${SUBJ[sub]}
+      <span style="margin-left:auto;display:flex;gap:5px;align-items:center;font-size:11.5px;font-weight:600">
+        <span style="color:var(--red)" data-cnt="${sub}-1">${c[1]}R</span>
+        <span style="color:var(--spanish)" data-cnt="${sub}-2">${c[2]}A</span>
+        <span style="color:var(--chem)" data-cnt="${sub}-3">${c[3]}G</span>
+        <span style="color:var(--faint);font-weight:400" data-cnt="${sub}-0">${c[0]} unrated \u00b7 ${pctG}% green</span>
+      </span><span class="chev">\u203a</span></summary><div style="padding:0 6px 6px">`;
+    if(!isOpen){ h+=`<div class="note" style="padding:8px 4px">Tap to expand \u2014 ${ts.length} items</div></div></details>`; return; }
+    let g='';
+    ts.forEach(t=>{
+      if(hg && t.rag===3) return;
+      if(t.g!==g){g=t.g;h+=`<div class="day-h" style="margin:11px 2px 3px">${esc(g)}</div>`;}
+      const r=RAG[t.rag||0];
+      h+=`<div class="list-row ragrow" data-sub="${sub}" onclick="cyc(event,'${t.id}')" style="padding:7px 2px;cursor:pointer;user-select:none">
+        <span class="grow" style="font-size:12.5px">${esc(t.t)}</span>
+        <span class="num" data-rdt="${t.id}" style="font-size:10.5px;color:var(--faint)">${t.dt?t.dt.slice(5):''}</span>
+        <span data-rid="${t.id}" style="width:32px;height:22px;border-radius:999px;display:grid;place-content:center;
+          font-weight:700;font-size:10.5px;color:#fff;background:${r.c};transition:background .12s var(--ease)">${r.l}</span></div>`;
+    });
+    h+=`</div></details>`;
+  });
+  return h;
+}
+window.tglTheme=()=>{
+  state.bunker=!state.bunker;
+  document.body.classList.toggle('bunker',state.bunker);
+  document.getElementById('themebtn').textContent=state.bunker?'Standard':'Launch Control';
+  paintLight();
+  paintTabs();
+  save();
+};
+window.setOpenSub=(e,sub)=>{ state.openSub=(state.openSub===sub)?null:sub; setTimeout(()=>paint(),0); };
+window.tglHideGreen=()=>{state.hideGreen=!state.hideGreen;paint();save();};
+window.forceReseed=()=>{
+  const prevT={}; (state.tasks||[]).forEach(t=>{ prevT[t.t]={done:t.done,doneAt:t.doneAt,
+    slipped:t.slipped,origDay:t.origDay,origBlk:t.origBlk,day:t.day,blk:t.blk}; });
+  state.tasks=SEED_TASKS.map((t,i)=>{ const o=prevT[t.t]||{};
+    return {id:'t'+i,...t, done:!!o.done, doneAt:o.doneAt||null,
+      slipped:!!o.slipped, day:o.slipped?o.day:t.day, blk:o.slipped?o.blk:t.blk,
+      origDay:o.origDay, origBlk:o.origBlk}; });
+  const mine={}; (state.topics||[]).forEach(o=>{ if(o.dt) mine[o.t]={rag:o.rag,dt:o.dt}; });
+  state.topics=SEED_TOPICS.map((t,i)=>{ const c=mine[t.t];
+    return {id:'p'+i,...t, rag:c?c.rag:(t.rag||0), dt:c?c.dt:null}; });
+  const oldCov=state.cov||{}, byText={};
+  (state.covText||[]).forEach((txt,i)=>{ if(oldCov['c'+i]) byText[txt]=true; });
+  state.cov={}; COVERAGE.forEach((c,i)=>{ if(byText[c.t]) state.cov['c'+i]=true; });
+  state.covText=COVERAGE.map(c=>c.t);
+  state.planV=PLAN_VERSION; state.topicsV=PLAN_VERSION;
+  paint(); save();
+  const rated=state.topics.filter(t=>t.rag).length;
+  alert('Reloaded v'+PLAN_VERSION+'\n'+state.tasks.length+' blocks\n'+rated+'/'+state.topics.length+' topics rated\n'+COVERAGE.length+' coverage items');
+};
+window.wipeAll=()=>{
+  if(!confirm('Wipe all ticks, ratings, papers and sessions? This cannot be undone.'))return;
+  state={tasks:null,checks:{},sessions:[],papers:[],topics:null,cov:{},covText:null,tab:state.tab,planV:null};
+  state.tasks=SEED_TASKS.map((t,i)=>({id:'t'+i,...t,done:false,doneAt:null}));
+  state.topics=SEED_TOPICS.map((t,i)=>({id:'p'+i,...t,rag:t.rag||0,dt:null}));
+  state.covText=COVERAGE.map(c=>c.t); state.planV=PLAN_VERSION; state.topicsV=PLAN_VERSION;
+  paint(); save();
+};
+window.cyc=(e,id)=>{
+  if(e&&e.stopPropagation) e.stopPropagation();
+  const t=state.topics.find(x=>x.id===id); if(!t)return;
+  t.rag=((t.rag||0)+1)%4; t.dt=new Date().toISOString().slice(0,10);
+  const b=document.querySelector('[data-rid="'+id+'"]');
+  if(b){const r=RAG[t.rag]; b.style.background=r.c; b.textContent=r.l;}
+  const d=document.querySelector('[data-rdt="'+id+'"]'); if(d) d.textContent=t.dt.slice(5);
+  // live-update this subject's R/A/G counts without a repaint
+  const ts=state.topics.filter(x=>x.s===t.s), c=[0,0,0,0];
+  ts.forEach(x=>c[x.rag||0]++);
+  const pct=Math.round(c[3]/ts.length*100);
+  [1,2,3].forEach(i=>{const el=document.querySelector('[data-cnt="'+t.s+'-'+i+'"]');
+    if(el) el.textContent=c[i]+['','R','A','G'][i];});
+  const u=document.querySelector('[data-cnt="'+t.s+'-0"]');
+  if(u) u.textContent=c[0]+' unrated \u00b7 '+pct+'% green';
+  save();};
+
+
+function covPct(sub){
+  const it=COVERAGE.map((c,i)=>({...c,id:'c'+i})).filter(c=>c.s===sub);
+  if(!it.length)return[0,0,0];
+  const d=it.filter(c=>state.cov[c.id]).length;
+  return [Math.round(d/it.length*100), d, it.length];
+}
+function vCover(){
+  let h='';
+  ['physics','math','chem','history','english','spanish'].forEach(sub=>{
+    const [pct,d,tot]=covPct(sub);
+    h+=`<div class="card" style="padding:12px 16px;margin-bottom:10px">
+      <div class="barrow" style="margin-bottom:9px"><span class="lab" style="width:70px;font-weight:700">${SUBJ[sub]}</span>
+        <span class="track" style="height:14px"><span class="fill" data-cbar="${sub}" style="width:${pct}%;background:${SCOL[sub]}"></span>
+        <span class="tgt" style="left:80%"></span></span>
+        <span class="num" data-cnum="${sub}" style="width:92px;font-weight:600;color:${pct>=80?'var(--chem)':'var(--sub)'}">${pct}% · ${d}/${tot}</span></div>`;
+    let g='';
+    COVERAGE.map((c,i)=>({...c,id:'c'+i})).filter(c=>c.s===sub).forEach(c=>{
+      if(c.g!==g){g=c.g;h+=`<div class="day-h" style="margin:10px 2px 4px">${g}</div>`;}
+      const on=!!state.cov[c.id];
+      h+=`<div class="list-row" style="padding:5px 2px"><input type="checkbox" ${on?'checked':''} onchange="tglCov('${c.id}')" style="width:17px;height:17px">
+        <span class="grow" data-vid="${c.id}" style="${on?'opacity:.5;text-decoration:line-through':''}">${esc(c.t)}</span></div>`;
+    });
+    h+=`</div>`;
+  });
+  return h;
+}
+window.tglCov=id=>{
+  state.cov[id]=!state.cov[id]; state.covText=COVERAGE.map(c=>c.t);
+  const on=!!state.cov[id];
+  const el=document.querySelector('[data-vid="'+id+'"]');
+  if(el) el.style.cssText = on ? 'opacity:.5;text-decoration:line-through' : '';
+  const row=(el && el.closest)?el.closest('.list-row'):null;
+  const cb=row?row.querySelector('input[type=checkbox]'):null;
+  if(cb) cb.checked=on;
+  // find which subject this item belongs to and refresh its bar + count
+  const idx=parseInt(id.slice(1),10);
+  const sub=COVERAGE[idx] && COVERAGE[idx].s;
+  if(sub){
+    const [pct,d,tot]=covPct(sub);
+    const bar=document.querySelector('[data-cbar="'+sub+'"]');
+    if(bar) bar.style.width=pct+'%';
+    const num=document.querySelector('[data-cnum="'+sub+'"]');
+    if(num){ num.textContent=pct+'% \u00b7 '+d+'/'+tot;
+             num.style.color = pct>=80 ? 'var(--chem)' : 'var(--sub)'; }
+  }
+  renderStats();
+  save();};
+
+
+function vRecipes(){
+  let h='';
+  Object.keys(RECIPES).forEach(k=>{
+    const r=RECIPES[k];
+    h+=`<details class="card" style="padding:2px 6px 6px;margin-bottom:8px"><summary>${r.n}<span class="chev">\u203a</span></summary><div style="padding:0 10px 8px">`;
+    if(r.x) h+=`<p class="note" style="margin:2px 0 8px">${r.x}</p>`;
+    r.st.forEach(st=>{
+      h+=`<div class="list-row" style="padding:6px 2px;align-items:flex-start">
+        <span class="num" style="width:46px;flex-shrink:0;font-weight:600;color:${st[0]?'var(--ink)':'var(--faint)'}">${st[0]?st[0]+' min':'\u2014'}</span>
+        <span class="grow">${st[1]}</span></div>`;
+    });
+    h+=`</div></details>`;
+  });
+  h+=`<div class="card" style="padding:12px 16px;margin-top:12px"><b>Rules that hold across all of them</b>
+    <div class="note" style="margin-top:5px">Phone in another room, not face-down on the desk. Check answers question-by-question, never in a batch at the end \u2014 batching loses the reasoning. Breaks mean leaving the chair. Benchmark papers override the 90-minute cap; nothing else does.</div></div>`;
+  return h;
+}
+
+function vCoach(){
+  return `<div class="coach glass"><h3>Coach</h3>
+  <p class="note" style="position:relative">Built-in Claude. Reads your live data — hours, papers, CW counts, open tasks — and answers with concrete changes. It suggests; you tick.</p>
+  <div class="quick">
+    <button onclick="ask('Replan the rest of this week. Keep one evening anchor per day, max 150 min each, papers-first. Tell me exactly what to change.')">Replan this week</button>
+    <button onclick="ask('Based on my data, what exactly should I do tonight and for how long?')">What tonight?</button>
+    <button onclick="ask('Recalculate my hours: am I on track per subject for the targets by 7 Sep? Where do I cut if behind?')">Recalc hours</button>
+    <button onclick="ask('Look at my paper scores and confident-wrong counts. Which topics should my next 3 targeted-revision blocks cover?')">Pick my next 3 blocks</button>
+    <button onclick="ask('Rewrite this week: retime anything mis-sized, rename anything vague, add what is missing and remove what is not worth doing. Then give me the actions.')">Let the coach edit the plan</button>
+  </div>
+  <textarea id="coach-q" placeholder="Or ask anything — e.g. 'Section B took 3h because momentum was rusty, rebalance week 2'"></textarea>
+  <div style="margin-top:8px;position:relative"><button class="b" id="coach-btn" onclick="ask()">Ask the coach</button></div>
+  <div class="out" id="coach-out"></div><div id="actionbox"></div></div>`;
+}
+
+/* ================= actions ================= */
+function fireAlarm(){
+  if(!state.bunker) return;                 // clean UI: no beacon, no wash
+  const b=document.getElementById('statuslight'), w=document.getElementById('alarmwash');
+  if(!b) return;
+  b.classList.add('spin'); if(w){w.classList.remove('on'); void w.offsetWidth; w.classList.add('on');}
+  clearTimeout(window._alarmT);
+  window._alarmT=setTimeout(()=>{ b.classList.remove('spin'); if(w)w.classList.remove('on'); }, 2900);
+}
+window.tgl=id=>{const t=state.tasks.find(x=>x.id===id);if(!t)return;
+  t.done=!t.done;t.doneAt=t.done?new Date().toISOString().slice(0,10):null;
+  document.querySelectorAll('[data-tid="'+id+'"]').forEach(el=>{
+    el.classList.toggle('done',t.done);
+    const cb=el.querySelector('input[type=checkbox]'); if(cb) cb.checked=t.done;
+  });
+  refreshDayCounters();
+  renderStats();paintLight();paintTabs();
+  if(t.done) fireAlarm();
+  save();};
+window.slipAllOverdue=()=>{
+  const od=overdueTasks(); if(!od.length) return;
+  if(!confirm('Slip '+od.length+' overdue block'+(od.length>1?'s':'')+' to the weekend buffer?')) return;
+  od.forEach(t=>{
+    const target=BUFFER_DAY[t.wk]||BUFFER_DAY.EX;
+    if(t.day===target||t.slipped) return;
+    t.origDay=t.day; t.origBlk=t.blk; t.day=target; t.blk='BUF'; t.slipped=true;
+  });
+  paint(); save();
+};
+window.xtra=(e,id)=>{
+  if(e){ if(e.stopPropagation)e.stopPropagation(); if(e.preventDefault)e.preventDefault(); }
+  const rows=document.querySelectorAll('[data-tid="'+id+'"]');
+  let open=null;
+  rows.forEach(r=>{ if(open===null) open=!r.classList.contains('open'); r.classList.toggle('open',open); });
+};
+window.slip=id=>{
+  const t=state.tasks.find(x=>x.id===id); if(!t) return;
+  if(t.slipped){ t.day=t.origDay; t.blk=t.origBlk; t.slipped=false; }
+  else {
+    const target=BUFFER_DAY[t.wk]||BUFFER_DAY.EX;
+    if(t.day===target){ alert('Already on the buffer day.'); return; }
+    t.origDay=t.day; t.origBlk=t.blk; t.day=target; t.blk='BUF'; t.slipped=true;
+  }
+  paint(); save();
+};
+window.delTask=id=>{state.tasks=state.tasks.filter(x=>x.id!==id);paint();save();};
+window.addTask=()=>{
+  const t=document.getElementById('nt-t').value.trim(); if(!t)return;
+  state.tasks.push({id:'t'+Date.now(),wk:document.getElementById('nt-wk').value,
+    day:document.getElementById('nt-day').value||'—',s:document.getElementById('nt-s').value,
+    t, m:+document.getElementById('nt-m').value||60, done:false});
+  paint();save();
+};
+window.tglCheck=(wk,id)=>{state.checks[wk]=state.checks[wk]||{};state.checks[wk][id]=!state.checks[wk][id];
+  const el=document.querySelector('[data-cid="'+id+'"]'); if(el)el.classList.toggle('done',state.checks[wk][id]);
+  renderStats(); if(state.checks[wk][id]) fireAlarm();
+  save();};
+window.addSession=()=>{
+  const m=+document.getElementById('ls-m').value;if(!m)return;
+  state.sessions.push({s:document.getElementById('ls-s').value,m,n:document.getElementById('ls-n').value.trim(),d:new Date().toISOString().slice(0,10)});
+  paint();save();
+};
+window.delSession=i=>{state.sessions.splice(i,1);paint();save();};
+window.addPaper=()=>{
+  const n=document.getElementById('lp-n').value.trim();if(!n)return;
+  state.papers.push({s:document.getElementById('lp-s').value,n,
+    sc:+document.getElementById('lp-sc').value||0,tot:+document.getElementById('lp-tot').value||0,
+    cw:+document.getElementById('lp-cw').value||0,note:document.getElementById('lp-note').value.trim(),
+    d:new Date().toISOString().slice(0,10)});
+  paint();save();
+};
+window.delPaper=i=>{state.papers.splice(i,1);paint();save();};
+
+/* ================= coach ================= */
+function stateSummary(){
+  const dm=doneMinBySubj();
+  const hours=Object.keys(TARGETS).map(s=>`${SUBJ[s]}: ${(dm[s]/60).toFixed(1)}h done of ${TARGETS[s]}h target`).join('; ');
+  const wk=curWeek();
+  const openT=state.tasks.filter(t=>t.wk===wk).map(t=>`${t.id} | ${t.day} | blk ${t.blk} | ${SUBJ[t.s]} | ${t.m}min | ${t.done?'DONE':'todo'} | ${t.t}`).join('\n')||'none';
+  const papers=state.papers.map(p=>`${p.n}: ${p.sc}/${p.tot}, confident-wrong ${p.cw||0}${p.note?', note: '+p.note:''}`).join(' | ')||'none yet';
+  const checks=(CHECKLISTS[wk]||[]).filter(i=>!(state.checks[wk]||{})[i.id]).map(i=>i.t).join(' | ')||'all done';
+  const covLine=['physics','math','chem','history','english','spanish'].map(x=>{const[p,d,t]=covPct(x);return SUBJ[x]+' '+p+'% ('+d+'/'+t+')';}).join('; ');
+  const redAll=state.topics.filter(t=>t.rag===1); const red=redAll.slice(0,18).map(t=>SUBJ[t.s]+': '+t.t).join(' | ')+(redAll.length>18?' ...and '+(redAll.length-18)+' more':'')||'none rated red yet';
+  const amberAll=state.topics.filter(t=>t.rag===2); const amber=amberAll.slice(0,12).map(t=>SUBJ[t.s]+': '+t.t).join(' | ')+(amberAll.length>12?' ...and '+(amberAll.length-12)+' more':'')||'none';
+  const ragPct=['math','physics','chem','history'].map(x=>{const a=state.topics.filter(t=>t.s===x);const g=a.filter(t=>t.rag===3).length;return SUBJ[x]+' '+Math.round(g/Math.max(a.length,1)*100)+'% green of '+a.length;}).join('; ');
+  return `Today: ${new Date().toDateString()}. Days to MOCKS (7 Sep): ${daysLeft()}. Days to FIRST FINAL exam (Spanish B, Thu 29 Oct): ${daysFinal()}. Final schedule: Spanish B P1+P2read Thu29Oct PM; Spanish B listening Fri30Oct AM; History P1+P2 BOTH Mon2Nov PM; History HL P3 Tue3Nov AM; Physics HL P1 Wed4Nov PM; Physics HL P2 Thu5Nov AM; English P1 Thu5Nov PM; English P2 Fri6Nov AM; Maths AA HL P1 Mon9Nov PM; Maths P2 Tue10Nov AM; Chem SL P1 Wed11Nov PM; Chem SL P2 Thu12Nov AM; Maths P3 Fri13Nov PM. Pressure points: History = 5h of essays inside 20 hours (2-3 Nov); Thu 5 Nov = Physics P2 then English P1 same day; Physics P1 and P2 are <24h apart. Final-exam ORDER differs from mock order, so post-mock revision should be sequenced Spanish/History first, Chemistry last. Mocks are a diagnostic checkpoint, not the terminal goal \u2014 roughly 7 more weeks of prep follow them.
+Exam order: Eng P1 Mon7, Chem P1 + Hist P1 Tue8, Spanish x2 + Maths P1 Wed9, Phys P1 Thu10, Eng P2 + Hist P2 Fri11, Chem P2 Mon14, Hist P3 + Maths P2 Tue15, Phys P2 + Spanish listening Wed16, Maths P3 Thu17.
+Hours: ${hours}.
+EDITABLE TASKS THIS WEEK (${wk}) - id | day | block | subject | minutes | status | text:
+${openT}
+Valid subjects: physics, math, chem, spanish, history, english, buffer.
+Valid weeks: W1 (17-23 Aug), W2 (24-30 Aug), W3 (31 Aug-6 Sep), EX (7-17 Sep).
+Valid recipes: paper, mark, proc, concept, format, chemfix, phys, mcq, hist, essay, io, lang, buffer.
+School checklist remaining: ${checks}.
+Papers logged: ${papers}.
+COVERAGE vs 80% target: ${covLine}.\nSYLLABUS RAG (green = exam-ready): ${ragPct}.\nTopics rated RED (weak): ${red}.\nTopics rated AMBER: ${amber}.\nTargets for mocks: 80% knowledge everywhere; complete most chem past papers (teacher's instruction); get through all/most of the physics SL AND HL revision booklets; chem papers are 10 sessions alternating May/Nov from 2021 to 2025 (May21, Nov21, May22, Nov22, May23, Nov23, May24, Nov24 = OLD syllabus; May25 and Nov25 = CURRENT syllabus). Nov 2025 P1 and P2 are reserved for October because they match both the syllabus and the November session he actually sits. Target 5 P1 + 5 P2 before mocks; 3 P1 done plus one P2 done in class Thu 20 Aug; maths SL core is mostly secure and the real weakness is the HL extensions, above all HL Calculus 5.12-5.19, then vectors and complex numbers. Evening structure: Block A ~90 min on the hard subject, Block B 60-75 min on a different subject; never exceed 90 min on one subject in a sitting except a benchmark/timed paper, which overrides the cap and runs to its own length. Each task names a session recipe with a minute-by-minute internal structure. Known context: Maths is weakest subject; physics strongest science; chemistry gaps = stoichiometry, atomic structure/periodicity, bonding-VSEPR, kinetics/equilibrium; physics gaps = buoyancy/Archimedes, average power with net force; history = nothing yet at exam standard, China+Germany clusters triple-count, Spain dropped to reserve; rust rule = first pass on old topics takes ~1.5x.`;
+}
+let pendingActions=null;
+function validAction(a){
+  if(!a||!a.op) return false;
+  if(a.day!==undefined){
+    const fixed=validDay(a.day);
+    if(!fixed) return false;      // phantom date -> drop the action entirely
+    a.day=fixed;                  // silently correct a wrong weekday prefix
+  }
+  if(a.op==='add') return a.s&&SUBJ[a.s]&&a.t&&a.day;
+  if(a.op==='edit'||a.op==='delete') return !!a.id && state.tasks.some(t=>t.id===a.id);
+  return false;
+}
+function describeAction(a){
+  const t=state.tasks.find(x=>x.id===a.id);
+  if(a.op==='add') return `<b style="color:var(--chem)">ADD</b> ${a.day} \u00b7 blk ${a.blk||'?'} \u00b7 ${SUBJ[a.s]} \u00b7 ${a.m||45} min<br><span style="opacity:.8">${esc(a.t)}</span>`;
+  if(a.op==='delete') return `<b style="color:var(--red)">REMOVE</b> ${t.day} \u00b7 ${SUBJ[t.s]}<br><span style="opacity:.8">${esc(t.t)}</span>`;
+  const bits=[];
+  if(a.m!==undefined && +a.m!==t.m) bits.push(t.m+' \u2192 '+a.m+' min');
+  if(a.day && a.day!==t.day) bits.push(t.day+' \u2192 '+a.day);
+  if(a.blk && a.blk!==t.blk) bits.push('block '+t.blk+' \u2192 '+a.blk);
+  if(a.s && a.s!==t.s) bits.push(SUBJ[t.s]+' \u2192 '+SUBJ[a.s]);
+  if(a.t && a.t!==t.t) bits.push('rewritten');
+  return `<b style="color:var(--spanish)">EDIT</b> ${t.day} \u00b7 ${SUBJ[t.s]} \u00b7 ${bits.join(', ')||'no change'}<br><span style="opacity:.65">${esc(a.t||t.t)}</span>`;
+}
+function renderActionPreview(){
+  const box=document.getElementById('actionbox'); if(!box) return;
+  if(!pendingActions||!pendingActions.length){ box.innerHTML=''; return; }
+  box.innerHTML=`<div class="card" style="padding:12px 14px;margin-top:12px;border-left:3px solid var(--spanish)">
+    <div style="font-size:11px;font-weight:700;letter-spacing:1.4px;color:var(--spanish);margin-bottom:8px">
+      PROPOSED PLAN CHANGES \u00b7 ${pendingActions.length}</div>
+    ${pendingActions.map(a=>`<div style="font-size:12.5px;padding:7px 0;border-top:1px solid var(--edge)">${describeAction(a)}</div>`).join('')}
+    <div style="display:flex;gap:8px;margin-top:11px">
+      <button class="b" onclick="applyActions()">Apply</button>
+      <button class="b ghost" onclick="discardActions()">Discard</button>
+    </div></div>`;
+}
+window.discardActions=()=>{ pendingActions=null; renderActionPreview(); };
+window.applyActions=()=>{
+  if(!pendingActions) return;
+  let n=0;
+  pendingActions.forEach(a=>{
+    if(a.op==='add'){
+      const used=state.tasks.filter(t=>t.day===a.day).map(t=>t.blk);
+      let blk=a.blk||'';
+      if(!blk||used.indexOf(blk)>-1){ blk='ABCDEFGH'.split('').find(L=>used.indexOf(L)<0)||'Z'; }
+      state.tasks.push({id:'c'+Date.now().toString(36)+Math.random().toString(36).slice(2,5),
+        custom:true, wk:a.wk||curWeek(), day:a.day, blk:blk, s:a.s,
+        t:a.t, m:Math.max(5,Math.min(240,+a.m||45)), rec:a.rec||'proc', done:false});
+      n++;
+    } else if(a.op==='edit'){
+      const t=state.tasks.find(x=>x.id===a.id); if(!t) return;
+      if(!t.origT) t.origT=t.t;
+      if(a.t!==undefined) t.t=a.t;
+      if(a.m!==undefined) t.m=Math.max(5,Math.min(240,+a.m));
+      if(a.day!==undefined) t.day=a.day;
+      if(a.blk!==undefined) t.blk=a.blk;
+      if(a.s!==undefined && SUBJ[a.s]) t.s=a.s;
+      t.edited=true; n++;
+    } else if(a.op==='delete'){
+      const t=state.tasks.find(x=>x.id===a.id); if(!t) return;
+      state.deleted=state.deleted||[];
+      if(!t.custom) state.deleted.push(t.origT||t.t);
+      state.tasks=state.tasks.filter(x=>x.id!==a.id); n++;
+    }
+  });
+  pendingActions=null;
+  state.tab='plan';
+  paint(true); save();
+};
+window.ask=async preset=>{
+  const ta=document.getElementById('coach-q');
+  const q=preset||ta.value.trim();
+  if(!q)return;
+  const out=document.getElementById('coach-out');
+  const btn=document.getElementById('coach-btn');
+  out.innerHTML='<span class="thinking">Thinking…</span>'; btn.disabled=true;
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1000,
+        messages:[{role:'user',content:
+`You are the revision coach inside an IB student's mock-exam tracker. Be direct and concrete. Respond in plain text (no markdown headers), under 250 words. Rules you enforce: papers-first then targeted revision; one evening anchor per night, max ~150 min; never split timed papers; marking counts as study and is never cut; confident-wrong errors get priority; school work goes to the weekly checklist, not evenings; protect sleep before exam days; aim for roughly 6/10 competence across everything rather than mastery of a few topics - these are mocks, so breadth beats depth and a topic is 'done' once the standard marks are reliably earned; preserve unused past papers for the October finals run rather than spending everything before mocks; it is acceptable to enter a mock paper deliberately underprepared if the topic is scheduled for October instead.
+
+Student data:
+${stateSummary()}
+
+Student asks: ${q}
+
+Give specific, actionable changes (which task, which day, how many minutes). If replanning, list the revised anchors day by day.
+
+IF AND ONLY IF the student is asking you to CHANGE the plan (retime, rename, add, remove, move a task), append a fenced block at the very end of your reply, after your prose:
+
+\`\`\`actions
+[{"op":"edit","id":"t12","m":60},
+ {"op":"edit","id":"t13","t":"New task wording","day":"Thu 27 Aug","blk":"D"},
+ {"op":"add","wk":"W2","day":"Fri 28 Aug","blk":"E","s":"math","t":"Task wording","m":45,"rec":"proc"},
+ {"op":"delete","id":"t30"}]
+\`\`\`
+
+Rules for actions: use exact ids from the list above; keep any single block at or under 90 minutes unless it is a timed paper; never put the same subject in the same block letter on consecutive days; only use day strings that already appear in the list. Omit the block entirely if no change was requested.`}]})
+    });
+    const data=await r.json();
+    if(data&&data.content){
+      let txt=data.content.filter(b=>b.type==='text').map(b=>b.text).join('\n').trim()||'No reply \u2014 try again.';
+      let acts=null;
+      const am=txt.match(/```actions\s*([\s\S]*?)```/);
+      if(am){
+        txt=txt.replace(am[0],'').trim();
+        try{ acts=JSON.parse(am[1].trim()); }catch(e){ acts=null; }
+      }
+      out.textContent=txt;
+      pendingActions = Array.isArray(acts) ? acts.filter(validAction) : null;
+      renderActionPreview();
+    } else out.textContent='No reply — try again.';
+  }catch(e){
+    out.textContent='Coach unavailable. This panel only works when the page is open inside Claude (artifact view), not as a downloaded file.';
+  }
+  btn.disabled=false;
+  if(!preset)ta.value='';
+};
+
+/* ================= shell ================= */
+function paintTabs(){
+  const bar=document.getElementById('tabbar');
+  bar.innerHTML='';
+  TABS.forEach(([id,l])=>{
+    const b=document.createElement('button');
+    b.className='tab'+(state.tab===id?' on':'');
+    b.textContent=l;
+    b.onclick=()=>go(id);
+    bar.appendChild(b);
+  });
+}
+function todayLabel(){
+  const d=new Date(), D=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],
+        M=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return D[d.getDay()]+' '+d.getDate()+' '+M[d.getMonth()];
+}
+function todayRemaining(){ const t=todayLabel(); return state.tasks.filter(x=>x.day===t&&!x.done); }
+function dayIdx(label){ return DAY_ORDER.indexOf(label); }
+function todayIdx(){ return dayIdx(todayLabel()); }
+function overdueTasks(){
+  const ti=todayIdx(); if(ti<0) return [];
+  return state.tasks.filter(t=>!t.done && dayIdx(t.day)>-1 && dayIdx(t.day)<ti);
+}
+function todayTasks(){ const t=todayLabel(); return state.tasks.filter(x=>x.day===t); }
+function refreshDayCounters(){
+  const tT=todayTasks(), rem=tT.filter(x=>!x.done);
+  const c=document.getElementById('todaycount');
+  if(c){
+    c.textContent = rem.length ? rem.length+' of '+tT.length+' left' : 'day complete';
+    c.classList.toggle('clearcount', rem.length===0);
+  }
+  const od=overdueTasks();
+  const oc=document.getElementById('overduecount');
+  if(oc) oc.textContent = od.length+' BLOCK'+(od.length>1?'S':'')+' OVERDUE';
+  const ocard=document.getElementById('overduecard');
+  if(ocard) ocard.style.display = od.length ? '' : 'none';
+  const olist=document.getElementById('overduelist');
+  if(olist) olist.innerHTML = od.slice(0,6).map(t=>esc(t.day+' \u00b7 '+SUBJ[t.s]+': '+t.t.split(' \u2014 ')[0])).join('<br>')+(od.length>6?'<br>\u2026and '+(od.length-6)+' more':'');
+  // day-header "N missed" badges
+  document.querySelectorAll('[data-dayh]').forEach(el=>{
+    const day=el.getAttribute('data-dayh');
+    const undone=state.tasks.filter(t=>t.day===day && !t.done).length;
+    const tag=el.querySelector('.odtag');
+    if(tag){ tag.textContent=undone+' missed'; tag.style.display=undone?'':'none'; }
+  });
+}
+function paintOdo(n){
+  const box=document.getElementById('odo'); if(!box) return;
+  const d=String(Math.min(99,n)).padStart(2,'0');
+  const H = window.innerWidth<=520 ? 38 : 44;
+  let changed=false;
+  ['odo0','odo1'].forEach((id,i)=>{
+    const el=document.getElementById(id); if(!el) return;
+    const want='translateY(-'+(+d[i]*H)+'px)';
+    if(el.style.transform!==want){ el.style.transform=want; changed=true; }
+  });
+  box.classList.toggle('alert', n>0);
+  if(changed){ box.classList.remove('rolling'); void box.offsetWidth; box.classList.add('rolling'); }
+}
+function paintLight(){
+  const rem=todayRemaining();
+  const el=document.getElementById('statuslight'); if(!el)return;
+  el.classList.toggle('idlealert', rem.length>0);
+  el.classList.toggle('clear', rem.length===0);
+  paintOdo(rem.length);
+  const pl=document.getElementById('odoplate');
+  if(pl) pl.textContent='BLOCKS OUTSTANDING \u00b7 '+todayLabel().toUpperCase();
+  document.body.classList.toggle('alertmode', !!(rem.length && state.bunker));
+}
+function paint(tabSwitch){
+  const pv=document.getElementById('planv');
+  if(pv){const rated=state.topics.filter(t=>t.rag).length;pv.textContent='v'+(state.planV||'?')+' \u00b7 '+state.tasks.length+' blocks \u00b7 '+rated+'/'+state.topics.length+' topics rated';}
+  renderStats();
+  paintLight();
+  paintTabs();
+  const v=document.getElementById('view');
+  if(tabSwitch){v.classList.remove('swap'); void v.offsetWidth; v.classList.add('swap');}
+  v.innerHTML={plan:vPlan,recipes:vRecipes,school:vSchool,cover:vCover,topics:vTopics,log:vLog,stats:vStats,coach:vCoach}[state.tab]();
+}
+window.go=id=>{state.tab=id;paint(true);save();};
+
+(async()=>{await load(); window.state=state; if(!state.tab)state.tab='plan';
+  if(state.bunker){document.body.classList.add('bunker');}
+  paint();
+  const tb=document.getElementById('themebtn'); if(tb)tb.textContent=state.bunker?'Standard':'Launch Control';
+  let lastDay=todayLabel();
+  function checkRollover(){
+    const now=todayLabel();
+    if(now!==lastDay){ lastDay=now; paint(true); }   // new day -> full refresh
+    else paintLight();
+  }
+  setInterval(checkRollover, 30000);
+  document.addEventListener('visibilitychange', ()=>{ if(!document.hidden) checkRollover(); });
+  window.addEventListener('focus', checkRollover);
+  // open straight on the Plan when the day has work outstanding
+  if(todayRemaining().length && state.tab!=='plan'){ /* leave the user's tab choice alone */ }
+})();
+</script>
+</body>
+</html>
