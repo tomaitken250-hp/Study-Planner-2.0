@@ -890,6 +890,57 @@ details.pastday > summary .chev{margin-left:auto}
   body.force-dark:not(.bunker) .themebtn{background:rgba(52,52,58,.95);color:var(--ink);border-color:rgba(255,255,255,.14)}
   body.force-dark:not(.bunker) .tab.tab.tmtab{background:rgb(40,40,46)}
 
+/* ================= exams, tags, pacing, cards ================= */
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 10px}
+.chip{font:inherit;font-size:11.5px;font-weight:600;padding:4px 10px;border-radius:999px;border:1px solid var(--edge);
+  background:rgba(255,255,255,.8);color:var(--ink);cursor:pointer;transition:background .15s var(--ease)}
+.chip.on{background:var(--blue);border-color:var(--blue);color:#fff}
+.chip .n{opacity:.65;margin-left:4px;font-weight:500;font-variant-numeric:tabular-nums}
+.mtags{display:inline-flex;flex-wrap:wrap;gap:4px;margin-top:4px;align-items:center}
+.tagx{border:none;background:none;color:inherit;cursor:pointer;padding:0 0 0 4px;font-size:11px;font-family:inherit}
+.tagsel{font:inherit;font-size:11px;padding:1px 6px;border:1px dashed var(--edge);border-radius:999px;background:transparent;color:var(--sub);cursor:pointer}
+.stbadge{font-size:9.5px;font-weight:700;letter-spacing:1px;color:#fff;padding:2px 8px;border-radius:999px;flex-shrink:0}
+.bgrid{display:grid;grid-template-columns:64px repeat(7,minmax(0,1fr));gap:5px;align-items:center;font-size:11.5px}
+.bgrid .hd{color:var(--faint);font-weight:600;text-align:center}
+.bgrid input{width:100%;min-width:0;font:inherit;font-size:12px;padding:5px 4px;text-align:center;border:1px solid var(--edge);border-radius:8px;background:rgba(255,255,255,.9);color:var(--ink)}
+.tmrow{display:flex;flex-wrap:wrap;gap:6px 12px;font-size:12px;margin:6px 0;align-items:center}
+.tmrow label{display:flex;align-items:center;gap:5px}
+#tmpanel .tmrow input{width:62px}
+#tmpanel #tp-qs{width:128px}
+.tmpace{font-size:12.5px;text-align:center;margin:0 0 8px;padding:6px 8px;border-radius:10px;background:rgba(10,132,255,.08)}
+.tmpace:empty{display:none}
+.tmphase{font-size:10.5px;font-weight:700;letter-spacing:1.4px;text-align:center;color:var(--sub)}
+.tmphase.rd{color:var(--english)}
+.fcard{padding:22px 20px 18px;text-align:center;margin-bottom:12px}
+.fcard .fg{font-size:10.5px;font-weight:700;letter-spacing:1.4px;color:var(--sub);text-transform:uppercase}
+.fcard .fq{font-size:17px;font-weight:600;margin:10px 0 4px;white-space:pre-wrap}
+.fcard .fa{margin-top:14px;padding-top:12px;border-top:1px solid var(--edge);font-size:14px;white-space:pre-wrap;text-align:left}
+.fcard .ftry{font-size:12.5px;color:var(--sub);text-align:left;white-space:pre-wrap;margin-top:12px}
+.fcard textarea{width:100%;min-height:52px;margin-top:12px;resize:vertical}
+.grades{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:14px}
+.grades button{font:inherit;font-size:12.5px;font-weight:600;padding:9px 4px;border-radius:12px;border:1px solid var(--edge);background:rgba(255,255,255,.85);color:var(--ink);cursor:pointer}
+.grades button kbd{display:block;font-size:10px;font-family:inherit;color:var(--faint);font-weight:500}
+.boxes{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin:4px 0 12px}
+.boxes .bx{padding:8px 6px;text-align:center;border-radius:12px}
+.boxes .bx b{display:block;font-size:18px;font-variant-numeric:tabular-nums}
+.boxes .bx span{font-size:10.5px;color:var(--faint)}
+@media (max-width:520px){.bgrid{grid-template-columns:44px repeat(7,minmax(0,1fr));gap:3px}.bgrid input{padding:5px 1px}}
+@media (prefers-color-scheme:dark){
+  body:not(.bunker):not(.force-light) .chip,body:not(.bunker):not(.force-light) .bgrid input,body:not(.bunker):not(.force-light) .grades button{background:rgba(52,52,58,.95);color:var(--ink);color-scheme:dark}
+  body:not(.bunker):not(.force-light) .chip.on{background:var(--blue);border-color:var(--blue);color:#fff}
+  body:not(.bunker):not(.force-light) .tagsel{color-scheme:dark}
+  body:not(.bunker):not(.force-light) .tmpace{background:rgba(10,132,255,.16)}
+}
+body.force-dark:not(.bunker) .chip,body.force-dark:not(.bunker) .bgrid input,body.force-dark:not(.bunker) .grades button{background:rgba(52,52,58,.95);color:var(--ink);color-scheme:dark}
+body.force-dark:not(.bunker) .chip.on{background:var(--blue);border-color:var(--blue);color:#fff}
+body.force-dark:not(.bunker) .tagsel{color-scheme:dark}
+body.force-dark:not(.bunker) .tmpace{background:rgba(10,132,255,.16)}
+body.bunker .chip,body.bunker .grades button{border-radius:2px;background:rgba(67,224,138,.08);color:var(--ink)}
+body.bunker .chip.on{background:rgba(67,224,138,.32);border-color:rgba(67,224,138,.7);color:#DFFFE9}
+body.bunker .bgrid input{background:#050A07;color:var(--ink);border:1px solid rgba(0,0,0,.85);border-radius:3px}
+body.bunker .tagsel{color-scheme:dark}
+body.bunker .stbadge{border-radius:2px}
+
 </style>
 </head>
 <body>
@@ -1812,14 +1863,27 @@ function normalize(){
   if(!state.topics || state.topics.length!==SEED_TOPICS.length || state.topicsV!==PLAN_VERSION){
     // A rating YOU set carries a date stamp (cyc sets dt). Those always win.
     // Ratings with no stamp came from the seed, so they take the newest seed value.
-    const mine={}; (state.topics||[]).forEach(o=>{ if(o.dt) mine[o.t]={rag:o.rag,dt:o.dt}; });
+    // rv (last reviewed) is carried the same way.
+    const mine={}; (state.topics||[]).forEach(o=>{ if(o.dt||o.rv) mine[o.t]={rag:o.rag,dt:o.dt,rv:o.rv}; });
     state.topics=SEED_TOPICS.map((t,i)=>{
       const carry=mine[t.t];
-      return {id:'p'+i,...t,rag:carry?carry.rag:(t.rag||0),dt:carry?carry.dt:null};
+      return {id:'p'+i,...t,rag:carry&&carry.dt?carry.rag:(t.rag||0),dt:carry&&carry.dt||null,rv:carry&&carry.rv||null};
     });
     state.topicsV=PLAN_VERSION;
   }
   if(!state.cov){ state.cov={}; }
+  // later additions: grade boundaries, exam kit ticks, timer pacing, capacity, mistake tags, recall cards
+  if(!state.bounds) state.bounds={};
+  if(!state.examChk) state.examChk={};
+  if(!state.tmCfg) state.tmCfg={};
+  if(!state.tmPrefs) state.tmPrefs={read:5,every:15};
+  state.cap=Object.assign({},CAP_DEF,state.cap||{});
+  state.mistakes.forEach(m=>{ if(!Array.isArray(m.tags)) m.tags=autoTags(m); });
+  if(!Array.isArray(state.cards)) state.cards=[];
+  const haveC=new Set(state.cards.map(c=>c.id)), delC=new Set(state.cardsDel||[]), seedC={};
+  SEED_CARDS.forEach(c=>{ seedC[c.id]=c; if(!haveC.has(c.id)&&!delC.has(c.id)) state.cards.push({...c,box:1,due:localISO(),seed:true,reps:0}); });
+  state.cards.forEach(c=>{ const sc=seedC[c.id]; if(c.seed&&sc){ c.s=sc.s; c.g=sc.g; c.q=sc.q; c.a=sc.a; } });
+  capAllDues();
 }
 let saveTimer=null;
 function save(){            // instant: paint never waits on storage
@@ -1857,7 +1921,7 @@ function doneMinBySubj(){
 function esc(x){return String(x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
 
 /* ================= views ================= */
-const TABS=[['plan','Plan'],['mistakes','Mistakes'],['recipes','Recipes'],['school','Checklist'],['cover','Cover'],['topics','Topics'],['log','Log it'],['stats','Stats'],['coach','Coach']];
+const TABS=[['plan','Plan'],['mistakes','Mistakes'],['cards','Cards'],['exams','Exams'],['recipes','Recipes'],['school','Checklist'],['cover','Cover'],['topics','Topics'],['log','Log it'],['stats','Stats'],['coach','Coach']];
 
 function renderStats(){
   const dm=doneMinBySubj();
@@ -2046,6 +2110,19 @@ window.skipTask=id=>{
 /* ================= mistake log ================= */
 function openMistakes(){ return (state.mistakes||[]).filter(m=>!m.fixed); }
 function dueMistakes(){ const td=localISO(); return openMistakes().filter(m=>m.due<=td); }
+const MTAGS=[['euler','Euler'],['relativity','Relativity'],['uncertainty','Uncertainty'],['box','Answer-box'],['argument','Argument structure'],['units','Units'],['command','Misread command term']];
+const MTAG_L={}; MTAGS.forEach(t=>MTAG_L[t[0]]=t[1]);
+const MTAG_RE={euler:/euler|e\^\{?i|polar form|de moivre/i, relativity:/relativ|lorentz|proper (time|length)|length contraction|time dilation/i,
+  uncertainty:/uncertaint|error bar|precision/i, box:/\bbox\b|outside the box|keywords?/i, argument:/narrat|argu(e|ment)|paragraph|judgement/i,
+  units:/\bunits?\b/i, command:/command term|misread|answered the wrong/i};
+function autoTags(m){ const txt=[m.paper,m.q,m.what,m.fix].join(' '); return MTAGS.map(t=>t[0]).filter(k=>MTAG_RE[k].test(txt)); }
+function hasTag(m,k){ return !k || (m.tags||[]).indexOf(k)>-1; }
+function tagChips(m,compact){
+  const tg=m.tags||[];
+  if(compact) return tg.length?`<br><span class="mtags">${tg.map(k=>`<span class="tag">${esc(MTAG_L[k]||k)}</span>`).join('')}</span>`:'';
+  return `<br><span class="mtags">${tg.map(k=>`<span class="tag">${esc(MTAG_L[k]||k)}<button class="tagx" title="Remove tag" onclick="untagMistake('${m.id}','${k}')">×</button></span>`).join('')}
+    ${tg.length<MTAGS.length?`<select class="tagsel" onchange="tagMistake('${m.id}',this.value)"><option value="">+ tag</option>${MTAGS.filter(t=>tg.indexOf(t[0])<0).map(t=>`<option value="${t[0]}">${t[1]}</option>`).join('')}</select>`:''}</span>`;
+}
 function mistakeRow(m,compact){
   const td=localISO();
   return `<div class="list-row mrow" data-mid="${m.id}">
@@ -2053,29 +2130,37 @@ function mistakeRow(m,compact){
     <span class="grow"><b>${esc(m.paper||SUBJ[m.s])}${m.q?' · '+esc(m.q):''}</b>
       ${m.what?`<br><span class="faint">Did: ${esc(m.what)}</span>`:''}
       ${m.fix?`<br>Fix: ${esc(m.fix)}`:''}
-      <br><span class="faint">${m.fixed?'✓ fixed '+isoToLabel(m.fixedAt):(m.due<=td?'<b style="color:var(--red)">redo due</b>':'redo '+isoToLabel(m.due))}${m.tries?' · '+m.tries+' miss'+(m.tries>1?'es':''):''}</span></span>
+      <br><span class="faint">${m.fixed?'✓ fixed '+isoToLabel(m.fixedAt):(m.due<=td?'<b style="color:var(--red)">redo due</b>':'redo '+isoToLabel(m.due))}${m.tries?' · '+m.tries+' miss'+(m.tries>1?'es':''):''}</span>${tagChips(m,compact)}</span>
     ${m.fixed?`<button class="del" style="opacity:.6" title="Reopen" onclick="reopenMistake('${m.id}')">↺</button>`:
       `<button class="b sm" onclick="redoRight('${m.id}')">✓ Right</button><button class="b ghost sm" onclick="redoWrong('${m.id}')">✗ Wrong</button>`}
     ${compact?'':`<button class="del delx" title="Delete" onclick="delMistake('${m.id}')">×</button>`}</div>`;
 }
 function vMistakes(){
-  const ms=state.mistakes||[], td=localISO();
-  const due=ms.filter(m=>!m.fixed&&m.due<=td).sort((a,b)=>a.due<b.due?-1:1);
-  const up=ms.filter(m=>!m.fixed&&m.due>td).sort((a,b)=>a.due<b.due?-1:1);
-  const fixed=ms.filter(m=>m.fixed);
+  const ms=state.mistakes||[], td=localISO(), tf=state.mkFilter||'';
+  const due=ms.filter(m=>!m.fixed&&m.due<=td&&hasTag(m,tf)).sort((a,b)=>a.due<b.due?-1:1);
+  const up=ms.filter(m=>!m.fixed&&m.due>td&&hasTag(m,tf)).sort((a,b)=>a.due<b.due?-1:1);
+  const fixed=ms.filter(m=>m.fixed&&hasTag(m,tf));
   const papers=[...new Set(state.papers.map(p=>p.n).concat(state.tasks.filter(t=>t.rec==='paper').map(paperName)))];
-  let h=`<p class="note">One line per lost mark. Redo it cold on the redo date — it only counts as fixed when the redo is right.</p>
+  const autoLine=['math','physics','chem','history','english','spanish'].map(s=>{ const r=redoPlan(s,3); return SUBJ[s]+' '+(r.n===0?'today':r.n+' d'); }).join(' · ');
+  let h=redoSessionHTML()+`<p class="note">One line per lost mark. Redo it cold on the redo date — it only counts as fixed when the redo is right.</p>
   <h2>Add a line</h2><div class="frm">
     <select id="mk-s">${Object.keys(SUBJ).filter(s=>s!=='buffer').map(s=>`<option value="${s}" ${state.mkS===s?'selected':''}>${SUBJ[s]}</option>`).join('')}</select>
     <input type="text" id="mk-p" list="mk-plist" placeholder="Paper (e.g. Maths P1 (Mon 5 Oct))" value="${esc(state.mkP||'')}">
     <datalist id="mk-plist">${papers.map(p=>`<option value="${esc(p)}">`).join('')}</datalist>
     <input type="text" id="mk-q" placeholder="Question (e.g. Q11b)">
-    <input type="number" id="mk-in" value="3" min="1" max="21" title="Redo in N days">
+    <input type="number" id="mk-in" min="0" max="21" placeholder="Redo in: auto" title="Redo in N days (blank = auto)">
     <input class="full" type="text" id="mk-w" placeholder="What I did (e.g. used (1,2,1) as the normal)">
     <input class="full" type="text" id="mk-f" placeholder="Rule / fix, one line (e.g. read the normal off the plane equation carefully)">
+    <div class="full chips" id="mk-tags" style="margin:0">${MTAGS.map(t=>`<button type="button" class="chip" data-tag="${t[0]}" onclick="this.classList.toggle('on')">${t[1]}</button>`).join('')}</div>
     <button class="b full" onclick="addMistake()">Add to log</button></div>
-  <p class="note" style="margin-top:-2px">The number box is the redo delay in days (default 3).</p>`;
-  h+=`<h2>Redo now <span class="marks">${due.length}</span></h2><div class="card" style="padding:4px 2px">${due.length?due.map(m=>mistakeRow(m)).join(''):'<div class="list-row faint">Nothing due. 👌</div>'}</div>`;
+  <p class="note" style="margin-top:-2px">Tap the weak areas this line belongs to (none picked → tagged from the text). Leave the redo box blank for <b>auto</b>: the gap shrinks as that subject’s exam gets closer and never lands after it. Auto today: ${autoLine}.</p>`;
+  const cnt=k=>{ const a=ms.filter(m=>hasTag(m,k)); return [a.filter(m=>!m.fixed).length,a.length]; };
+  const [oa,aa]=cnt('');
+  h+=`<h2>By weak area <span class="marks">open / all</span></h2><div class="chips">
+    <button class="chip ${tf?'':'on'}" onclick="mkFilter('')">All<span class="n">${oa}/${aa}</span></button>
+    ${MTAGS.map(t=>{ const [o,a]=cnt(t[0]); return `<button class="chip ${tf===t[0]?'on':''}" onclick="mkFilter('${t[0]}')">${t[1]}<span class="n">${o}/${a}</span></button>`; }).join('')}</div>
+    <button class="b" onclick="startRedo()" ${cnt(tf)[0]?'':'disabled'}>Wrong answers only · redo ${cnt(tf)[0]} open line${cnt(tf)[0]===1?'':'s'}${tf?' tagged '+esc(MTAG_L[tf]):''}</button>`;
+  h+=`<h2>Redo now <span class="marks">${due.length}${tf?' · '+esc(MTAG_L[tf]):''}</span></h2><div class="card" style="padding:4px 2px">${due.length?due.map(m=>mistakeRow(m)).join(''):'<div class="list-row faint">Nothing due. 👌</div>'}</div>`;
   h+=`<h2>Coming up <span class="marks">${up.length}</span></h2><div class="card" style="padding:4px 2px">${up.length?up.map(m=>mistakeRow(m)).join(''):'<div class="list-row faint">No upcoming redos.</div>'}</div>`;
   h+=`<details class="card" style="padding:2px 6px 6px;margin-top:14px"><summary>Fixed ✓ <span class="marks" style="margin-left:6px;font-weight:400;color:var(--faint)">${fixed.length}</span><span class="chev">›</span></summary><div style="padding:0 4px 6px">${fixed.length?fixed.map(m=>mistakeRow(m)).join(''):'<div class="list-row faint">None yet.</div>'}</div></details>`;
   return h;
@@ -2086,14 +2171,55 @@ window.addMistake=()=>{
   if(!fix && !what && !q){ toast('Add at least the question or the fix'); return; }
   state.mistakes=state.mistakes||[];
   state.mkS=g('mk-s').value; state.mkP=g('mk-p').value.trim();
-  state.mistakes.push({id:'m'+Date.now().toString(36),s:state.mkS,paper:state.mkP,q,what,fix,
-    due:addDaysISO(Math.max(1,+g('mk-in').value||3)),created:localISO(),fixed:false,tries:0});
-  paint(); save(); toast('Added — redo '+isoToLabel(state.mistakes[state.mistakes.length-1].due));
+  const typed=g('mk-in').value.trim();
+  const r=typed===''?redoPlan(state.mkS,3):redoPlan(state.mkS,Math.max(0,+typed),true);
+  const m={id:'m'+Date.now().toString(36),s:state.mkS,paper:state.mkP,q,what,fix,
+    due:addDaysISO(r.n),created:localISO(),fixed:false,tries:0};
+  const picked=[...document.querySelectorAll('#mk-tags .chip.on')].map(b=>b.dataset.tag);
+  m.tags=picked.length?picked:autoTags(m);
+  state.mistakes.push(m);
+  paint(); save(); toast('Added — redo '+isoToLabel(m.due)+(r.ex?' · '+r.ex[2].replace(/\s*\(.*$/,'')+' '+inDays(r.ex[0]):''));
   setTimeout(()=>{ const q2=document.getElementById('mk-q'); if(q2) q2.focus(); },50);
 };
-window.redoRight=id=>{ const m=(state.mistakes||[]).find(x=>x.id===id); if(!m) return; m.fixed=true; m.fixedAt=localISO(); paint(); save(); fireAlarm(); toast('Fixed ✓','Undo',()=>reopenMistake(id)); };
-window.redoWrong=id=>{ const m=(state.mistakes||[]).find(x=>x.id===id); if(!m) return; m.tries=(m.tries||0)+1; m.due=addDaysISO(2); paint(); save(); toast('Rescheduled for '+isoToLabel(m.due)); };
+function fixMistake(m){ m.fixed=true; m.fixedAt=localISO(); }
+function missMistake(m){ m.tries=(m.tries||0)+1; m.due=addDaysISO(redoPlan(m.s,2).n); }
+window.redoRight=id=>{ const m=(state.mistakes||[]).find(x=>x.id===id); if(!m) return; fixMistake(m); paint(); save(); fireAlarm(); toast('Fixed ✓','Undo',()=>reopenMistake(id)); };
+window.redoWrong=id=>{ const m=(state.mistakes||[]).find(x=>x.id===id); if(!m) return; missMistake(m); paint(); save(); toast('Rescheduled for '+isoToLabel(m.due)); };
 window.reopenMistake=id=>{ const m=(state.mistakes||[]).find(x=>x.id===id); if(!m) return; m.fixed=false; m.fixedAt=null; paint(); save(); };
+window.tagMistake=(id,k)=>{ const m=(state.mistakes||[]).find(x=>x.id===id); if(!m||!k) return; m.tags=m.tags||[]; if(m.tags.indexOf(k)<0) m.tags.push(k); paint(); save(); };
+window.untagMistake=(id,k)=>{ const m=(state.mistakes||[]).find(x=>x.id===id); if(!m) return; m.tags=(m.tags||[]).filter(x=>x!==k); paint(); save(); };
+window.mkFilter=k=>{ state.mkFilter=k||''; paint(); save(); };
+/* "wrong answers only" redo session: open lines, one at a time, optionally one weak area */
+let rs=null;
+window.startRedo=()=>{
+  const tf=state.mkFilter||'';
+  const ids=openMistakes().filter(m=>hasTag(m,tf)).sort((a,b)=>a.due<b.due?-1:1).map(m=>m.id);
+  if(!ids.length){ toast('No open lines'+(tf?' tagged '+MTAG_L[tf]:'')); return; }
+  rs={ids,i:0,shown:false,right:0,wrong:0,tag:tf}; paint(); window.scrollTo({top:0,behavior:'smooth'});
+};
+function redoSessionHTML(){
+  if(!rs) return '';
+  const head=`REDO SESSION · WRONG ANSWERS ONLY${rs.tag?' · '+MTAG_L[rs.tag].toUpperCase():''}`;
+  if(rs.i>=rs.ids.length) return `<div class="card fcard" style="border-left:3px solid var(--red)"><div class="fg">${head}</div>
+    <div class="fq">Done — ${rs.right} right, ${rs.wrong} wrong</div>
+    <div class="note" style="margin:6px 0 12px">Right ones are marked fixed. Wrong ones got a new redo date, earlier if that exam is close.</div>
+    <button class="b" onclick="endRedo()">Close</button></div>`;
+  const m=(state.mistakes||[]).find(x=>x.id===rs.ids[rs.i]);
+  if(!m||m.fixed){ rs.i++; return redoSessionHTML(); }
+  return `<div class="card fcard" style="border-left:3px solid var(--red)"><div class="fg">${head} · ${rs.i+1} / ${rs.ids.length}</div>
+    <div class="fq"><span class="sd" style="background:${SCOL[m.s]}"></span>${esc(m.paper||SUBJ[m.s])}${m.q?' · '+esc(m.q):''}</div>
+    ${m.what?`<div class="note" style="margin:0">Last time you: ${esc(m.what)}</div>`:''}
+    <div class="note" style="margin:6px 0 0">Redo it cold — no notes, no answer — then check.</div>
+    ${rs.shown?`<div class="fa"><b>Fix:</b> ${esc(m.fix||'(no fix written)')}</div>
+      <div style="display:flex;gap:8px;justify-content:center;margin-top:14px;flex-wrap:wrap"><button class="b" onclick="rsGrade(true)">✓ Right</button><button class="b ghost" onclick="rsGrade(false)">✗ Wrong</button><button class="b ghost" onclick="rsSkip()">Skip</button></div>`
+    :`<div style="display:flex;gap:8px;justify-content:center;margin-top:14px;flex-wrap:wrap"><button class="b" onclick="rsShow()">I’ve done it — show the fix</button><button class="b ghost" onclick="rsSkip()">Skip</button><button class="b ghost" onclick="endRedo()">End</button></div>`}</div>`;
+}
+window.rsShow=()=>{ if(rs){ rs.shown=true; paint(); } };
+window.rsSkip=()=>{ if(rs){ rs.i++; rs.shown=false; paint(); } };
+window.rsGrade=ok=>{ if(!rs) return; const m=(state.mistakes||[]).find(x=>x.id===rs.ids[rs.i]);
+  if(m){ if(ok){ fixMistake(m); rs.right++; fireAlarm(); } else { missMistake(m); rs.wrong++; } }
+  rs.i++; rs.shown=false; paint(); save(); };
+window.endRedo=()=>{ rs=null; paint(); };
 let mUndo=null;
 window.delMistake=id=>{ const i=(state.mistakes||[]).findIndex(x=>x.id===id); if(i<0) return; mUndo={m:state.mistakes[i],i}; state.mistakes.splice(i,1); paint(); save();
   toast('Line deleted','Undo',()=>{ if(mUndo){ state.mistakes.splice(mUndo.i,0,mUndo.m); mUndo=null; paint(); save(); } }); };
@@ -2160,6 +2286,7 @@ function vPlan(){
       <div class="note" style="margin:0"><b>${state.orphans} task${state.orphans>1?'s':''} moved</b> — ${state.orphans>1?'they were':'it was'} on a date that isn’t in the plan. Now placed on the correct day.</div></div>`;
     state.orphans=0;
   }
+  h+=examKitHTML();
   const isSun=new Date().getDay()===0;
   if(isSun || tTasks.some(t=>t.rec==='review')) h+=reviewHTML();
   if(tTasks.length){
@@ -2177,6 +2304,7 @@ function vPlan(){
       ${due.slice(0,5).map(m=>mistakeRow(m,true)).join('')}${due.length>5?`<div class="note" style="margin:6px 0 0">…and ${due.length-5} more in the Mistakes tab</div>`:''}</div>`;
   }
   h+=tomorrowHTML();
+  h+=capBannerHTML();
   if(od.length){
     h+=`<div class="card overduecard" id="overduecard" style="padding:12px 16px;margin-bottom:16px">
       <div class="todayhead"><span class="todaydate" id="overduecount" style="color:var(--spanish)">${od.length} TASK${od.length>1?'S':''} OVERDUE</span>
@@ -2266,53 +2394,131 @@ window.printWeek=w=>{
 
 /* ================= timer ================= */
 let beepCtx=null;
-function beep(n){ try{ beepCtx=beepCtx||new (window.AudioContext||window.webkitAudioContext)();
-  for(let i=0;i<(n||1);i++){ const o=beepCtx.createOscillator(), g=beepCtx.createGain(); o.frequency.value=880; o.connect(g); g.connect(beepCtx.destination);
+function beep(n,hz){ try{ beepCtx=beepCtx||new (window.AudioContext||window.webkitAudioContext)();
+  for(let i=0;i<(n||1);i++){ const o=beepCtx.createOscillator(), g=beepCtx.createGain(); o.frequency.value=hz||880; o.connect(g); g.connect(beepCtx.destination);
     const t0=beepCtx.currentTime+i*0.35; g.gain.setValueAtTime(0.0001,t0); g.gain.exponentialRampToValueAtTime(0.25,t0+0.02); g.gain.exponentialRampToValueAtTime(0.0001,t0+0.25); o.start(t0); o.stop(t0+0.27); } }catch(e){} }
-function timerLeft(){ const T=state.timer; if(!T) return null; const now=T.paused?T.pausedAt:Date.now(); return Math.max(0,Math.round((T.start+T.dur*1000-now)/1000)); }
+// T.read = reading-time seconds before the writing clock (T.dur) starts. Old saved timers have no read.
+function timerLeft(){ const T=state.timer; if(!T) return null; const now=T.paused?T.pausedAt:Date.now(); return Math.max(0,Math.round((T.start+((T.read||0)+T.dur)*1000-now)/1000)); }
+function writeLeft(){ const l=timerLeft(); return l===null?null:Math.min(state.timer.dur,l); }
+function inReading(){ const T=state.timer; return !!T && timerLeft()>T.dur; }
 function mmss(s){ const h=Math.floor(s/3600), m=Math.floor(s%3600/60), x=s%60; return (h?h+':'+String(m).padStart(2,'0'):m)+':'+String(x).padStart(2,'0'); }
+// pacing: known totals for papers whose mark count doesn't change; everything else is remembered per paper once entered
+const PACE_DEF={'Maths P1':{marks:110},'Maths P2':{marks:110},'Maths P3':{marks:55}};
+function paceKey(label){ return String(label).replace(/\s*\(.*\)\s*$/,'').trim(); }
+function qMarks(P){
+  const raw=String((P&&P.qs)||'').trim(); if(!raw) return null;
+  if(/^\d+$/.test(raw)){ const n=+raw; return n>0&&+P.marks>0?Array(n).fill(+P.marks/n):null; }
+  const a=raw.split(/[\s,;+]+/).map(Number).filter(x=>x>0); return a.length?a:null;
+}
+function paceTotal(P){ const raw=String((P&&P.qs)||'').trim(); const q=qMarks(P);
+  return (q && !/^\d+$/.test(raw)) ? q.reduce((a,b)=>a+b,0) : (+(P&&P.marks)||0); }
+function paceMpm(T){ const P=T.pace||{}; if(+P.mpm>0) return +P.mpm; const tot=paceTotal(P); return tot?tot/(T.dur/60):0; }
+function paceNow(T){
+  const mpm=paceMpm(T); if(!mpm) return null;
+  const exp=Math.min(paceTotal(T.pace), (T.dur-writeLeft())/60*mpm), q=qMarks(T.pace);
+  if(!q) return {exp,q:null};
+  let cum=0; for(let i=0;i<q.length;i++){ cum+=q[i]; if(exp<cum-1e-9) return {exp,q:i+1}; }
+  return {exp,q:0};
+}
+function paceText(T){ const p=paceNow(T); if(!p) return ''; const tot=paceTotal(T.pace);
+  return (p.q===null?'':p.q===0?'All questions done — checking time · ':'You should be on Q'+p.q+' by now · ')+'≈'+Math.round(p.exp)+(tot?'/'+tot:'')+' marks'; }
 window.startTimer=(label,minutes)=>{
   if(state.timer && timerLeft()>0 && !confirm('Replace the running timer ('+state.timer.label+')?')) return;
-  state.timer={label:String(label),dur:Math.round(minutes*60),start:Date.now(),paused:false,pausedAt:null,warn:{}};
+  const k=paceKey(label), cfg=state.tmCfg[k]||PACE_DEF[k]||{}, pr=state.tmPrefs||{};
+  state.timer={id:Date.now(),label:String(label),dur:Math.round(minutes*60),read:Math.max(0,Math.round((+pr.read||0)*60)),
+    start:Date.now(),paused:false,pausedAt:null,warn:{},
+    pace:{marks:cfg.marks||'',qs:cfg.qs||'',mpm:cfg.mpm||'',every:+pr.every||0}};
   state.tmOpen=true; beep(1); paintTimer(); save();
+  if(state.timer.read) toast('Reading time: '+fmtDur(state.timer.read/60)+' — count the questions and marks');
 };
 window.timerPause=()=>{ const T=state.timer; if(!T) return; if(T.paused){ T.start+=Date.now()-T.pausedAt; T.paused=false; T.pausedAt=null; } else { T.paused=true; T.pausedAt=Date.now(); } paintTimer(); save(); };
 window.timerStop=()=>{ if(state.timer && timerLeft()>0 && !confirm('Stop the timer?')) return; state.timer=null; paintTimer(); save(); };
 window.timerAdd=m=>{ if(!state.timer) return; state.timer.dur+=m*60; paintTimer(); save(); };
 window.tglTimerPanel=()=>{ state.tmOpen=!state.tmOpen; paintTimer(); };
+window.setTmPref=()=>{ const r=document.getElementById('tm-read'), e=document.getElementById('tm-every');
+  state.tmPrefs={read:Math.max(0,Math.min(30,+(r&&r.value)||0)),every:Math.max(0,Math.min(120,+(e&&e.value)||0))}; save(); };
+window.setPace=()=>{
+  const T=state.timer; if(!T) return; const g=id=>{ const el=document.getElementById(id); return el?el.value.trim():''; };
+  T.pace={marks:g('tp-marks'),qs:g('tp-qs'),mpm:g('tp-mpm'),every:Math.max(0,+g('tp-every')||0)};
+  // start counting checkpoints from now, so changing the interval doesn't fire a burst of old ones
+  const el=(T.dur-writeLeft())/60; T.warn.cp=T.pace.every?Math.floor(el/T.pace.every):0;
+  state.tmCfg[paceKey(T.label)]={marks:T.pace.marks,qs:T.pace.qs,mpm:T.pace.mpm};
+  state.tmPrefs=Object.assign({},state.tmPrefs,{every:T.pace.every});
+  paintTimer(); save();
+};
+function runPanelHTML(T,left){
+  const P=Object.assign({marks:'',qs:'',mpm:'',every:0},T.pace);   // timers saved before pacing existed have no pace
+  return `<div class="tmhead"><b>${esc(T.label)}</b><button class="del" style="opacity:1" onclick="tglTimerPanel()">✕</button></div>
+    <div class="tmphase" id="tm-phase"></div>
+    <div class="tmbig" id="tm-big"></div>
+    <div class="tmbar"><span id="tm-barf"></span></div>
+    <div class="note" id="tm-sub" style="margin:6px 0 8px;text-align:center"></div>
+    <div class="tmpace" id="tm-pace"></div>
+    <div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap">
+      ${left>0?`<button class="b sm" id="tm-pbtn" onclick="timerPause()">Pause</button><button class="b ghost sm" onclick="timerAdd(5)">+5 min</button>`:''}
+      <button class="b ghost sm" onclick="timerStop()">${left>0?'Stop':'Clear'}</button></div>
+    ${left>0?`<details style="margin-top:10px" ${paceTotal(P)?'':'open'}><summary style="font-size:12.5px;padding:6px 2px">Pacing checkpoints<span class="chev">›</span></summary>
+      <div class="tmrow"><label>Marks <input type="number" id="tp-marks" min="1" value="${esc(P.marks)}" onchange="setPace()"></label>
+        <label>Questions <input type="text" id="tp-qs" value="${esc(P.qs)}" placeholder="12 or 5,6,4,…" onchange="setPace()"></label></div>
+      <div class="tmrow"><label>Target <input type="number" id="tp-mpm" min="0" step="0.05" value="${esc(P.mpm)}" placeholder="auto" onchange="setPace()"> marks/min</label>
+        <label>Beep every <input type="number" id="tp-every" min="0" value="${esc(P.every||'')}" placeholder="off" onchange="setPace()"> min</label></div>
+      <div class="note" style="margin:2px 0 0">Questions: a count (split evenly), or each question’s marks. Blank target = marks ÷ writing time. Remembered for this paper next time.</div></details>`:''}`;
+}
+function updateRunPanel(T){
+  const left=timerLeft(), wl=writeLeft(), rd=inReading(), g=id=>document.getElementById(id);
+  const ph=g('tm-phase'); if(ph){ ph.textContent=rd?'READING TIME · WRITING STARTS IN '+mmss(left-T.dur):(T.read?'WRITING TIME':''); ph.classList.toggle('rd',rd); }
+  const big=g('tm-big'); if(big){ big.textContent=left>0?mmss(rd?left-T.dur:wl):'Time’s up'; big.classList.toggle('warn',!rd&&left>0&&wl<=600); }
+  const bar=g('tm-barf'); if(bar){ bar.style.width=(rd?0:Math.min(100,100-wl/T.dur*100))+'%'; }
+  const sub=g('tm-sub'); if(sub) sub.textContent=fmtDur(Math.round(T.dur/60))+' writing'+(T.read?' + '+fmtDur(Math.round(T.read/60))+' reading':'')+' · halfway at '+mmss(Math.floor(T.dur/2))+' left · warning at 10:00 left';
+  const pc=g('tm-pace');
+  if(pc){ const P=T.pace||{}, mpm=paceMpm(T), ev=+P.every||0;
+    let x='';
+    if(left>0 && rd) x=paceTotal(P)?'Pace target '+mpm.toFixed(2)+' marks/min once writing starts':'Use the reading time to count questions and marks → enter them under Pacing';
+    else if(left>0 && mpm){ const el=(T.dur-wl)/60, nx=ev?(Math.floor(el/ev)+1)*ev:0;
+      x=`<b>${esc(paceText(T))}</b><br><span class="faint">${mpm.toFixed(2)} marks/min${ev&&nx*60<T.dur?' · next check at '+nx+' min in':''}</span>`; }
+    else if(left>0 && ev){ const el=(T.dur-wl)/60, nx=(Math.floor(el/ev)+1)*ev; if(nx*60<T.dur) x='<span class="faint">Checkpoint beep every '+ev+' min · next at '+nx+' min in</span>'; }
+    if(pc.innerHTML!==x) pc.innerHTML=x; }
+  const pb=g('tm-pbtn'); if(pb) pb.textContent=T.paused?'Resume':'Pause';
+}
 function paintTimer(){
   const btn=document.getElementById('tmbtn'), pn=document.getElementById('tmpanel'); if(!btn||!pn) return;
-  const T=state.timer, left=timerLeft();
-  btn.textContent=T?(left>0?'⏱ '+mmss(left)+(T.paused?' ‖':''):'⏱ Time’s up'):'⏱ Timer';
+  const T=state.timer, left=timerLeft(), rd=inReading(), wl=T?writeLeft():0;
+  btn.textContent=T?(left>0?'⏱ '+(rd?'Read '+mmss(left-T.dur):mmss(wl))+(T.paused?' ‖':''):'⏱ Time’s up'):'⏱ Timer';
   btn.classList.toggle('running',!!T&&left>0); btn.classList.toggle('over',!!T&&left===0);
-  btn.classList.toggle('warn',!!T&&left>0&&left<=600);
+  btn.classList.toggle('warn',!!T&&left>0&&!rd&&wl<=600);
   pn.style.display=state.tmOpen?'block':'none';
-  if(!state.tmOpen){ pn.dataset.mode=''; return; }
-  if(!T && pn.dataset.mode==='presets') return;
-  pn.dataset.mode=T?'run':'presets';
+  if(!state.tmOpen){ pn.dataset.mode=''; pn.dataset.key=''; return; }
   if(T){
-    pn.innerHTML=`<div class="tmhead"><b>${esc(T.label)}</b><button class="del" style="opacity:1" onclick="tglTimerPanel()">✕</button></div>
-      <div class="tmbig ${left<=600?'warn':''}">${left>0?mmss(left):'Time’s up'}</div>
-      <div class="tmbar"><span style="width:${Math.min(100,100-left/T.dur*100)}%"></span></div>
-      <div class="note" style="margin:6px 0 10px;text-align:center">${Math.round(T.dur/60)} min · halfway at ${mmss(Math.floor(T.dur/2))} left · warning at 10:00 left</div>
-      <div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap">
-        ${left>0?`<button class="b sm" onclick="timerPause()">${T.paused?'Resume':'Pause'}</button><button class="b ghost sm" onclick="timerAdd(5)">+5 min</button>`:''}
-        <button class="b ghost sm" onclick="timerStop()">${left>0?'Stop':'Clear'}</button></div>`;
-  } else {
-    pn.innerHTML=`<div class="tmhead"><b>Exam timer</b><button class="del" style="opacity:1" onclick="tglTimerPanel()">✕</button></div>
-      <div class="note" style="margin:0 0 8px">Real paper lengths. Beeps at halfway, 10 min left and the end.</div>
-      <div class="tmgrid">${TIMER_PRESETS.map(p=>`<button onclick="startTimer('${p[0]}',${p[1]})"><b>${p[0]}</b><span>${fmtDur(p[1])}</span></button>`).join('')}</div>
-      <div style="display:flex;gap:6px;margin-top:8px"><input type="number" id="tm-custom" placeholder="Minutes" min="1" style="flex:1"><button class="b sm" onclick="(v=>v>0&&startTimer('Custom',v))(+document.getElementById('tm-custom').value)">Start</button></div>`;
+    // rebuild only when the timer itself changes, so the pacing inputs keep focus while the clock ticks
+    const key=(T.id||T.label)+'|'+(left>0?'on':'over');
+    if(pn.dataset.mode!=='run' || pn.dataset.key!==key){ pn.dataset.mode='run'; pn.dataset.key=key; pn.innerHTML=runPanelHTML(T,left); }
+    updateRunPanel(T);
+    return;
   }
+  if(pn.dataset.mode==='presets') return;
+  pn.dataset.mode='presets'; pn.dataset.key='';
+  const pr=state.tmPrefs||{};
+  pn.innerHTML=`<div class="tmhead"><b>Exam timer</b><button class="del" style="opacity:1" onclick="tglTimerPanel()">✕</button></div>
+    <div class="note" style="margin:0 0 6px">Real paper lengths. Beeps when reading time ends, at each pace checkpoint, halfway, 10 min left and the end.</div>
+    <div class="tmrow"><label>Reading time <input type="number" id="tm-read" min="0" max="30" value="${+pr.read||0}" onchange="setTmPref()"> min</label>
+      <label>Pace beep every <input type="number" id="tm-every" min="0" max="120" value="${+pr.every||0}" onchange="setTmPref()"> min</label></div>
+    <div class="note" style="margin:0 0 8px">0 = off. Marks and questions are set once the timer is running.</div>
+    <div class="tmgrid">${TIMER_PRESETS.map(p=>`<button onclick="startTimer('${p[0]}',${p[1]})"><b>${p[0]}</b><span>${fmtDur(p[1])}</span></button>`).join('')}</div>
+    <div style="display:flex;gap:6px;margin-top:8px"><input type="number" id="tm-custom" placeholder="Minutes" min="1" style="flex:1"><button class="b sm" onclick="(v=>v>0&&startTimer('Custom',v))(+document.getElementById('tm-custom').value)">Start</button></div>`;
 }
 function timerTick(){
   const T=state.timer; if(!T){ return; }
-  const left=timerLeft();
-  if(!T.paused){
-    if(!T.warn.half && left<=T.dur/2 && left>0){ T.warn.half=true; beep(1); toast('Halfway — '+mmss(left)+' left'); save(); }
-    if(!T.warn.ten && left<=600 && left>0 && T.dur>900){ T.warn.ten=true; beep(2); toast('10 minutes left'); save(); }
-    if(!T.warn.end && left===0){ T.warn.end=true; beep(3); toast('Time’s up — pens down',null,null,15000); save(); }
+  const left=timerLeft(), wl=writeLeft(), rd=inReading();
+  if(!T.paused && left>0 && !rd){
+    if(T.read && !T.warn.read){ T.warn.read=true; beep(2,660); toast('Reading time over — start writing'); save(); }
+    if(!T.warn.half && wl<=T.dur/2){ T.warn.half=true; beep(1); toast('Halfway — '+mmss(wl)+' left'); save(); }
+    if(!T.warn.ten && wl<=600 && T.dur>900){ T.warn.ten=true; beep(2); toast('10 minutes left'); save(); }
+    // pace checkpoint last, so its 'you should be on Q_' toast is the one left showing
+    const ev=+(T.pace&&T.pace.every)||0, el=(T.dur-wl)/60;
+    if(ev && wl>60){ const k=Math.floor(el/ev);
+      if(k>0 && k>(T.warn.cp||0)){ T.warn.cp=k; beep(2,660); const pt=paceText(T); toast(k*ev+' min in · '+(pt||mmss(wl)+' left'),null,null,12000); save(); } }
   }
+  if(!T.paused && !T.warn.end && left===0){ T.warn.end=true; beep(3); toast('Time’s up — pens down',null,null,15000); save(); }
   paintTimer();
 }
 
@@ -2407,7 +2613,7 @@ function vLog(){
       const i=state.papers.length-1-ri;
       h+=`<div class="list-row"><span class="sd" style="background:${SCOL[p.s]}"></span>
         <span class="grow">${esc(p.n)}${p.note?` — <i>${esc(p.note)}</i>`:''}</span>
-        <span class="scorechip">${p.sc}/${p.tot}</span>
+        <span class="scorechip">${p.sc}/${p.tot}</span>${gchip(p)}
         ${+p.cw?`<span class="cw">${p.cw} CW</span>`:''}
         <button class="del" onclick="delPaper(${i})">×</button></div>`;
     });
@@ -2468,7 +2674,7 @@ function vStats(){
       ${n>1?`<polyline points="${pts.map(p=>p.join(',')).join(' ')}" style="stroke:${SCOL[s]}" class="ln"/>`:''}
       ${pts.map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="3.5" style="fill:${SCOL[s]}"/>`).join('')}</svg>
       <div class="note" style="margin:2px 0 6px">Grade ${gl[1]} line \u2248 ${gl[0]}% \u00b7 latest ${Math.round(ps[n-1].sc/ps[n-1].tot*100)}%${n>1?' \u00b7 first '+Math.round(ps[0].sc/ps[0].tot*100)+'%':''}</div>`;
-    ps.forEach(p=>{ const i=state.papers.indexOf(p); h+=`<div class="list-row" style="padding:3px 2px"><span class="grow">${esc(p.n)}</span><span class="num">${p.sc}/${p.tot} \u00b7 ${Math.round(p.sc/p.tot*100)}%</span><button class="del delx" title="Delete score" onclick="delPaper(${i})">\u00d7</button></div>`; });
+    ps.forEach(p=>{ const i=state.papers.indexOf(p); h+=`<div class="list-row" style="padding:3px 2px"><span class="grow">${esc(p.n)}</span><span class="num">${p.sc}/${p.tot} \u00b7 ${Math.round(p.sc/p.tot*100)}%</span>${gchip(p)}<button class="del delx" title="Delete score" onclick="delPaper(${i})">\u00d7</button></div>`; });
     h+=`</div>`;
   });
   h+=`<p class="note">Paper % isn\u2019t the same as your final grade % (IAs count too) \u2014 treat the line as a rough guide. Which way the line is heading matters more than any one point.</p>`;
@@ -2479,7 +2685,7 @@ function vStats(){
 const RAG=[{c:'rgba(29,29,31,.12)',l:'—'},{c:'var(--red)',l:'R'},{c:'var(--spanish)',l:'A'},{c:'var(--chem)',l:'G'}];
 function vTopics(){
   const hg=!!state.hideGreen;
-  let h=`<div class="quick" style="margin:0 0 4px"><button onclick="tglHideGreen()" style="${hg?'background:var(--ink);color:#fff;border-color:var(--ink)':''}">${hg?'Showing R/A/unrated only':'Hide green'}</button></div>`;
+  let h=whatNextHTML()+`<div class="quick" style="margin:0 0 4px"><button onclick="tglHideGreen()" style="${hg?'background:var(--ink);color:#fff;border-color:var(--ink)':''}">${hg?'Showing R/A/unrated only':'Hide green'}</button></div>`;
   ['math','physics','chem','history','english','spanish'].forEach(sub=>{
     const ts=state.topics.filter(t=>t.s===sub);
     if(!ts.length)return;
@@ -2502,7 +2708,8 @@ function vTopics(){
       const r=RAG[t.rag||0];
       h+=`<div class="list-row ragrow" data-sub="${sub}" onclick="cyc(event,'${t.id}')" style="padding:7px 2px;cursor:pointer;user-select:none">
         <span class="grow" style="font-size:12.5px">${esc(t.t)}</span>
-        <span class="num" data-rdt="${t.id}" style="font-size:10.5px;color:var(--faint)">${t.dt?t.dt.slice(5):''}</span>
+        <span class="num" data-rdt="${t.id}" title="Last reviewed" style="font-size:10.5px;color:var(--faint)">${lastRev(t)?shortD(lastRev(t)):''}</span>
+        <button class="del" title="Reviewed today (keeps the rating)" onclick="event.stopPropagation();reviewTopic('${t.id}')">✓</button>
         <span data-rid="${t.id}" style="width:32px;height:22px;border-radius:999px;display:grid;place-content:center;
           font-weight:700;font-size:10.5px;color:#fff;background:${r.c};transition:background .12s var(--ease)">${r.l}</span></div>`;
     });
@@ -2539,15 +2746,15 @@ window.wipeAll=()=>{
   state.tasks=SEED_TASKS.map((t,i)=>({id:'t'+i,...t,done:false,doneAt:null}));
   state.topics=SEED_TOPICS.map((t,i)=>({id:'p'+i,...t,rag:t.rag||0,dt:null}));
   state.covText=COVERAGE.map(c=>c.t); state.planV=PLAN_VERSION; state.topicsV=PLAN_VERSION;
-  paint(); save();
+  normalize(); paint(); save();
 };
 window.cyc=(e,id)=>{
   if(e&&e.stopPropagation) e.stopPropagation();
   const t=state.topics.find(x=>x.id===id); if(!t)return;
-  t.rag=((t.rag||0)+1)%4; t.dt=localISO();
+  t.rag=((t.rag||0)+1)%4; t.dt=t.rv=localISO();
   const b=document.querySelector('[data-rid="'+id+'"]');
   if(b){const r=RAG[t.rag]; b.style.background=r.c; b.textContent=r.l;}
-  const d=document.querySelector('[data-rdt="'+id+'"]'); if(d) d.textContent=t.dt.slice(5);
+  const d=document.querySelector('[data-rdt="'+id+'"]'); if(d) d.textContent=shortD(t.rv);
   // live-update this subject's R/A/G counts without a repaint
   const ts=state.topics.filter(x=>x.s===t.s), c=[0,0,0,0];
   ts.forEach(x=>c[x.rag||0]++);
@@ -2756,7 +2963,11 @@ Papers logged: ${papers}.
 EXAM-READY CHECKLIST (Cover): ${covLine}.
 SYLLABUS RAG (green = exam-ready): ${ragPct}.
 Topics rated RED: ${red}.
-Topics rated AMBER: ${amber}.`;
+Topics rated AMBER: ${amber}.
+Mistake log by weak area (open/all): ${MTAGS.map(t=>{ const a=(state.mistakes||[]).filter(m=>(m.tags||[]).indexOf(t[0])>-1); return t[1]+' '+a.filter(m=>!m.fixed).length+'/'+a.length; }).join('; ')}.
+Capacity before each exam (planned vs free hours): ${capacityRows().rows.map(x=>examName(x.f)+' '+(x.need/60).toFixed(1)+'/'+(x.have/60).toFixed(1)+' '+CAP_ST[x.st][1]).join('; ')||'exams done'}.
+Grades from logged papers: ${state.papers.map(p=>{ const gi=gradeInfo(p); return gi&&!gi.none?p.n+' = grade '+gi.g+(gi.need!==null?' (target '+gi.tgt+' at '+gi.need+'/'+gi.max+')':''):null; }).filter(Boolean).join(' | ')||'no boundaries entered yet'}.
+Recall cards: ${cardsDue('').length} due of ${(state.cards||[]).length}.`;
 }
 let pendingActions=null;
 function validAction(a){
@@ -2879,6 +3090,388 @@ Rules for actions: use exact ids from the list above; keep any single block at o
   if(!preset)ta.value='';
 };
 
+/* ================= exams: shared helpers ================= */
+const EXAM_AT={AM:'10:00',PM:'14:00'};
+const EXAM_DATES=new Set(FINALS.map(f=>f[0]));
+function hm(s){ const p=String(s).split(':'); return (+p[0])*60+(+p[1]||0); }
+function nowMin(){ const d=new Date(); return d.getHours()*60+d.getMinutes(); }
+function dateFromISO(iso){ const p=String(iso).split('-'); return new Date(+p[0],+p[1]-1,+p[2]); }
+function shortD(iso){ if(!iso) return ''; const d=dateFromISO(iso); return d.getDate()+' '+MON3[d.getMonth()]; }
+function examName(f){ return f[2].replace(/\s*\([^)]*\)/g,'').replace(/\s*—.*$/,'').trim(); }
+function nextExam(s,minDays){ return FINALS.find(f=>f[3]===s && daysUntil(f[0])>=(minDays||0))||null; }
+// days from today to the last safe day for subject s = the day before its next exam (null: no exam left)
+function examCapDays(s){ const ex=nextExam(s,1); return ex?Math.max(0,daysUntil(ex[0])-1):null; }
+const REDO_FULL=21;   // redo gaps are full length 3+ weeks out, then shrink in step with that subject's exam
+function redoPlan(s,base,fixed){
+  const ex=nextExam(s,1); let n=Math.max(0,base);
+  if(ex){ const D=daysUntil(ex[0]);
+    if(!fixed) n=Math.max(1,Math.round(n*Math.min(1,D/REDO_FULL)));
+    n=Math.min(n,D-1); }
+  return {n:Math.max(0,n),ex};
+}
+function capAllDues(){
+  (state.mistakes||[]).forEach(m=>{ if(m.fixed) return; const k=examCapDays(m.s); if(k===null) return; const lim=addDaysISO(k); if(m.due>lim) m.due=lim; });
+  (state.cards||[]).forEach(c=>{ const k=examCapDays(c.s); if(k===null) return; const lim=addDaysISO(k); if(c.due>lim) c.due=lim; });
+}
+
+/* ================= exam-day kit ================= */
+const KIT=[
+ {id:'calc',t:'Calculator charged, in exam mode, spare batteries'},
+ {id:'pens',t:'Black pens ×2, pencil, ruler, eraser — in a clear pencil case'},
+ {id:'id',t:'ID and candidate number'},
+ {id:'phone',t:'No phone or smartwatch on you — leave them at home or hand them in'},
+ {id:'alarm',t:'Two alarms set: phone plus a second clock',night:true},
+ {id:'sleep',t:'Lights out by 10:30 pm — no revision after 9 pm',night:true}
+];
+function kitKey(f){ return f[0]+' '+f[1]; }
+function needsCalc(f){ return f[3]==='physics'||f[3]==='chem'||(f[3]==='math'&&!/P1/.test(f[2])); }
+function kitItems(f,mode){
+  const first=FINALS.find(x=>x[0]===f[0])===f;      // alarms + sleep belong to the day's first paper
+  const its=KIT.filter(k=>(k.id!=='calc'||needsCalc(f))&&(!k.night||(first&&mode!=='day')));
+  if(f[3]==='math'&&/P1/.test(f[2])) its.unshift({id:'nocalc',t:'Non-calculator paper — the GDC stays in your bag'});
+  its.push({id:'arrive',t:'Arrive by '+t12(f[1]==='AM'?'9:30':'13:30')+' (30 min early)'});
+  return its;
+}
+function kitRow(key,i,ck){ const c=!!ck[i.id];
+  return `<div class="list-row" style="padding:5px 2px;align-items:center"><input type="checkbox" ${c?'checked':''} onchange="tglKit('${key}','${i.id}')" style="width:18px;height:18px">
+    <span class="grow" data-kit="${key}|${i.id}" style="${c?'opacity:.5;text-decoration:line-through':''}">${esc(i.t)}</span></div>`; }
+function kitCount(key,its,ck,cls,style){ const n=its.filter(i=>ck[i.id]).length;
+  return `<span class="${cls}${n===its.length?' clearcount':''}" data-kitn="${key}" data-ids="${its.map(i=>i.id).join(',')}" style="${style||''}">${n===its.length?'all set ✓':n+'/'+its.length+' ready'}</span>`; }
+function kitCard(f,mode){
+  const key=kitKey(f), its=kitItems(f,mode), ck=state.examChk[key]||{};
+  return `<div class="card" style="padding:12px 14px;margin-bottom:14px;border-left:3px solid ${SCOL[f[3]]}">
+    <div class="todayhead"><span class="todaydate">${mode==='night'?'NIGHT BEFORE':'EXAM DAY'} · ${esc(examName(f).toUpperCase())} · ${mode==='night'?'TOMORROW':'TODAY'} ${t12(EXAM_AT[f[1]]).toUpperCase()}</span>
+    ${kitCount(key,its,ck,'todaycount')}</div>
+    ${its.map(i=>kitRow(key,i,ck)).join('')}</div>`;
+}
+function examKitHTML(){
+  const td=todayLabel(), nm=nowMin(), d=new Date(); d.setDate(d.getDate()+1); const tm=labelOf(d);
+  return FINALS.filter(f=>f[0]===td && nm<hm(EXAM_AT[f[1]])).map(f=>kitCard(f,'day')).join('')
+    +FINALS.filter(f=>f[0]===tm).map(f=>kitCard(f,'night')).join('');
+}
+function kitAllHTML(){
+  let h=`<h2>Exam-day kit <span class="marks">shows on the Plan the day before and on the day</span></h2><div class="card" style="padding:2px 6px 6px">`;
+  FINALS.forEach(f=>{ const key=kitKey(f), its=kitItems(f,'night'), ck=state.examChk[key]||{};
+    h+=`<details style="margin:0"><summary style="font-size:13px;padding:8px 8px;${daysUntil(f[0])<0?'opacity:.45':''}"><span class="sd" style="background:${SCOL[f[3]]};margin:0"></span>
+      <span style="width:74px">${f[0]}</span><span class="num" style="width:40px;color:var(--faint);font-weight:400">${t12(EXAM_AT[f[1]])}</span><span style="font-weight:500">${esc(examName(f))}</span>
+      ${kitCount(key,its,ck,'num','margin-left:auto;font-size:11.5px;font-weight:400;color:var(--faint)')}<span class="chev" style="margin-left:8px">›</span></summary>
+      <div style="padding:0 10px 6px">${its.map(i=>kitRow(key,i,ck)).join('')}</div></details>`; });
+  return h+`</div>`;
+}
+window.tglKit=(key,id)=>{
+  const o=state.examChk[key]=state.examChk[key]||{}; o[id]=!o[id];
+  document.querySelectorAll('[data-kit="'+key+'|'+id+'"]').forEach(x=>x.style.cssText=o[id]?'opacity:.5;text-decoration:line-through':'');
+  document.querySelectorAll('[data-kitn="'+key+'"]').forEach(x=>{ const ids=x.dataset.ids.split(','), n=ids.filter(i=>o[i]).length;
+    x.textContent=n===ids.length?'all set ✓':n+'/'+ids.length+' ready'; x.classList.toggle('clearcount',n===ids.length); });
+  save();
+};
+
+/* ================= raw mark -> grade ================= */
+const PAPER_KEYS={math:['P1','P2','P3'],physics:['P1','P2'],chem:['P1','P2'],history:['P1','P2','P3'],english:['P1','P2'],spanish:['P1','Reading','Listening']};
+const TARGET_GRADE={math:4,physics:4,chem:6};
+const SAFE_LO=5, SAFE_HI=8;   // marks above the line before a grade counts as safe
+function paperKeyOf(p){
+  if(p.pk!==undefined) return p.pk;
+  const n=String(p.n||''), ks=PAPER_KEYS[p.s]; if(!ks) return '';
+  if(p.s==='spanish'){ if(/listen/i.test(n)) return 'Listening'; if(/P1|writing/i.test(n)) return 'P1'; if(/reading|P2/i.test(n)) return 'Reading'; return ''; }
+  const m=n.match(/\bP([123])\b/); return m&&ks.indexOf('P'+m[1])>-1?'P'+m[1]:'';
+}
+function boundsOf(s,k){ const b=((state.bounds||{})[s]||{})[k]; return b&&+b.max>0&&(b.g||[]).some(x=>x!==''&&x!=null)?b:null; }
+function gradeInfo(p){
+  const k=paperKeyOf(p); if(!k||!(+p.tot>0)) return null;
+  const b=boundsOf(p.s,k); if(!b) return {k,none:true};
+  const scaled=+p.tot!==+b.max, raw=scaled?p.sc/p.tot*b.max:+p.sc;
+  let g=1; for(let i=2;i<=7;i++){ const v=b.g[i-2]; if(v!==''&&v!=null&&raw>=+v) g=i; }
+  const tgt=TARGET_GRADE[p.s]||Math.min(7,g+1), nd=b.g[tgt-2];
+  return {k,g,raw,scaled,max:+b.max,tgt,need:(nd===''||nd==null)?null:+nd};
+}
+function gradeText(p,gi){
+  if(!gi) return '<span class="faint">pick the paper type →</span>';
+  if(gi.none) return `<span class="faint">enter the ${SUBJ[p.s]} ${gi.k} boundaries below</span>`;
+  const up=x=>Math.ceil(x-1e-9), dn=x=>Math.floor(x+1e-9);
+  const tl=TARGET_GRADE[p.s]?'target '+gi.tgt:'next grade ('+gi.tgt+')';
+  let x=`<b>Grade ${gi.g}</b> · ${gi.scaled?'≈'+(Math.round(gi.raw*10)/10)+'/'+gi.max+' scaled':Math.round(gi.raw*10)/10+'/'+gi.max}`;
+  if(gi.need===null) return x+` · <span class="faint">enter the grade ${gi.tgt} boundary</span>`;
+  const gap=gi.need-gi.raw;
+  if(gap>0) return x+` · <span style="color:var(--red);font-weight:600">${up(gap)} marks short of ${tl}</span> · ${up(gap+SAFE_LO)}–${up(gap+SAFE_HI)} short with the ${SAFE_LO}–${SAFE_HI} mark safety margin`;
+  if(-gap<SAFE_LO) return x+` · <span style="color:var(--spanish);font-weight:600">at ${tl}, only ${dn(-gap)} above the line</span> — ${up(SAFE_LO+gap)}–${up(SAFE_HI+gap)} more to be safe`;
+  return x+` · <span style="color:var(--chem);font-weight:600">safe ${tl}: ${dn(-gap)} above the line</span>`;
+}
+function gchip(p){ const gi=gradeInfo(p); return gi&&!gi.none?`<span class="scorechip" title="Grade from your ${SUBJ[p.s]} ${gi.k} boundaries">G${gi.g}</span>`:''; }
+function gradeListHTML(){
+  const ps=state.papers.map((p,i)=>({p,i})).filter(x=>+x.p.tot>0&&PAPER_KEYS[x.p.s]).sort((a,b)=>(a.p.d||'')<(b.p.d||'')?1:-1);
+  if(!ps.length) return '<div class="list-row faint">No scored papers yet — tick a paper or marking task and enter the score.</div>';
+  return ps.map(({p,i})=>{ const gi=gradeInfo(p), k=paperKeyOf(p);
+    return `<div class="list-row" style="align-items:flex-start"><span class="sd" style="background:${SCOL[p.s]};margin-top:6px"></span>
+      <span class="grow">${esc(p.n)} <span class="scorechip">${p.sc}/${p.tot}</span><br>${gradeText(p,gi)}</span>
+      <select class="tagsel" title="Which paper’s boundaries to use" onchange="setPk(${i},this.value)"><option value="">type?</option>${PAPER_KEYS[p.s].map(x=>`<option ${k===x?'selected':''}>${x}</option>`).join('')}</select></div>`; }).join('');
+}
+function gradesHTML(){
+  let h=`<h2>Raw mark → grade <span class="marks">Maths 4 · Physics 4 · Chem 6 · others next grade up</span></h2>
+  <p class="note">Enter the November boundaries below — the lowest raw mark for each grade. Every scored paper then shows its grade and how far it is from target, with a ${SAFE_LO}–${SAFE_HI} mark safety margin because boundaries move between sessions. Half papers are scaled up to the full paper.</p>
+  <div class="card" style="padding:4px 2px" id="gradelist">${gradeListHTML()}</div><h2>November boundaries</h2>`;
+  Object.keys(PAPER_KEYS).forEach(s=>{
+    const set=PAPER_KEYS[s].filter(k=>boundsOf(s,k)).length;
+    h+=`<details class="card" style="padding:2px 6px 6px;margin-bottom:8px" ${state.bdOpen===s?'open':''} ontoggle="if(this.open)state.bdOpen='${s}';else if(state.bdOpen==='${s}')state.bdOpen=null"><summary><span class="sd" style="background:${SCOL[s]};margin:0"></span>${SUBJ[s]}
+      <span style="margin-left:auto;font-size:11.5px;font-weight:400;color:var(--faint)">${set}/${PAPER_KEYS[s].length} set · target ${TARGET_GRADE[s]||'next grade up'}</span><span class="chev" style="margin-left:8px">›</span></summary>
+      <div style="padding:4px 8px 8px"><div class="bgrid"><span class="hd" style="text-align:left">Paper</span><span class="hd">Max</span>${[2,3,4,5,6,7].map(g=>`<span class="hd" ${TARGET_GRADE[s]===g?'style="color:var(--ink)"':''}>${g}</span>`).join('')}`;
+    PAPER_KEYS[s].forEach(k=>{ const b=((state.bounds[s]||{})[k])||{max:'',g:[]};
+      h+=`<b>${k}</b><input type="number" min="1" value="${b.max===''||b.max==null?'':b.max}" data-s="${s}" data-k="${k}" data-i="max" onchange="setBound(this)" aria-label="${SUBJ[s]} ${k} max marks">`
+        +[0,1,2,3,4,5].map(i=>`<input type="number" min="0" value="${b.g[i]===''||b.g[i]==null?'':b.g[i]}" data-s="${s}" data-k="${k}" data-i="${i}" onchange="setBound(this)" aria-label="${SUBJ[s]} ${k} grade ${i+2}">`).join('');
+    });
+    h+=`</div><div class="note" style="margin:8px 0 0">Max = marks the paper is out of. Leave a grade blank if you don’t know it.</div></div></details>`;
+  });
+  return h;
+}
+window.setBound=el=>{
+  const s=el.dataset.s, k=el.dataset.k, i=el.dataset.i;
+  state.bounds[s]=state.bounds[s]||{};
+  const b=state.bounds[s][k]=state.bounds[s][k]||{max:'',g:['','','','','','']};
+  const v=el.value.trim()===''?'':Math.max(0,+el.value);
+  if(i==='max') b.max=v; else b.g[+i]=v;
+  const nums=b.g.filter(x=>x!=='').map(Number);
+  if(nums.some((x,j)=>j&&x<nums[j-1])) toast('Check '+SUBJ[s]+' '+k+': boundaries should rise with the grade');
+  else if(b.max!==''&&nums.some(x=>x>+b.max)) toast('A '+SUBJ[s]+' '+k+' boundary is above the paper’s max');
+  const gl=document.getElementById('gradelist'); if(gl) gl.innerHTML=gradeListHTML();   // no full repaint: keeps your place in the grid
+  save();
+};
+window.setPk=(i,v)=>{ const p=state.papers[i]; if(!p) return; p.pk=v; const gl=document.getElementById('gradelist'); if(gl) gl.innerHTML=gradeListHTML(); save(); };
+
+/* ================= capacity check ================= */
+const CAP_DEF={day:300,light:120,lv:150,exam:120};
+const CAP_L=[['day','Normal day'],['light','Sunday'],['lv','Leavers’ week'],['exam','Exam day']];
+function dayCap(label){
+  const c=state.cap||CAP_DEF, d=dateOf(label); if(!d) return 0;
+  if(REST_DAYS.indexOf(label)>-1) return 0;
+  if(EXAM_DATES.has(label)) return +c.exam||0;
+  if(d.getDay()===0) return +c.light||0;
+  if(d>=new Date(2026,9,12)&&d<=new Date(2026,9,16)) return +c.lv||0;
+  return +c.day||0;
+}
+function doneTodayMin(){ const td=localISO(); let m=0;
+  state.tasks.forEach(t=>{ if(t.done&&t.doneAt===td) m+=actualM(t); });
+  state.sessions.forEach(x=>{ if(x.d===td) m+=+x.m||0; }); return m; }
+function dayAvail(label){ const c=dayCap(label); return label===todayLabel()?Math.max(0,c-doneTodayMin()):c; }
+// how long your ticked tasks really took vs their plan (needs 3+ logged tasks; clamped to 0.8–1.6)
+function paceRatio(){ let a=0,p=0,n=0; state.tasks.forEach(t=>{ if(t.done&&t.am!=null&&t.am!==''&&t.rec!=='exam'){ a+=+t.am; p+=t.m; n++; } });
+  return n>=3&&p?Math.max(.8,Math.min(1.6,a/p)):1; }
+function taskBefore(t,f){
+  const d=dateOf(t.day), E=dateOf(f[0]); if(!d||!E) return false;
+  if(d<E) return true; if(d>E||f[1]!=='PM') return false;
+  const tm=taskTime(t); if(tm) return hm(tm)<hm(EXAM_AT.PM);
+  return /^(★\s*)?(Morning|Between papers)/i.test(t.t);
+}
+function availBefore(f){
+  const E=dateOf(f[0]), d=new Date(); d.setHours(0,0,0,0); let tot=0;
+  for(;d<E;d.setDate(d.getDate()+1)) tot+=dayAvail(labelOf(d));
+  if(f[1]==='PM') tot+=Math.min(60,dayAvail(f[0]));    // the morning before an afternoon paper
+  return tot;
+}
+const CUT_NEVER=/euler|relativity|listening|\bbox\b/i;
+const CUT_WHY=['','History extra plan','Chem top-up','English P2 plan','Physics recall cards','non-★ extra'];
+// the plan's own cut order; -1 = never suggest (★, papers, marking, redos, listening, Euler, relativity, box drill)
+function cutRank(t){
+  if(/^★/.test(t.t) || CUT_NEVER.test(t.t)) return -1;
+  if(['paper','mark','exam','listen','box','redo','setup','review'].indexOf(t.rec)>-1) return -1;
+  if(t.s==='history'&&(t.rec==='essay'||t.rec==='hist')) return 1;
+  if(t.s==='chem'&&['chemfix','recall','mcq'].indexOf(t.rec)>-1) return 2;
+  if(t.s==='english'&&t.rec==='essay') return 3;
+  if(t.s==='physics'&&t.rec==='recall') return 4;
+  return 5;
+}
+function cutCandidates(ts,f){ return ts.filter(t=>cutRank(t)>0).sort((a,b)=>cutRank(a)-cutRank(b)||(a.s===f[3])-(b.s===f[3])||b.m-a.m); }
+const CAP_ST={g:['var(--chem)','GREEN'],a:['var(--spanish)','AMBER'],r:['var(--red)','RED']};
+function capacityRows(){
+  const ratio=paceRatio(), act=state.tasks.filter(t=>isActive(t)&&t.rec!=='exam'), cut=new Set(), rows=[];
+  FINALS.forEach(f=>{
+    const D=daysUntil(f[0]); if(D<0 || (D===0 && nowMin()>=hm(EXAM_AT[f[1]]))) return;
+    const before=act.filter(t=>taskBefore(t,f));
+    const need=before.reduce((a,t)=>a+t.m,0)*ratio, have=availBefore(f);
+    const r=have>0?need/have:(need>0?Infinity:0), st=r<=.85?'g':r<=1?'a':'r';
+    const cuts=[]; let over=0;
+    if(st!=='g'){
+      over=need-(st==='r'?have:.85*have);
+      before.forEach(t=>{ if(cut.has(t.id)) over-=t.m*ratio; });    // cuts already suggested for an earlier paper count here too
+      cutCandidates(before,f).forEach(t=>{ if(over<=0||cut.has(t.id)) return; cuts.push(t); cut.add(t.id); over-=t.m*ratio; });
+    }
+    rows.push({f,need,have,r,st,cuts,short:Math.max(0,over)});
+  });
+  return {rows,ratio};
+}
+function capacityHTML(){
+  const {rows,ratio}=capacityRows(), c=state.cap;
+  let h=`<h2>Capacity check <span class="marks">work left vs time you really have</span></h2>
+  <p class="note">Planned = every unfinished task before the paper, overdue included${ratio!==1?` — × <b>${ratio.toFixed(2)}</b>, because that’s how long your ticked tasks really took against plan`:''}. Free = the minutes below for each day from today (rest days 0), minus what you’ve already logged today. Green ≤ 85% full · amber 85–100% · red = more work than time.</p>
+  <div class="editrow" style="margin-bottom:10px">${CAP_L.map(([k,l])=>`<label style="font-size:12px;display:flex;align-items:center;gap:5px">${l} <input type="number" min="0" max="720" step="15" value="${c[k]}" data-cap="${k}" onchange="setCap(this)"> min</label>`).join('')}</div>`;
+  if(!rows.length) return h+`<div class="card" style="padding:12px 16px"><div class="note" style="margin:0">All exams are done.</div></div>`;
+  h+=`<div class="card" style="padding:4px 2px">`;
+  rows.forEach(x=>{ const [col,lab]=CAP_ST[x.st];
+    h+=`<div class="list-row" style="align-items:center"><span class="sd" style="background:${SCOL[x.f[3]]}"></span>
+      <span style="width:74px;font-weight:600;flex-shrink:0">${x.f[0]}</span><span class="num" style="width:40px;color:var(--faint);flex-shrink:0">${t12(EXAM_AT[x.f[1]])}</span>
+      <span class="grow">${esc(examName(x.f))}<br><span class="faint">${(x.need/60).toFixed(1)} h planned · ${(x.have/60).toFixed(1)} h free${isFinite(x.r)?' · '+Math.round(x.r*100)+'% full':''}</span></span>
+      <span class="stbadge" style="background:${col}">${lab}</span></div>`;
+    if(x.cuts.length||x.short>0){
+      h+=`<details ${x.st==='r'?'open':''} style="margin:0 10px 8px 28px"><summary style="font-size:12px;padding:4px 2px;font-weight:600">${x.cuts.length?(x.st==='r'?'Cut ':'Trim ')+x.cuts.length+' task'+(x.cuts.length>1?'s':'')+' · '+(x.cuts.reduce((a,t)=>a+t.m,0)/60).toFixed(1)+' h':'Nothing safe to cut'}<span class="chev">›</span></summary>
+       ${x.cuts.length?`<div class="note" style="margin:2px 0 4px">Non-★ only, in the plan’s cut order: History extra plans → Chem top-ups → English P2 plans → Physics recall cards → other extras.</div>`:''}
+       ${x.cuts.map(t=>`<div class="list-row" style="padding:4px 2px;align-items:center"><span class="sd" style="background:${SCOL[t.s]}"></span><span class="num" style="width:70px;color:var(--faint);flex-shrink:0">${t.day}</span><span class="grow">${esc(t12(headOf(t)))} <span class="faint">· ${CUT_WHY[cutRank(t)]}</span></span><span class="num faint">${t.m} min</span><button class="b ghost sm" onclick="skipTask('${t.id}')">Skip</button></div>`).join('')}
+       ${x.short>0?`<div class="note" style="margin:6px 0 0;color:${x.st==='r'?'var(--red)':'var(--sub)'}">${x.st==='r'?'Still ~'+(x.short/60).toFixed(1)+' h more work than time':'Still above 85% full'}${x.cuts.length?' after these':''} — nothing else is safe to cut. Add minutes above, or ask the Coach to replan the ★ blocks.</div>`:''}</details>`;
+    }
+  });
+  return h+`</div>`;
+}
+function capBannerHTML(){
+  const x=capacityRows().rows.find(r=>r.st==='r'); if(!x) return '';
+  return `<div class="card" style="padding:12px 14px;margin-bottom:14px;border-left:3px solid var(--red)">
+    <div class="todayhead"><span class="todaydate" style="color:var(--red)">OVER-PLANNED · ${esc(examName(x.f).toUpperCase())}</span><button class="b ghost sm" onclick="go('exams')">See what to cut</button></div>
+    <div class="note" style="margin:0">${(x.need/60).toFixed(1)} h of work left before ${x.f[0]}, ${t12(EXAM_AT[x.f[1]])} — but only ${(x.have/60).toFixed(1)} h free.</div></div>`;
+}
+window.setCap=el=>{ state.cap[el.dataset.cap]=Math.max(0,Math.min(720,+el.value||0)); paint(); save(); };
+
+function vExams(){
+  return `<p class="note">The papers themselves: whether the plan still fits before each one, what your raw marks mean as grades, and the kit for the day.</p>`
+    +capacityHTML()+gradesHTML()+kitAllHTML()+finalsHTML();
+}
+
+/* ================= what next (topics) ================= */
+function lastRev(t){ return t.rv||t.dt||null; }
+// red counts double; the longer untouched (capped at 30 days, never = 30) and the nearer that subject's exam, the higher
+function whatNext(n){
+  const td=new Date(); td.setHours(0,0,0,0);
+  return state.topics.filter(t=>t.rag===1||t.rag===2).map(t=>{
+    const ex=nextExam(t.s,0); if(!ex) return null;
+    const D=daysUntil(ex[0]), lr=lastRev(t), stale=lr?Math.max(0,Math.round((td-dateFromISO(lr))/86400000)):null;
+    return {t,ex,stale,score:(t.rag===1?2:1)*((stale===null?30:Math.min(stale,30))+3)/(D+2)};
+  }).filter(Boolean).sort((a,b)=>b.score-a.score).slice(0,n);
+}
+function whatNextHTML(){
+  const q=whatNext(8);
+  if(!q.length) return `<div class="card" style="padding:12px 16px;margin-bottom:12px"><b>What next</b><div class="note" style="margin:4px 0 0">Rate topics red or amber below. The ones you’ve left longest — weighted by how close that subject’s exam is — queue up here.</div></div>`;
+  return `<div class="card" style="padding:12px 14px;margin-bottom:12px"><div class="todayhead"><span class="todaydate">WHAT NEXT · RED/AMBER · LONGEST UNTOUCHED · NEAREST EXAM</span></div>
+    ${q.map(x=>`<div class="list-row" style="padding:6px 2px;align-items:center"><span style="width:24px;height:18px;border-radius:999px;display:grid;place-content:center;font-size:10px;font-weight:700;color:#fff;background:${RAG[x.t.rag].c};flex-shrink:0">${RAG[x.t.rag].l}</span>
+      <span class="grow">${esc(x.t.t)}<br><span class="faint">${SUBJ[x.t.s]} · ${x.stale===null?'never reviewed':x.stale===0?'reviewed today':'untouched '+x.stale+' day'+(x.stale>1?'s':'')} · ${esc(examName(x.ex))} ${inDays(x.ex[0])}</span></span>
+      <button class="b ghost sm" onclick="reviewTopic('${x.t.id}')">✓ Reviewed</button></div>`).join('')}
+    <div class="note" style="margin:6px 0 0">✓ stamps today as the last review and keeps the rating. Changing a rating counts as a review too.</div></div>`;
+}
+window.reviewTopic=id=>{ const t=state.topics.find(x=>x.id===id); if(!t) return; t.rv=localISO(); paint(); save(); toast('Reviewed today — '+t.t); };
+
+/* ================= rule-recall cards (Leitner) ================= */
+const SEED_CARDS=[
+ {id:'rc-u1',s:'physics',g:'Uncertainty rules',q:'A length is the difference of two ruler readings (end − start). What is its uncertainty?',a:'Both readings carry an uncertainty, so add them: double the single-reading uncertainty.'},
+ {id:'rc-u2',s:'physics',g:'Uncertainty rules',q:'Adding or subtracting quantities: how do the uncertainties combine?',a:'Add the ABSOLUTE uncertainties.'},
+ {id:'rc-u3',s:'physics',g:'Uncertainty rules',q:'Multiplying or dividing quantities: how do the uncertainties combine?',a:'Add the PERCENTAGE (fractional) uncertainties.'},
+ {id:'rc-u4',s:'physics',g:'Uncertainty rules',q:'A quantity raised to a power, e.g. x³ or √x: what happens to the uncertainty?',a:'Multiply the % uncertainty by the power: x³ → 3 × the %, √x → ½ × the %.'},
+ {id:'rc-u5',s:'physics',g:'Uncertainty rules',q:'How do you write an absolute uncertainty, and the value that goes with it?',a:'Uncertainty to 1 significant figure. Round the value to the same decimal place as the uncertainty. Units on both.'},
+ {id:'rc-u6',s:'physics',g:'Uncertainty rules',q:'How do you improve PRECISION? (And what is accuracy about instead?)',a:'Repeat and average, or measure many and divide (e.g. time 10 oscillations). Precision = random error; accuracy = systematic error (zero errors, calibration).'},
+ {id:'rc-u7',s:'physics',g:'Uncertainty rules',q:'Uncertainty in a gradient from a graph with error bars?',a:'Draw the steepest and shallowest lines that still pass through all the error bars. Uncertainty = (max gradient − min gradient) ÷ 2.'},
+ {id:'rc-e1',s:'math',g:'Euler form',q:'Steps: write z = a + bi in Euler form.',a:'1) r = √(a² + b²).\n2) θ from tan θ = b/a — sketch the Argand diagram and fix the quadrant.\n3) z = r e^{iθ}.'},
+ {id:'rc-e2',s:'math',g:'Euler form',q:'What does e^{iθ} mean, and what does multiplying by it do?',a:'e^{iθ} = cos θ + i sin θ: a point on the unit circle at angle θ (a clock face). Multiplying by it rotates by θ.'},
+ {id:'rc-e3',s:'math',g:'Euler form',q:'Multiplying, dividing and powers in Euler form?',a:'Multiply → multiply moduli, ADD arguments. Divide → divide moduli, SUBTRACT arguments. (r e^{iθ})ⁿ = rⁿ e^{inθ} (De Moivre).'},
+ {id:'rc-e4',s:'math',g:'Euler form',q:'A real base with a complex power, e.g. 4^{i+1}: first move?',a:'Write 4 = e^{ln 4}. Then 4^{i+1} = e^{(i+1) ln 4} = 4 e^{i ln 4} = 4(cos(ln 4) + i sin(ln 4)).'},
+ {id:'rc-e5',s:'math',g:'Euler form',q:'Sums of cosines / “find Re(…)” questions: method?',a:'Write cos nθ as Re(e^{inθ}), do the algebra with exponentials (often a geometric series), expand into cos + i sin, and keep the real parts at the end.'},
+ {id:'rc-e6',s:'math',g:'Euler form',q:'Steps for the n-th roots of w = r e^{iθ}?',a:'Write w = r e^{i(θ + 2πk)}. Roots: r^{1/n} e^{i(θ + 2πk)/n} for k = 0 … n−1 — equally spaced round a circle.'},
+ {id:'rc-r1',s:'physics',g:'Relativity: five moves',q:'Name the relativity five moves.',a:'1) Find the proper length.\n2) Galilean addition (low speeds only).\n3) γ and length contraction.\n4) Lorentz velocity addition.\n5) Find the proper-time frame.'},
+ {id:'rc-r2',s:'physics',g:'Relativity: five moves',q:'Move 1 — what is the proper length?',a:'The length measured in the frame where the object is at rest. It is the longest; every other frame measures L = L₀ / γ.'},
+ {id:'rc-r3',s:'physics',g:'Relativity: five moves',q:'Move 2 — Galilean addition, and when it fails?',a:'u′ = u − v. Fine at everyday speeds; near c it can give more than c, so switch to Lorentz.'},
+ {id:'rc-r4',s:'physics',g:'Relativity: five moves',q:'Move 3 — γ, and which lengths contract?',a:'γ = 1 / √(1 − v²/c²), always ≥ 1. Only lengths along the direction of motion contract; perpendicular ones don’t.'},
+ {id:'rc-r5',s:'physics',g:'Relativity: five moves',q:'Move 4 — Lorentz velocity addition?',a:'u′ = (u − v) / (1 − uv/c²). It never gives a speed above c.'},
+ {id:'rc-r6',s:'physics',g:'Relativity: five moves',q:'Move 5 — what is proper time, and who measures it?',a:'Time between two events that happen at the same place in that frame — the traveller’s own wristwatch. It is the shortest; others measure Δt = γ Δt₀.'},
+ {id:'rc-c1',s:'chem',g:'Answer-box habits',q:'Where does every written answer go?',a:'Inside the answer box. Anything outside the box may not be marked.'},
+ {id:'rc-c2',s:'chem',g:'Answer-box habits',q:'How long should a short written answer be?',a:'8 keywords or fewer, in mark-scheme wording. One mark = one point.'},
+ {id:'rc-c3',s:'chem',g:'Answer-box habits',q:'Before you write an explanation, check…',a:'The command term and the marks: “state” = no reason, “explain” = give the reason; 2 marks = 2 distinct points.'},
+ {id:'rc-c4',s:'chem',g:'Answer-box habits',q:'Calculation answers in the box must show…',a:'The working, the final answer with units, and sensible significant figures — all inside the box.'},
+ {id:'rc-c5',s:'chem',g:'Answer-box habits',q:'Running out of room in the box?',a:'Cut words; don’t spill over. If you truly must continue, use an extra sheet and write “continued on extra sheet” inside the box.'},
+ {id:'rc-h1',s:'history',g:'Paragraph & essay structure',q:'The paragraph template?',a:'Claim → evidence (2–3 specific facts) → counter-view → mini-judgement linked back to the question.'},
+ {id:'rc-h2',s:'history',g:'Paragraph & essay structure',q:'What goes in the introduction?',a:'Your judgement (the answer to the question) and the criteria you’ll judge by.'},
+ {id:'rc-h3',s:'history',g:'Paragraph & essay structure',q:'Compare / contrast questions: how do you structure them?',a:'Theme by theme, across both cases in each paragraph — never one case, then the other.'},
+ {id:'rc-h4',s:'history',g:'Paragraph & essay structure',q:'Warning sign that a paragraph is narrating, not arguing?',a:'It opens with a date or “then”. Open with a claim that answers the question instead.'},
+ {id:'rc-h5',s:'history',g:'Paragraph & essay structure',q:'The 15-minute essay plan?',a:'Intro: judgement + criteria. Then 3 claims, each with 2–3 pieces of evidence and a counter-argument. Conclusion that weighs.'},
+ {id:'rc-h6',s:'history',g:'Paragraph & essay structure',q:'What does the conclusion do?',a:'Weighs the claims — which mattered most and why — and matches the judgement in your intro. No new evidence.'}
+];
+const LEITNER=[0,1,2,4,7,14];                    // days until the next review, by box 1–5
+const BOX_L=['','daily','every 2 days','every 4 days','weekly','fortnightly'];
+const GRADE_L=['','Again','Hard','Good','Easy'];
+let cs=null;
+function cardsDue(sub){ const td=localISO(); return (state.cards||[]).filter(c=>c.due<=td&&c.seen!==td&&(!sub||c.s===sub)); }
+window.cardSub=s=>{ state.cardSub=s||''; paint(); save(); };
+window.startCards=all=>{
+  const sub=state.cardSub||'';
+  const pool=(all?state.cards.filter(c=>!sub||c.s===sub):cardsDue(sub)).slice().sort((a,b)=>a.box-b.box||(a.due<b.due?-1:1));
+  if(!pool.length){ toast('No cards due'+(sub?' for '+SUBJ[sub]:'')); return; }
+  cs={ids:pool.map(c=>c.id),i:0,shown:false,try:'',n:[0,0,0,0,0],again:{}};
+  paint(); window.scrollTo({top:0,behavior:'smooth'});
+};
+window.csShow=()=>{ if(!cs||cs.i>=cs.ids.length) return; const ta=document.getElementById('cs-try'); if(ta) cs.try=ta.value.trim(); cs.shown=true; paint(); };
+window.csGrade=k=>{
+  if(!cs||!cs.shown) return;
+  const c=state.cards.find(x=>x.id===cs.ids[cs.i]);
+  if(c){
+    if(k===1) c.box=1; else if(k===3) c.box=Math.min(5,c.box+1); else if(k===4) c.box=Math.min(5,c.box+2);
+    let gap=k===2?1:LEITNER[c.box]; const cap=examCapDays(c.s); if(cap!==null) gap=Math.min(gap,cap);
+    c.due=addDaysISO(gap); c.seen=localISO(); c.reps=(c.reps||0)+1;
+    if(k===1 && (cs.again[c.id]||0)<2){ cs.again[c.id]=(cs.again[c.id]||0)+1; cs.ids.push(c.id); }   // missed → once more at the end
+    cs.n[k]++;
+  }
+  cs.i++; cs.shown=false; cs.try=''; paint(); save();
+};
+window.endCards=()=>{ cs=null; paint(); };
+function cardSessionHTML(){
+  if(!cs) return '';
+  if(cs.i>=cs.ids.length) return `<div class="card fcard"><div class="fg">SESSION DONE · ${cs.i} CARDS</div>
+    <div class="fq">${[1,2,3,4].map(k=>GRADE_L[k]+' '+cs.n[k]).join(' · ')}</div>
+    <div class="note" style="margin:4px 0 12px">Misses are back in box 1 for tomorrow; the rest moved up.</div><button class="b" onclick="endCards()">Close</button></div>`;
+  const c=state.cards.find(x=>x.id===cs.ids[cs.i]); if(!c){ cs.i++; return cardSessionHTML(); }
+  return `<div class="card fcard" style="border-left:3px solid ${SCOL[c.s]}"><div class="fg">${SUBJ[c.s]} · ${esc(c.g||'')} · box ${c.box} · ${cs.i+1} / ${cs.ids.length}</div>
+    <div class="fq">${esc(c.q)}</div>
+    ${cs.shown?`${cs.try?`<div class="ftry"><b>Your try:</b> ${esc(cs.try)}</div>`:''}<div class="fa">${esc(c.a)}</div>
+      <div class="grades">${[1,2,3,4].map(k=>`<button onclick="csGrade(${k})" style="${k===1?'color:var(--red)':k===4?'color:var(--chem)':''}">${GRADE_L[k]}<kbd>${k}</kbd></button>`).join('')}</div>`
+    :`<textarea id="cs-try" rows="2" placeholder="Type your try (optional) — Enter to reveal" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();csShow()}"></textarea>
+      <div style="margin-top:12px;display:flex;gap:8px;justify-content:center"><button class="b" onclick="csShow()">Show answer <span style="opacity:.7;font-weight:500">· Space</span></button><button class="b ghost" onclick="endCards()">End</button></div>`}</div>`;
+}
+function vCards(){
+  const sub=state.cardSub||'', all=state.cards.filter(c=>!sub||c.s===sub), due=cardsDue(sub);
+  let h=cardSessionHTML()+`<p class="note">Small rule cards in Leitner boxes. Answer out loud or type it, reveal, then grade yourself honestly — keys <b>1–4</b>: 1 again (back to box 1) · 2 hard (same box, tomorrow) · 3 good (up a box) · 4 easy (up two). <b>Space</b> shows the answer. Nothing is scheduled after that subject’s next exam.</p>`;
+  const subs=[...new Set(state.cards.map(c=>c.s))];
+  h+=`<div class="chips"><button class="chip ${sub?'':'on'}" onclick="cardSub('')">All<span class="n">${cardsDue('').length} due</span></button>${subs.map(s=>`<button class="chip ${sub===s?'on':''}" onclick="cardSub('${s}')">${SUBJ[s]}<span class="n">${cardsDue(s).length}</span></button>`).join('')}</div>
+    <div class="boxes">${[1,2,3,4,5].map(b=>{ const n=all.filter(c=>c.box===b).length, d=due.filter(c=>c.box===b).length;
+      return `<div class="bx card"><span>Box ${b}</span><b>${n}</b><span>${BOX_L[b]}${d?' · <span style="color:var(--red)">'+d+' due</span>':''}</span></div>`; }).join('')}</div>`;
+  if(!cs) h+=`<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:4px"><button class="b" onclick="startCards(false)" ${due.length?'':'disabled'}>Review due · ${due.length}</button><button class="b ghost" onclick="startCards(true)" ${all.length?'':'disabled'}>Practise all · ${all.length}</button></div>`;
+  h+=`<h2>Add your own card</h2><div class="frm">
+    <select id="cd-s">${Object.keys(SUBJ).filter(s=>s!=='buffer').map(s=>`<option value="${s}" ${(state.cdS||sub)===s?'selected':''}>${SUBJ[s]}</option>`).join('')}</select>
+    <input type="text" id="cd-g" placeholder="Topic (e.g. Kinetics)" value="${esc(state.cdG||'')}">
+    <textarea class="full" id="cd-q" rows="2" style="width:100%" placeholder="Front — the question or cue"></textarea>
+    <textarea class="full" id="cd-a" rows="2" style="width:100%" placeholder="Back — the rule, in a line or two"></textarea>
+    <button class="b full" onclick="addCard()">Add card</button></div>`;
+  const groups={}; all.forEach(c=>{ (groups[c.g||'Other']=groups[c.g||'Other']||[]).push(c); });
+  h+=`<details class="card" style="padding:2px 6px 6px;margin-top:14px"><summary>All cards <span class="marks" style="margin-left:6px;font-weight:400;color:var(--faint)">${all.length}</span><span class="chev">›</span></summary><div style="padding:0 6px 6px">`;
+  Object.keys(groups).forEach(g=>{ h+=`<div class="day-h" style="margin:11px 2px 3px">${esc(g)}</div>`;
+    groups[g].forEach(c=>{ h+=`<div class="list-row" style="align-items:flex-start"><span class="sd" style="background:${SCOL[c.s]};margin-top:6px"></span>
+      <span class="grow"><b>${esc(c.q)}</b><br><span class="faint" style="white-space:pre-wrap">${esc(c.a)}</span><br><span class="faint">Box ${c.box} · next ${c.due<=localISO()?'<b style="color:var(--red)">due</b>':isoToLabel(c.due)}${c.seed?'':' · yours'}</span></span>
+      <button class="del delx" title="Delete card" onclick="delCard('${c.id}')">×</button></div>`; }); });
+  return h+`</div></details>`;
+}
+window.addCard=()=>{
+  const g=id=>document.getElementById(id), q=g('cd-q').value.trim(), a=g('cd-a').value.trim();
+  if(!q||!a){ toast('Write both sides of the card'); return; }
+  state.cdS=g('cd-s').value; state.cdG=g('cd-g').value.trim();
+  state.cards.push({id:'rc'+Date.now().toString(36),s:state.cdS,g:state.cdG||'My cards',q,a,box:1,due:localISO(),reps:0});
+  paint(); save(); toast('Card added to box 1');
+  setTimeout(()=>{ const f=document.getElementById('cd-q'); if(f) f.focus(); },50);
+};
+let cUndo=null;
+window.delCard=id=>{
+  const i=state.cards.findIndex(c=>c.id===id); if(i<0) return; const c=state.cards[i];
+  state.cards.splice(i,1); if(c.seed){ state.cardsDel=state.cardsDel||[]; state.cardsDel.push(id); }
+  cUndo={c,i}; paint(); save();
+  toast('Card deleted','Undo',()=>{ if(!cUndo) return; state.cards.splice(cUndo.i,0,cUndo.c); state.cardsDel=(state.cardsDel||[]).filter(x=>x!==cUndo.c.id); cUndo=null; paint(); save(); });
+};
+document.addEventListener('keydown',e=>{
+  if(!state||state.tab!=='cards'||!cs||cs.i>=cs.ids.length||e.metaKey||e.ctrlKey||e.altKey) return;
+  const tg=e.target&&e.target.tagName;
+  if(tg==='INPUT'||tg==='TEXTAREA'||tg==='SELECT') return;
+  if(!cs.shown && (e.key===' '||e.key==='Enter')){ if(tg==='BUTTON') return; e.preventDefault(); csShow(); }
+  else if(cs.shown && /^[1-4]$/.test(e.key)){ e.preventDefault(); csGrade(+e.key); }
+});
+
 /* ================= shell ================= */
 function paintTabs(){
   const bar=document.getElementById('tabbar');
@@ -2939,7 +3532,8 @@ function paint(tabSwitch){
   paintTabs();
   const v=document.getElementById('view');
   if(tabSwitch){v.classList.remove('swap'); void v.offsetWidth; v.classList.add('swap');}
-  v.innerHTML={plan:vPlan,mistakes:vMistakes,recipes:vRecipes,school:vSchool,cover:vCover,topics:vTopics,log:vLog,stats:vStats,coach:vCoach}[state.tab]();
+  capAllDues();
+  v.innerHTML={plan:vPlan,mistakes:vMistakes,cards:vCards,exams:vExams,recipes:vRecipes,school:vSchool,cover:vCover,topics:vTopics,log:vLog,stats:vStats,coach:vCoach}[state.tab]();
 }
 window.go=id=>{state.tab=id;paint(true);save();};
 
