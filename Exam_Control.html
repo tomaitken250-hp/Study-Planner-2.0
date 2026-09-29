@@ -1501,6 +1501,14 @@ body.bunker #tmbtn.over{background:linear-gradient(180deg,#E0563F,var(--valve));
 body.bunker .footer{background:transparent;border:none;box-shadow:none}
 @media (prefers-reduced-motion:reduce){body.bunker::before,body.bunker .nav.on::before{animation:none}body.bunker .card,body.bunker .stat,body.bunker .tile,body.bunker .ncard,body.bunker .rcard{animation:none}}
 
+/* sweep fixes */
+body:not(.bunker) #view > .card{margin-bottom:12px}
+body[data-theme=dark] .nav.on .pillbg,body[data-theme=midnight] .nav.on .pillbg{background:var(--surface-2);box-shadow:inset 0 0 0 1px var(--edge-2)}
+.seg{max-width:100%;overflow-x:auto;scrollbar-width:none}
+.seg::-webkit-scrollbar{display:none}
+.seg button{white-space:nowrap;flex-shrink:0}
+@media (max-width:700px){.ptools{flex-direction:column;align-items:stretch}.wkpills{flex:none;width:100%}.pbtns{justify-content:flex-start}}
+
 </style>
 </head>
 <body>
@@ -1555,7 +1563,7 @@ body.bunker .footer{background:transparent;border:none;box-shadow:none}
   <div id="view"></div>
   <div class="footer card">
     Log the real minutes, not the planned ones. The plan follows what actually happened.
-    Ticks save in this browser. The Coach only works when this page is open inside Claude.
+    Ticks save in this browser. John Claude only works when this page is open inside Claude.
     <div style="margin-top:10px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
       <span id="planv" style="font-size:11.5px"></span><span id="lastbk" style="font-size:11.5px"></span>
       <button class="b ghost sm" onclick="forceReseed()">Reload latest plan</button>
@@ -3132,7 +3140,7 @@ function vStats(){
     const pts=ps.map((p,i)=>[X(i).toFixed(1),Y(p.sc/p.tot*100).toFixed(1)]);
     h+=`<svg viewBox="0 0 ${W} ${H}" class="spark" preserveAspectRatio="none"><line x1="0" x2="${W}" y1="${Y(gl[0])}" y2="${Y(gl[0])}" class="gl"/>
       ${n>1?`<polyline points="${pts.map(p=>p.join(',')).join(' ')}" style="stroke:${SCOL[s]}" class="ln"/>`:''}
-      ${pts.map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="3.5" style="fill:${SCOL[s]}"/>`).join('')}</svg>
+      ${pts.map(p=>`<line x1="${p[0]}" y1="${p[1]}" x2="${p[0]}" y2="${p[1]}" style="stroke:${SCOL[s]};stroke-width:8;stroke-linecap:round;vector-effect:non-scaling-stroke"/>`).join('')}</svg>
       <div class="note" style="margin:2px 0 6px">Grade ${gl[1]} line \u2248 ${gl[0]}% \u00b7 latest ${Math.round(ps[n-1].sc/ps[n-1].tot*100)}%${n>1?' \u00b7 first '+Math.round(ps[0].sc/ps[0].tot*100)+'%':''}</div>`;
     ps.forEach(p=>{ const i=state.papers.indexOf(p); h+=`<div class="list-row" style="padding:3px 2px"><span class="grow">${esc(p.n)}</span><span class="num">${p.sc}/${p.tot} \u00b7 ${Math.round(p.sc/p.tot*100)}%</span>${gchip(p)}<button class="del delx" title="Delete score" onclick="delPaper(${i})">\u00d7</button></div>`; });
     h+=`</div>`;
@@ -3302,18 +3310,18 @@ function vRecipes(){
 }
 
 function vCoach(){
-  return `<div class="coach glass"><h3>Coach</h3>
+  return `<div class="coach glass"><h3>John Claude</h3>
   <p class="note" style="position:relative">Built-in Claude. Reads your live data \u2014 hours, papers, mistake log, open tasks \u2014 and answers with concrete changes. It suggests; you tick.</p>
-  ${(location.protocol==='file:'||window.__localStore)?'<div class="card" style="padding:10px 12px;margin:8px 0;border-left:3px solid var(--spanish);position:relative"><div class="note" style="margin:0"><b>Offline here.</b> The Coach can\u2019t reach Claude when this page is opened as a file on your computer. Everything else works normally.</div></div>':''}
+  ${(location.protocol==='file:'||window.__localStore)?'<div class="card" style="padding:10px 12px;margin:8px 0;border-left:3px solid var(--spanish);position:relative"><div class="note" style="margin:0"><b>Offline here.</b> John Claude can\u2019t reach Claude when this page is opened as a file on your computer. Everything else works normally.</div></div>':''}
   <div class="quick">
     <button onclick="ask('Replan the rest of this week around what I actually did. Keep 13:00\u201318:00, rest days free, next exam first. Tell me exactly what to change.')">Replan this week</button>
     <button onclick="ask('Based on my data, what exactly should I do today and for how long?')">What today?</button>
     <button onclick="ask('Recalculate my hours: am I on track per subject against the planned hours? Where do I cut if behind?')">Recalc hours</button>
     <button onclick="ask('Look at my paper scores and open mistake-log lines. Which topics should my next 3 targeted-revision blocks cover?')">Pick my next 3 blocks</button>
-    <button onclick="ask('Rewrite this week: retime anything mis-sized, rename anything vague, add what is missing and remove what is not worth doing. Then give me the actions.')">Let the coach edit the plan</button>
+    <button onclick="ask('Rewrite this week: retime anything mis-sized, rename anything vague, add what is missing and remove what is not worth doing. Then give me the actions.')">Let John Claude edit the plan</button>
   </div>
   <textarea id="coach-q" placeholder="Or ask anything: e.g. 'Marking the Maths P1 took 90 min, rebalance this week'"></textarea>
-  <div style="margin-top:8px;position:relative"><button class="b" id="coach-btn" onclick="ask()">Ask the coach</button></div>
+  <div style="margin-top:8px;position:relative"><button class="b" id="coach-btn" onclick="ask()">Ask John Claude</button></div>
   <div class="out" id="coach-out"></div><div id="actionbox"></div></div>`;
 }
 
@@ -3549,7 +3557,7 @@ Rules for actions: use exact ids from the list above; keep any single block at o
       renderActionPreview();
     } else out.textContent='No reply — try again.';
   }catch(e){
-    out.textContent='Coach unavailable. This panel only works when the page is open inside Claude (artifact view), not as a downloaded file.';
+    out.textContent='John Claude is unavailable. This panel only works when the page is open inside Claude (artifact view), not as a downloaded file.';
   }
   btn.disabled=false;
   if(!preset)ta.value='';
@@ -4072,7 +4080,7 @@ function cutListHTML(x){
   if(!x||(!x.cuts.length&&!(x.short>0))) return '';
   return `<div class="cuts">${x.cuts.length?`<div class="note" style="margin:0 0 6px">${x.st==='r'?'Cut':'Trim'} these, non-starred only, in the plan’s cut order:</div>`:''}
     ${x.cuts.map(t=>`<div class="list-row" style="padding:6px 2px;align-items:center"><span class="sd" style="background:${SCOL[t.s]}"></span><span class="num faint" style="width:74px;flex-shrink:0">${t.day}</span><span class="grow">${esc(t12(headOf(t)))}<br><span class="faint">${CUT_WHY[cutRank(t)]} · ${t.m} min</span></span><button class="b ghost sm" onclick="skipTask('${t.id}')">Skip</button></div>`).join('')}
-    ${x.short>0?`<div class="note" style="margin:8px 0 0;color:${x.st==='r'?'var(--red)':'var(--sub)'}">${x.st==='r'?'Still about '+(x.short/60).toFixed(1)+' h more work than time':'Still above 85% full'}${x.cuts.length?' after these':''}. Nothing else is safe to cut: add hours in Exams, or ask the Coach to replan the starred blocks.</div>`:''}</div>`;
+    ${x.short>0?`<div class="note" style="margin:8px 0 0;color:${x.st==='r'?'var(--red)':'var(--sub)'}">${x.st==='r'?'Still about '+(x.short/60).toFixed(1)+' h more work than time':'Still above 85% full'}${x.cuts.length?' after these':''}. Nothing else is safe to cut: add hours in Exams, or ask John Claude to replan the starred blocks.</div>`:''}</div>`;
 }
 window.openExam=i=>openSheet(()=>{
   const f=FINALS[i]; if(!f) return null;
@@ -4139,7 +4147,7 @@ const ICONS={
 };
 function icon(k){ return `<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[k]||''}</svg>`; }
 const SPACES=[['today','Today','home'],['plan','Plan','calendar'],['practice','Practice','target'],['exams','Exams','clip'],['progress','Progress','trend']];
-const MORE=[['library','Library','books'],['school','Checklist','list'],['recipes','Recipes','notebook'],['coach','Coach','chat']];
+const MORE=[['library','Library','books'],['school','Checklist','list'],['recipes','Recipes','notebook'],['coach','John Claude','chat']];
 const SUBTABS={practice:[['mistakes','Mistakes'],['cards','Recall cards']],progress:[['stats','Scores & hours'],['topics','Topics'],['cover','Cover'],['log','Log']]};
 function spaceOf(tab){ for(const k in SUBTABS) if(SUBTABS[k].some(x=>x[0]===tab)) return k; return tab; }
 function navBtn(id,label,ic,count,hot){
@@ -4175,7 +4183,7 @@ function paintHead(){
     library:['Library','Your dossiers and summaries.'],
     school:['Checklist','One-off jobs for this week.'],
     recipes:['Recipes','How each kind of task is done.'],
-    coach:['Coach','Ask about your plan, using your live data.']
+    coach:['John Claude','Ask about your plan, using your live data.']
   }[sp]||['',''];
   const seg=SUBTABS[sp]?`<div class="seg" role="tablist">${SUBTABS[sp].map(([id,l])=>`<button role="tab" class="${state.tab===id?'on':''}" onclick="go('${id}')">${l}</button>`).join('')}</div>`:'';
   el.innerHTML=`<div class="ttl"><h1>${esc(T[0])}</h1>${T[1]?`<div class="sub">${esc(T[1])}</div>`:''}${seg}</div>`;
