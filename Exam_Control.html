@@ -1877,6 +1877,8 @@ function normalize(){
   if(!state.cov){ state.cov={}; }
   // later additions: grade boundaries, exam kit ticks, timer pacing, capacity, mistake tags, recall cards
   if(!state.bounds) state.bounds={};
+  Object.keys(PAPER_MAX).forEach(s=>Object.keys(PAPER_MAX[s]).forEach(k=>{ state.bounds[s]=state.bounds[s]||{};
+    const b=state.bounds[s][k]=state.bounds[s][k]||{max:'',g:['','','','','','']}; if(b.max===''||b.max==null) b.max=PAPER_MAX[s][k]; }));
   if(!state.examChk) state.examChk={};
   if(!state.tmCfg) state.tmCfg={};
   if(!state.tmPrefs) state.tmPrefs={read:5,every:15};
@@ -2407,7 +2409,9 @@ function writeLeft(){ const l=timerLeft(); return l===null?null:Math.min(state.t
 function inReading(){ const T=state.timer; return !!T && timerLeft()>T.dur; }
 function mmss(s){ const h=Math.floor(s/3600), m=Math.floor(s%3600/60), x=s%60; return (h?h+':'+String(m).padStart(2,'0'):m)+':'+String(x).padStart(2,'0'); }
 // pacing: known totals for papers whose mark count doesn't change; everything else is remembered per paper once entered
-const PACE_DEF={'Maths P1':{marks:110},'Maths P2':{marks:110},'Maths P3':{marks:55}};
+const PACE_DEF={'Maths P1':{marks:110},'Maths P2':{marks:110},'Maths P3':{marks:55},'Physics P1':{marks:60},'Physics P2':{marks:90},
+  'Chem P1':{marks:55},'Chem P2':{marks:50},'Chem P2 half':{marks:25},'History P1':{marks:24},'History P2':{marks:30},'History P3':{marks:45},'History P3 essay':{marks:15},
+  'English P1':{marks:20},'Spanish P1':{marks:30},'Spanish Reading':{marks:40},'Spanish Listening':{marks:25}};
 function paceKey(label){ return String(label).replace(/\s*\(.*\)\s*$/,'').trim(); }
 function qMarks(P){
   const raw=String((P&&P.qs)||'').trim(); if(!raw) return null;
@@ -3173,6 +3177,8 @@ window.tglKit=(key,id)=>{
 /* ================= raw mark -> grade ================= */
 const PAPER_KEYS={math:['P1','P2','P3'],physics:['P1','P2'],chem:['P1','P2'],history:['P1','P2','P3'],english:['P1','P2'],spanish:['P1','Reading','Listening']};
 const TARGET_GRADE={math:4,physics:4,chem:6};
+// paper totals from MOCK_DATA.md (English P2 is 25 or 30 — not confirmed, so left blank)
+const PAPER_MAX={math:{P1:110,P2:110,P3:55},physics:{P1:60,P2:90},chem:{P1:55,P2:50},history:{P1:24,P2:30,P3:45},english:{P1:20},spanish:{P1:30,Reading:40,Listening:25}};
 const SAFE_LO=5, SAFE_HI=8;   // marks above the line before a grade counts as safe
 function paperKeyOf(p){
   if(p.pk!==undefined) return p.pk;
