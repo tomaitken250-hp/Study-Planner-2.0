@@ -1238,6 +1238,126 @@ body:not(.bunker) .tmgrid button span{color:var(--faint)}
   body:not(.bunker) #toast{bottom:96px}
 }
 
+/* ---------- drawer (slide-in panel) ---------- */
+.drawer{position:fixed;z-index:130;top:12px;right:12px;bottom:12px;width:min(560px,calc(100vw - 24px));
+  display:flex;flex-direction:column;background:var(--surface,#fff);color:var(--ink);border:1px solid var(--edge);border-radius:26px;
+  box-shadow:var(--shadow-2,0 20px 60px rgba(0,0,0,.3));transform:translateX(calc(100% + 32px));visibility:hidden;
+  transition:transform .55s cubic-bezier(.16,1,.3,1),visibility 0s linear .55s}
+.drawer.open{transform:none;visibility:visible;transition:transform .55s cubic-bezier(.16,1,.3,1),visibility 0s}
+#drawerscrim{z-index:125;background:rgba(10,12,18,.28);backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px)}
+.drawerhead{display:flex;align-items:flex-start;gap:12px;padding:24px 26px 14px;border-bottom:1px solid var(--edge)}
+.drawerhead .sttl{flex:1;min-width:0}
+.drawerhead h3{margin:0;font-size:22px;font-weight:700;letter-spacing:-.5px;line-height:1.2}
+.drawerhead .sub{font-size:13.5px;color:var(--sub);margin-top:3px}
+.drawerhead .sdot{display:block;width:10px;height:10px;border-radius:50%;margin-bottom:10px}
+.drawerx{border:none;background:var(--fill);color:var(--ink);width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:13px;flex-shrink:0;
+  transition:transform .15s cubic-bezier(.16,1,.3,1)}
+.drawerx:active{transform:scale(.92)}
+.drawerbody{flex:1;overflow-y:auto;padding:8px 26px 28px;overscroll-behavior:contain}
+.sblock{padding:18px 0;border-bottom:1px solid var(--edge)}
+.sblock:last-child{border-bottom:none}
+.sblock h4{display:flex;align-items:center;gap:10px;margin:0 0 12px;font-size:15px;font-weight:650;letter-spacing:-.2px}
+.sblock h4 .stbadge,.sblock h4 .kitn,.sblock h4 .b{margin-left:auto}
+.kitn{font-size:12.5px;font-weight:600;color:var(--warn)}
+.kitn.clearcount{color:var(--ok)}
+.drawernote p{margin:0 0 14px;font-size:14px;line-height:1.6;color:var(--sub)}
+.drawernote b{color:var(--ink)}
+.sform{display:flex;flex-direction:column;gap:14px;padding-top:12px}
+.sform label{display:flex;flex-direction:column;gap:6px;font-size:12.5px;font-weight:600;color:var(--sub);flex:1;min-width:0}
+.sform input,.sform select{font:inherit;font-size:14px;font-weight:400;padding:10px 12px;border-radius:12px;border:1px solid var(--edge);background:var(--surface-2);color:var(--ink);color-scheme:var(--scheme)}
+.sform input:focus,.sform select:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 4px color-mix(in srgb,var(--blue) 18%,transparent)}
+.srow{display:flex;gap:12px}
+.sform .b{align-self:flex-start;padding:11px 22px}
+.capbars{display:flex;flex-direction:column;gap:10px}
+.capbars div{display:grid;grid-template-columns:78px 1fr 58px;align-items:center;gap:10px;font-size:13px;color:var(--sub)}
+.capbars i{height:10px;border-radius:999px;background:var(--fill);overflow:hidden;display:block}
+.capbars em{display:block;height:100%;border-radius:999px;transition:width .8s cubic-bezier(.16,1,.3,1)}
+.capbars b{text-align:right;color:var(--ink);font-variant-numeric:tabular-nums}
+.cuts{margin-top:14px}
+@media (max-width:700px){
+  .drawer{top:auto;left:0;right:0;bottom:0;width:auto;max-height:90vh;border-radius:24px 24px 0 0;transform:translateY(100%)}
+  .srow{flex-direction:column}
+}
+body.bunker .drawer{background:linear-gradient(180deg,#0B1410,#060C09);border:1px solid rgba(120,255,170,.18);border-radius:6px;color:var(--ink);
+  --surface-2:#050A07;--fill:rgba(67,224,138,.1);--edge:rgba(120,255,170,.14);--scheme:dark}
+
+/* ---------- Plan ---------- */
+.ptools{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin:-4px 0 18px}
+.wkpills{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;flex:1;min-width:0;padding:2px}
+.wkpills::-webkit-scrollbar{display:none}
+.wkp{position:relative;flex:0 0 auto;display:flex;flex-direction:column;align-items:flex-start;gap:1px;padding:9px 16px;border-radius:16px;
+  border:1px solid var(--edge);background:var(--surface);color:var(--ink);font:inherit;cursor:pointer;
+  transition:transform .2s cubic-bezier(.16,1,.3,1),background .25s,color .25s}
+.wkp:hover{transform:translateY(-1px)}
+.wkp:active{transform:scale(.97)}
+.wkp b{font-size:13.5px;font-weight:600}
+.wkp small{font-size:11.5px;color:var(--faint);font-variant-numeric:tabular-nums}
+.wkp i{position:absolute;top:9px;right:9px;width:6px;height:6px;border-radius:50%;background:var(--blue)}
+.wkp.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.wkp.on small{color:inherit;opacity:.65}
+.pbtns{display:flex;gap:6px;flex-wrap:wrap}
+.wksum{display:grid;grid-template-columns:1fr auto;gap:16px 24px;align-items:center;padding:22px 26px;margin-bottom:26px;animation:rise .5s cubic-bezier(.16,1,.3,1) both}
+.wksum h3{margin:0;font-size:22px;font-weight:700;letter-spacing:-.5px}
+.wksum .sub{font-size:13.5px;color:var(--sub);margin-top:3px}
+.wkstats{display:flex;gap:30px}
+.wkstats div{display:flex;flex-direction:column}
+.wkstats b{font-size:24px;font-weight:650;letter-spacing:-.6px;font-variant-numeric:tabular-nums}
+.wkstats b em{font-style:normal;font-size:15px;color:var(--faint);font-weight:500;letter-spacing:0}
+.wkstats span{font-size:12px;color:var(--faint)}
+.wkbar{grid-column:1/-1;height:6px;border-radius:999px;background:var(--fill);overflow:hidden}
+.wkbar span{display:block;height:100%;border-radius:999px;background:var(--ok);transition:width .9s cubic-bezier(.16,1,.3,1)}
+.pday{display:grid;grid-template-columns:84px minmax(0,1fr);gap:18px;padding:18px 0;border-top:1px solid var(--edge);animation:rise .5s cubic-bezier(.16,1,.3,1) both}
+.pday:first-of-type{border-top:none}
+.pdate{position:sticky;top:18px;align-self:start;display:flex;flex-direction:column;align-items:flex-start;padding-left:4px}
+.pdate small{font-size:12.5px;color:var(--faint);font-weight:500}
+.pdate b{font-size:36px;font-weight:650;letter-spacing:-1.2px;line-height:1.05;font-variant-numeric:tabular-nums}
+.pday.today .pdate small:first-child{color:var(--blue);font-weight:650}
+.pday.today .pdate b{color:var(--blue)}
+.pday.past .pdate{opacity:.5}
+.pmeta{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;font-size:12.5px;color:var(--faint);min-height:28px;margin-bottom:8px}
+.pmeta .miss{color:var(--red);font-weight:600}
+.lnk{margin-left:auto;border:none;background:none;font:inherit;font-size:12.5px;font-weight:600;color:var(--blue);cursor:pointer;padding:4px 6px;border-radius:8px}
+.lnk:hover{background:var(--fill)}
+.exchip{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:999px;font-weight:600;color:var(--ink);
+  background:color-mix(in srgb,var(--sc) 16%,transparent);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--sc) 40%,transparent)}
+.plist{display:flex;flex-direction:column;gap:8px}
+#view .plist .task.card{margin:0}
+.movedlbl{font-size:12.5px;font-weight:600;color:var(--warn);margin:8px 2px 0}
+@media (max-width:700px){.pday{grid-template-columns:1fr;gap:6px}.pdate{position:static;flex-direction:row;align-items:baseline;gap:8px}.pdate b{font-size:24px}
+  .wksum{grid-template-columns:1fr}.wkstats{gap:20px}}
+
+/* ---------- Exams ---------- */
+.tiles.four{grid-template-columns:repeat(4,minmax(0,1fr))}
+@media (max-width:980px){.tiles.four{grid-template-columns:1fr 1fr}}
+div.tile{cursor:default}
+div.tile:hover{transform:none;box-shadow:var(--shadow-1)}
+.board{padding:6px;display:flex;flex-direction:column}
+.brow{display:grid;grid-template-columns:62px minmax(0,1fr) 150px 80px 16px;align-items:center;gap:16px;padding:12px 16px;border:none;background:none;
+  font:inherit;color:inherit;text-align:left;cursor:pointer;border-radius:16px;animation:rise .45s cubic-bezier(.16,1,.3,1) both;
+  transition:background .2s,transform .15s cubic-bezier(.16,1,.3,1)}
+.brow:hover{background:var(--hover)}
+.brow:active{transform:scale(.99)}
+.brow + .brow{box-shadow:0 -1px 0 var(--edge)}
+.brow:hover + .brow,.brow:hover{box-shadow:none}
+.bdate{display:flex;flex-direction:column;align-items:center;line-height:1.1}
+.bdate small{font-size:11.5px;color:var(--faint)}
+.bdate b{font-size:24px;font-weight:650;letter-spacing:-.6px;font-variant-numeric:tabular-nums}
+.bname b{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:600;letter-spacing:-.2px}
+.bname small{display:block;font-size:12.5px;color:var(--faint);margin-top:2px;padding-left:16px}
+.sdot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--sc);flex-shrink:0}
+.bcap,.bkit{font-size:12.5px;color:var(--sub);font-variant-numeric:tabular-nums}
+.bkit.ok{color:var(--ok);font-weight:600}
+.brow .chev{color:var(--faint)}
+.brow.past{opacity:.42}
+.egrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0 24px;align-items:start}
+@media (max-width:1100px){.egrid{grid-template-columns:1fr}}
+@media (max-width:700px){.brow{grid-template-columns:48px minmax(0,1fr) 16px}.bcap,.bkit{display:none}}
+body.bunker .brow,body.bunker .wkp{color:var(--ink);font-family:inherit}
+body.bunker .wkp,body.bunker .pday{border-color:var(--edge)}
+body.bunker .wkp{background:rgba(12,22,16,.78);border-radius:3px}
+body.bunker .wkp.on{background:rgba(67,224,138,.3)}
+@media (prefers-reduced-motion:reduce){.drawer,.drawer.open{transition:none}.pday,.brow,.wksum{animation:none}}
+
 </style>
 </head>
 <body>
@@ -1305,6 +1425,8 @@ body:not(.bunker) .tmgrid button span{color:var(--faint)}
 </div>
 <nav class="bottombar" id="bottombar" aria-label="Sections"></nav>
 <div class="scrim" id="scrim" onclick="closeSide()"></div>
+<div class="scrim" id="drawerscrim" onclick="closePanel()"></div>
+<aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-hidden="true"></aside>
 
 <div id="toast" role="status" aria-live="polite"></div>
 <div id="tmpanel" class="glass"></div>
@@ -2581,74 +2703,6 @@ function tomorrowHTML(){
 }
 
 /* ================= plan view ================= */
-function vPlan(){
-  const wk=curWeek();
-  // today, redos, overdue, exam kit and capacity now live on the Today screen
-  let h='';
-  h+=`<div style="display:flex;justify-content:flex-end;margin:-6px 0 12px"><button class="b ghost sm" onclick="jumpToday()">Jump to today</button></div>
-  <details class="card" style="padding:2px 10px 4px;margin-bottom:12px"><summary style="font-size:12.5px;padding:8px 4px">How this plan works<span class="chev">›</span></summary>
-  <div class="note" style="padding:2px 4px 8px">
-  <b>Study 1–6 pm</b> on most days. Rest days: Sun 4 and Sun 11 Oct. Leavers’ week ~2.5 h a day; Sundays are light.<br><br>
-  <b>★ = protected.</b> If a day shrinks, do the ★ tasks in order and drop the rest. Tap a task to see its steps.<br><br>
-  <b>Tick</b> when done → enter how long it really took (and the score, for papers). <b>✎</b> edit · <b>⊘</b> skip on purpose · <b>→</b> move to the next study day (never a rest or exam day) · <b>↩</b> move back · <b>×</b> delete (with undo).<br><br>
-  <b>The 5 exam rules:</b> first parts first · stuck 2 min → move on · use “show that” results · keywords inside the box · sanity-check numbers.<br><br>
-  <b>Papers:</b> find each one online the day before, with its mark scheme (the Tomorrow card lists them). Never re-sit a paper you’ve already seen (incl. Chem May 2025 TZ2/TZ3 SL). Every paper = sit + mark + log.<br><br>
-  <b>If a day slips:</b> lost part of a day → ★ tasks only. Lost a whole day → its ★ tasks go into the next day’s non-★ slots (never the rest days); a missed paper takes the next day’s 1 pm slot. Spanish listening never moves until 30 Oct — 15 min still counts. More than 2 days lost → cut History extra plans, then Chem top-ups, then English P2 plans, then Physics recall cards. Never cut Euler, relativity, timed Maths/Physics papers, the Chem box drill or listening.
-  </div></details>`;
-  const ti=todayIdx();
-  WEEKS.forEach(([w,wlabel])=>{
-    const ts=state.tasks.filter(t=>t.wk===w);
-    if(!ts.length)return;
-    const isNow=(w===wk);
-    const open=window._openWk?window._openWk===w:isNow;
-    h+=`<details ${open?'open':''} class="card weekcard" data-wk="${w}" ontoggle="if(this.open){window._openWk='${w}'}" style="padding:2px 6px 6px"><summary>
-      ${wlabel}
-      ${isNow?'<span class="pill">now</span>':''}<span class="chev">›</span></summary><div style="padding:0 8px 6px">
-      <div style="display:flex;justify-content:flex-end;margin:2px 0 -4px"><button class="b ghost sm" onclick="printWeek('${w}')">Print week</button></div>`;
-    const allDays=DAY_ORDER.slice();
-    ts.forEach(t=>{ if(allDays.indexOf(t.day)<0) allDays.push(t.day); });
-    allDays.forEach(day=>{
-      const dtsAll=ts.filter(t=>t.day===day);
-      if(!dtsAll.length) return;
-      const dts=dtsAll.filter(t=>!t.slipped);
-      const slipHere=dtsAll.filter(t=>t.slipped);
-      const mins=dtsAll.filter(t=>!isOpt(t)).reduce((a,t)=>a+t.m,0);
-      const di=dayIdx(day), past=(ti>-1 && di>-1 && di<ti), isToday=(di===ti && ti>-1);
-      const missed=past?dtsAll.filter(isDue).length:0;
-      const doneN=dtsAll.filter(t=>t.done).length;
-      const hdr=`${day}${REST_DAYS.indexOf(day)>-1?' · rest day':''}${isToday?' <span class="pill">today</span>':''}<span style="font-weight:400;color:var(--faint);margin-left:6px">${doneN}/${dtsAll.length} done · ${(mins/60).toFixed(1)}h</span><span class="misstag" style="${missed?'':'display:none'}">${missed} missed</span>`;
-      let body='';
-      const add=(t)=>{ body+=taskCard(t,'week'); };
-      dts.forEach(add);
-      if(slipHere.length){
-        const smin=slipHere.reduce((a,t)=>a+t.m,0);
-        body+=`<div class="slipbox"><div class="day-h" style="color:var(--spanish);margin-top:8px">↳ Moved here · ${slipHere.length} task${slipHere.length>1?'s':''} · ${(smin/60).toFixed(1)}h</div>`;
-        slipHere.forEach(add); body+=`</div>`;
-      }
-      const did='d-'+day.replace(/\s+/g,'-');
-      if(past) h+=`<details class="pastday" id="${did}"><summary class="day-h" data-dayh="${day}">${hdr}<span class="chev">›</span></summary>${body}</details>`;
-      else h+=`<div class="day-h" id="${did}" data-dayh="${day}">${hdr}</div>${body}`;
-    });
-    h+=`</div></details>`;
-  });
-  const opts=Object.keys(RECIPES).map(k=>`<option value="${k}">${RECIPES[k].n}</option>`).join('');
-  h+=`<h2>Add a task</h2><div class="frm addfrm">
-    <input type="date" id="nt-date" min="2026-09-29" max="2026-11-13" value="${(()=>{const v=localISO(); return (v>='2026-09-29'&&v<='2026-11-13')?v:'2026-09-29';})()}">
-    <input type="time" id="nt-at" title="Start time (optional)">
-    <select id="nt-s">${Object.keys(SUBJ).map(s=>`<option value="${s}">${SUBJ[s]}</option>`).join('')}</select>
-    <input type="number" id="nt-m" value="45" min="5" max="300" title="Minutes">
-    <input class="full" type="text" id="nt-t" placeholder="Specific task: verb + deliverable">
-    <select id="nt-rec"><option value="">Guide: pick for me</option>${opts}</select>
-    <button class="b" onclick="addTask()">Add task</button></div>`;
-  h+=finalsHTML();
-  return h;
-}
-window.jumpToday=()=>{
-  const lbl=todayLabel(); if(DAY_ORDER.indexOf(lbl)<0){ toast('Today isn’t in the plan'); return; }
-  window._openWk=weekOf(lbl); paint();
-  setTimeout(()=>{ const el=document.getElementById('d-'+lbl.replace(/\s+/g,'-')); if(el) el.scrollIntoView({behavior:'smooth',block:'start'}); },60);
-};
-
 /* ================= print ================= */
 window.printWeek=w=>{
   const wl=(WEEKS.find(x=>x[0]===w)||[,''])[1];
@@ -2832,18 +2886,6 @@ const FINALS=[
  ['Thu 12 Nov','AM','Chemistry SL P2 (1h30)','chem'],
  ['Fri 13 Nov','PM','Maths AA HL P3 (1h15) \u2014 last exam','math'],
 ];
-function finalsHTML(){
-  let h=`<details class="card" style="padding:2px 6px 6px;margin-top:16px"><summary>November exams \u2014 your 13 papers<span class="chev">\u203a</span></summary><div style="padding:0 8px 8px">
-  <p class="note">Zone A 12: morning papers start 10 am, afternoon papers 2 pm \u2014 confirm with your IB coordinator. The evening before each exam goes to that exam only.</p>`;
-  FINALS.forEach(f=>{
-    h+=`<div class="list-row"><span class="sd" style="background:${SCOL[f[3]]}"></span>
-      <span style="width:78px;font-weight:600">${f[0]}</span>
-      <span class="num" style="width:44px;color:var(--faint)">${f[1]==='AM'?'10 am':'2 pm'}</span>
-      <span class="grow">${f[2]}</span><span class="num" style="color:var(--faint)">${inDays(f[0])}</span></div>`;
-  });
-  h+=`</div></details>`;
-  return h;
-}
 
 function vSchool(){
   const wk=curWeek();
@@ -3010,7 +3052,7 @@ window.cycleMode=()=>{ const i=THEMES.findIndex(x=>x[0]===themeNow()); setTheme(
 window.tglTheme=()=>setTheme(themeNow()==='launch'?'auto':'launch');
 // run a DOM change as a view transition where the browser supports it
 function vt(fn){
-  if(document.startViewTransition && !matchMedia('(prefers-reduced-motion: reduce)').matches) document.startViewTransition(fn);
+  if(document.startViewTransition && !matchMedia('(prefers-reduced-motion: reduce)').matches){ window._vt=document.startViewTransition(fn); window._vt.finished.finally(()=>{ window._vt=null; }); }
   else fn();
 }
 window.setOpenSub=(e,sub)=>{ state.openSub=(state.openSub===sub)?null:sub; setTimeout(()=>paint(),0); };
@@ -3192,7 +3234,7 @@ window.addTask=()=>{
   let ins=-1; state.tasks.forEach((x,i)=>{ if(x.day===day) ins=i; });
   if(ins<0){ const di=DAY_ORDER.indexOf(day); const k=state.tasks.findIndex(x=>DAY_ORDER.indexOf(x.day)>di); ins=(k<0?state.tasks.length:k)-1; }
   state.tasks.splice(ins+1,0,t);
-  paint(); save(); toast('Added to '+day);
+  closePanel(); paint(); save(); toast('Added to '+day);
 };
 window.tglCheck=(wk,id)=>{state.checks[wk]=state.checks[wk]||{};state.checks[wk][id]=!state.checks[wk][id];
   const el=document.querySelector('[data-cid="'+id+'"]'); if(el)el.classList.toggle('done',state.checks[wk][id]);
@@ -3429,15 +3471,6 @@ function examKitHTML(){
   return FINALS.filter(f=>f[0]===td && nm<hm(EXAM_AT[f[1]])).map(f=>kitCard(f,'day')).join('')
     +FINALS.filter(f=>f[0]===tm).map(f=>kitCard(f,'night')).join('');
 }
-function kitAllHTML(){
-  let h=`<h2>Exam-day kit <span class="marks">shows on the Plan the day before and on the day</span></h2><div class="card" style="padding:2px 6px 6px">`;
-  FINALS.forEach(f=>{ const key=kitKey(f), its=kitItems(f,'night'), ck=state.examChk[key]||{};
-    h+=`<details style="margin:0"><summary style="font-size:13px;padding:8px 8px;${daysUntil(f[0])<0?'opacity:.45':''}"><span class="sd" style="background:${SCOL[f[3]]};margin:0"></span>
-      <span style="width:74px">${f[0]}</span><span class="num" style="width:40px;color:var(--faint);font-weight:400">${t12(EXAM_AT[f[1]])}</span><span style="font-weight:500">${esc(examName(f))}</span>
-      ${kitCount(key,its,ck,'num','margin-left:auto;font-size:11.5px;font-weight:400;color:var(--faint)')}<span class="chev" style="margin-left:8px">›</span></summary>
-      <div style="padding:0 10px 6px">${its.map(i=>kitRow(key,i,ck)).join('')}</div></details>`; });
-  return h+`</div>`;
-}
 window.tglKit=(key,id)=>{
   const o=state.examChk[key]=state.examChk[key]||{}; o[id]=!o[id];
   document.querySelectorAll('[data-kit="'+key+'|'+id+'"]').forEach(x=>x.style.cssText=o[id]?'opacity:.5;text-decoration:line-through':'');
@@ -3487,23 +3520,6 @@ function gradeListHTML(){
     return `<div class="list-row" style="align-items:flex-start"><span class="sd" style="background:${SCOL[p.s]};margin-top:6px"></span>
       <span class="grow">${esc(p.n)} <span class="scorechip">${p.sc}/${p.tot}</span><br>${gradeText(p,gi)}</span>
       <select class="tagsel" title="Which paper’s boundaries to use" onchange="setPk(${i},this.value)"><option value="">type?</option>${PAPER_KEYS[p.s].map(x=>`<option ${k===x?'selected':''}>${x}</option>`).join('')}</select></div>`; }).join('');
-}
-function gradesHTML(){
-  let h=`<h2>Raw mark → grade <span class="marks">Maths 4 · Physics 4 · Chem 6 · others next grade up</span></h2>
-  <p class="note">Enter the November boundaries below — the lowest raw mark for each grade. Every scored paper then shows its grade and how far it is from target, with a ${SAFE_LO}–${SAFE_HI} mark safety margin because boundaries move between sessions. Half papers are scaled up to the full paper.</p>
-  <div class="card" style="padding:4px 2px" id="gradelist">${gradeListHTML()}</div><h2>November boundaries</h2>`;
-  Object.keys(PAPER_KEYS).forEach(s=>{
-    const set=PAPER_KEYS[s].filter(k=>boundsOf(s,k)).length;
-    h+=`<details class="card" style="padding:2px 6px 6px;margin-bottom:8px" ${state.bdOpen===s?'open':''} ontoggle="if(this.open)state.bdOpen='${s}';else if(state.bdOpen==='${s}')state.bdOpen=null"><summary><span class="sd" style="background:${SCOL[s]};margin:0"></span>${SUBJ[s]}
-      <span style="margin-left:auto;font-size:11.5px;font-weight:400;color:var(--faint)">${set}/${PAPER_KEYS[s].length} set · target ${TARGET_GRADE[s]||'next grade up'}</span><span class="chev" style="margin-left:8px">›</span></summary>
-      <div style="padding:4px 8px 8px"><div class="bgrid"><span class="hd" style="text-align:left">Paper</span><span class="hd">Max</span>${[2,3,4,5,6,7].map(g=>`<span class="hd" ${TARGET_GRADE[s]===g?'style="color:var(--ink)"':''}>${g}</span>`).join('')}`;
-    PAPER_KEYS[s].forEach(k=>{ const b=((state.bounds[s]||{})[k])||{max:'',g:[]};
-      h+=`<b>${k}</b><input type="number" min="1" value="${b.max===''||b.max==null?'':b.max}" data-s="${s}" data-k="${k}" data-i="max" onchange="setBound(this)" aria-label="${SUBJ[s]} ${k} max marks">`
-        +[0,1,2,3,4,5].map(i=>`<input type="number" min="0" value="${b.g[i]===''||b.g[i]==null?'':b.g[i]}" data-s="${s}" data-k="${k}" data-i="${i}" onchange="setBound(this)" aria-label="${SUBJ[s]} ${k} grade ${i+2}">`).join('');
-    });
-    h+=`</div><div class="note" style="margin:8px 0 0">Max = marks the paper is out of. Leave a grade blank if you don’t know it.</div></div></details>`;
-  });
-  return h;
 }
 window.setBound=el=>{
   const s=el.dataset.s, k=el.dataset.k, i=el.dataset.i;
@@ -3580,27 +3596,6 @@ function capacityRows(){
   });
   return {rows,ratio};
 }
-function capacityHTML(){
-  const {rows,ratio}=capacityRows(), c=state.cap;
-  let h=`<h2>Capacity check <span class="marks">work left vs time you really have</span></h2>
-  <p class="note">Planned = every unfinished task before the paper, overdue included${ratio!==1?` — × <b>${ratio.toFixed(2)}</b>, because that’s how long your ticked tasks really took against plan`:''}. Free = the minutes below for each day from today (rest days 0), minus what you’ve already logged today. Green ≤ 85% full · amber 85–100% · red = more work than time.</p>
-  <div class="editrow" style="margin-bottom:10px">${CAP_L.map(([k,l])=>`<label style="font-size:12px;display:flex;align-items:center;gap:5px">${l} <input type="number" min="0" max="720" step="15" value="${c[k]}" data-cap="${k}" onchange="setCap(this)"> min</label>`).join('')}</div>`;
-  if(!rows.length) return h+`<div class="card" style="padding:12px 16px"><div class="note" style="margin:0">All exams are done.</div></div>`;
-  h+=`<div class="card" style="padding:4px 2px">`;
-  rows.forEach(x=>{ const [col,lab]=CAP_ST[x.st];
-    h+=`<div class="list-row" style="align-items:center"><span class="sd" style="background:${SCOL[x.f[3]]}"></span>
-      <span style="width:74px;font-weight:600;flex-shrink:0">${x.f[0]}</span><span class="num" style="width:40px;color:var(--faint);flex-shrink:0">${t12(EXAM_AT[x.f[1]])}</span>
-      <span class="grow">${esc(examName(x.f))}<br><span class="faint">${(x.need/60).toFixed(1)} h planned · ${(x.have/60).toFixed(1)} h free${isFinite(x.r)?' · '+Math.round(x.r*100)+'% full':''}</span></span>
-      <span class="stbadge" style="background:${col}">${lab}</span></div>`;
-    if(x.cuts.length||x.short>0){
-      h+=`<details ${x.st==='r'?'open':''} style="margin:0 10px 8px 28px"><summary style="font-size:12px;padding:4px 2px;font-weight:600">${x.cuts.length?(x.st==='r'?'Cut ':'Trim ')+x.cuts.length+' task'+(x.cuts.length>1?'s':'')+' · '+(x.cuts.reduce((a,t)=>a+t.m,0)/60).toFixed(1)+' h':'Nothing safe to cut'}<span class="chev">›</span></summary>
-       ${x.cuts.length?`<div class="note" style="margin:2px 0 4px">Non-★ only, in the plan’s cut order: History extra plans → Chem top-ups → English P2 plans → Physics recall cards → other extras.</div>`:''}
-       ${x.cuts.map(t=>`<div class="list-row" style="padding:4px 2px;align-items:center"><span class="sd" style="background:${SCOL[t.s]}"></span><span class="num" style="width:70px;color:var(--faint);flex-shrink:0">${t.day}</span><span class="grow">${esc(t12(headOf(t)))} <span class="faint">· ${CUT_WHY[cutRank(t)]}</span></span><span class="num faint">${t.m} min</span><button class="b ghost sm" onclick="skipTask('${t.id}')">Skip</button></div>`).join('')}
-       ${x.short>0?`<div class="note" style="margin:6px 0 0;color:${x.st==='r'?'var(--red)':'var(--sub)'}">${x.st==='r'?'Still ~'+(x.short/60).toFixed(1)+' h more work than time':'Still above 85% full'}${x.cuts.length?' after these':''} — nothing else is safe to cut. Add minutes above, or ask the Coach to replan the ★ blocks.</div>`:''}</details>`;
-    }
-  });
-  return h+`</div>`;
-}
 function capBannerHTML(){
   const x=capacityRows().rows.find(r=>r.st==='r'); if(!x) return '';
   return `<div class="card" style="padding:12px 14px;margin-bottom:14px;border-left:3px solid var(--red)">
@@ -3608,11 +3603,6 @@ function capBannerHTML(){
     <div class="note" style="margin:0">${(x.need/60).toFixed(1)} h of work left before ${x.f[0]}, ${t12(EXAM_AT[x.f[1]])} — but only ${(x.have/60).toFixed(1)} h free.</div></div>`;
 }
 window.setCap=el=>{ state.cap[el.dataset.cap]=Math.max(0,Math.min(720,+el.value||0)); paint(); save(); };
-
-function vExams(){
-  return `<p class="note">The papers themselves: whether the plan still fits before each one, what your raw marks mean as grades, and the kit for the day.</p>`
-    +capacityHTML()+gradesHTML()+kitAllHTML()+finalsHTML();
-}
 
 /* ================= what next (topics) ================= */
 function lastRev(t){ return t.rv||t.dt||null; }
@@ -3836,6 +3826,159 @@ function vLibrary(){
   return h;
 }
 
+/* ================= sheet: slide-in panel for details and forms ================= */
+let sheetFn=null;
+function renderSheet(){
+  const el=document.getElementById('drawer'); if(!el||!sheetFn) return;
+  const body=el.querySelector('.drawerbody'), keep=body?body.scrollTop:0, r=sheetFn();
+  if(!r){ closePanel(); return; }
+  el.innerHTML=`<div class="drawerhead"><div class="sttl">${r.pre||''}<h3>${esc(r.title)}</h3>${r.sub?`<div class="sub">${esc(r.sub)}</div>`:''}</div>
+    <button class="drawerx" onclick="closePanel()" aria-label="Close">✕</button></div><div class="drawerbody">${r.html}</div>`;
+  deDash(el); el.querySelector('.drawerbody').scrollTop=keep;
+}
+function openSheet(fn){
+  if(window._vt&&window._vt.skipTransition) window._vt.skipTransition();   // a running page transition would draw over the panel
+  sheetFn=fn; renderSheet();
+  const el=document.getElementById('drawer'); el.classList.add('open'); el.setAttribute('aria-hidden','false');
+  document.getElementById('drawerscrim').classList.add('on');
+  setTimeout(()=>{ const f=el.querySelector('.drawerx'); if(f) f.focus({preventScroll:true}); },60);
+}
+window.closePanel=()=>{
+  sheetFn=null; const el=document.getElementById('drawer'); if(!el) return;
+  el.classList.remove('open'); el.setAttribute('aria-hidden','true');
+  document.getElementById('drawerscrim').classList.remove('on');
+};
+document.addEventListener('keydown',e=>{ if(e.key==='Escape' && sheetFn) closePanel(); });
+
+/* ================= Plan ================= */
+const WK_SHORT={H1:'Holidays 1',H2:'Holidays 2',LV:'Leavers’ week',SL:'Study leave',X1:'Exams 1',X2:'Exams 2',X3:'Exams 3'};
+function wkParts(w){ const l=((WEEKS.find(x=>x[0]===w)||[,''])[1]).split(' · ');
+  return {name:(l[0]||'').replace(/\bwk\b/,'week'),dates:(l[1]||'').replace(/[–—]/g,'-'),what:l[2]||''}; }
+window.pickWeek=w=>{ vt(()=>{ window._openWk=w; paint(); window.scrollTo({top:0,behavior:'instant'}); }); };
+window.tglPast=d=>{ window._pastOpen=window._pastOpen||{}; window._pastOpen[d]=!window._pastOpen[d]; paint(); };
+window.openHelp=()=>openSheet(()=>({title:'How this plan works',html:`<div class="note drawernote">
+  <p><b>Study 1-6 pm</b> on most days. Rest days are Sun 4 and Sun 11 Oct. Leavers’ week is about 2.5 h a day, and Sundays are light.</p>
+  <p><b><span class="star">★</span> protected.</b> If a day shrinks, do the starred tasks in order and drop the rest. Tap a task to see its steps.</p>
+  <p><b>Tick</b> when done, then enter how long it really took (and the score, for papers). <b>✎</b> edit · <b>⊘</b> skip on purpose · <b>→</b> move to the next study day (never a rest or exam day) · <b>↩</b> move back · <b>×</b> delete, with undo.</p>
+  <p><b>The 5 exam rules:</b> first parts first · stuck 2 min, move on · use “show that” results · keywords inside the box · sanity-check numbers.</p>
+  <p><b>Papers:</b> find each one online the day before, with its mark scheme (Today lists them). Never re-sit a paper you’ve already seen, including Chem May 2025 TZ2/TZ3 SL. Every paper is sit, mark and log.</p>
+  <p><b>If a day slips:</b> lost part of a day, do the starred tasks only. Lost a whole day, its starred tasks go into the next day’s non-starred slots (never rest days); a missed paper takes the next day’s 1 pm slot. Spanish listening never moves until 30 Oct, and 15 min still counts. More than 2 days lost: cut History extra plans, then Chem top-ups, then English P2 plans, then Physics recall cards. Never cut Euler, relativity, timed Maths/Physics papers, the Chem box drill or listening.</p></div>`}));
+window.openAddTask=day=>{
+  const opts=Object.keys(RECIPES).map(k=>`<option value="${k}">${RECIPES[k].n}</option>`).join('');
+  const d=day?localISO(dateOf(day)):(()=>{const v=localISO(); return (v>='2026-09-29'&&v<='2026-11-13')?v:'2026-09-30';})();
+  openSheet(()=>({title:'Add a task',sub:'It goes into the plan on the day you pick.',html:`<div class="sform">
+    <label>What exactly<input type="text" id="nt-t" placeholder="Verb + deliverable, e.g. Redo P2 Q8 cold"></label>
+    <div class="srow"><label>Day<input type="date" id="nt-date" min="2026-09-29" max="2026-11-13" value="${d}"></label>
+      <label>Start (optional)<input type="time" id="nt-at"></label></div>
+    <div class="srow"><label>Subject<select id="nt-s">${Object.keys(SUBJ).map(s=>`<option value="${s}">${SUBJ[s]}</option>`).join('')}</select></label>
+      <label>Minutes<input type="number" id="nt-m" value="45" min="5" max="300"></label></div>
+    <label>How to do it<select id="nt-rec"><option value="">Pick for me from the subject</option>${opts}</select></label>
+    <button class="b" onclick="addTask()">Add task</button></div>`}));
+  setTimeout(()=>{ const f=document.getElementById('nt-t'); if(f) f.focus(); },120);
+};
+function vPlan(){
+  const cur=curWeek(), sel=window._openWk&&state.tasks.some(t=>t.wk===window._openWk)?window._openWk:cur, ti=todayIdx(), p=wkParts(sel);
+  const wks=WEEKS.filter(([w])=>state.tasks.some(t=>t.wk===w));
+  let h=`<div class="ptools"><div class="wkpills" role="tablist" aria-label="Weeks">${wks.map(([w])=>{ const q=wkParts(w);
+      return `<button class="wkp ${w===sel?'on':''}" role="tab" onclick="pickWeek('${w}')"><b>${WK_SHORT[w]}</b><small>${q.dates}</small>${w===cur?'<i></i>':''}</button>`; }).join('')}</div>
+    <div class="pbtns"><button class="b sm" onclick="openAddTask()">Add task</button><button class="b ghost sm" onclick="jumpToday()">Today</button>
+      <button class="b ghost sm" onclick="printWeek('${sel}')">Print</button><button class="b ghost sm" onclick="openHelp()" title="How this plan works">How it works</button></div></div>`;
+  const ts=state.tasks.filter(t=>t.wk===sel), req=ts.filter(t=>!isOpt(t)&&!t.skipped), dn=req.filter(t=>t.done);
+  const hp=req.reduce((a,t)=>a+t.m,0)/60, hd=dn.reduce((a,t)=>a+actualM(t),0)/60, starL=req.filter(t=>/^★/.test(t.t)&&!t.done).length;
+  h+=`<section class="card wksum"><div class="wkt"><h3>${esc(p.name)}</h3><div class="sub">${p.what?esc(p.what[0].toUpperCase()+p.what.slice(1))+' · ':''}${esc(p.dates)}</div></div>
+    <div class="wkstats"><div><b>${dn.length}<em>/${req.length}</em></b><span>tasks done</span></div><div><b>${hd.toFixed(1)}<em>/${hp.toFixed(1)} h</em></b><span>hours</span></div><div><b>${starL}</b><span>protected left</span></div></div>
+    <div class="wkbar"><span style="width:${req.length?Math.round(dn.length/req.length*100):0}%"></span></div></section>`;
+  const days=DAY_ORDER.filter(d=>ts.some(t=>t.day===d)); ts.forEach(t=>{ if(days.indexOf(t.day)<0) days.push(t.day); });
+  days.forEach(day=>{
+    const all=ts.filter(t=>t.day===day), main=all.filter(t=>!t.slipped), moved=all.filter(t=>t.slipped);
+    const n=all.filter(t=>!isOpt(t)&&!t.skipped), mins=n.reduce((a,t)=>a+t.m,0), doneN=all.filter(t=>t.done).length;
+    const di=dayIdx(day), past=ti>-1&&di>-1&&di<ti, isToday=di===ti&&ti>-1, missed=past?all.filter(isDue).length:0;
+    const rest=REST_DAYS.indexOf(day)>-1, dt=dateOf(day), exs=FINALS.filter(f=>f[0]===day);
+    const open=!past||(window._pastOpen&&window._pastOpen[day]);
+    let body=main.map(t=>taskCard(t,'week')).join('');
+    if(moved.length) body+=`<div class="movedlbl">↳ Moved here · ${moved.length} task${moved.length>1?'s':''} · ${(moved.reduce((a,t)=>a+t.m,0)/60).toFixed(1)} h</div>`+moved.map(t=>taskCard(t,'week')).join('');
+    h+=`<section class="pday ${isToday?'today':''} ${past?'past':''}" id="d-${day.replace(/\s+/g,'-')}" data-dayh="${day}">
+      <div class="pdate">${dt?`<small>${isToday?'Today':WD[dt.getDay()]}</small><b>${dt.getDate()}</b><small>${MON3[dt.getMonth()]}</small>`:`<b>?</b><small>${esc(day)}</small>`}</div>
+      <div class="ptasks"><div class="pmeta">${exs.map(f=>`<span class="exchip" style="--sc:${SCOL[f[3]]}">Exam · ${esc(examName(f))} · ${t12(EXAM_AT[f[1]])}</span>`).join('')}
+        ${rest?'<span>Rest day</span>':''}<span>${doneN}/${all.length} done · ${(mins/60).toFixed(1)} h</span>${missed?`<span class="miss">${missed} missed</span>`:''}
+        ${past?`<button class="lnk" onclick="tglPast('${day}')">${open?'Hide tasks':'Show tasks'}</button>`:`<button class="lnk" onclick="openAddTask('${day}')">Add</button>`}</div>
+        ${open?`<div class="plist">${body}</div>`:''}</div></section>`;
+  });
+  return h;
+}
+window.jumpToday=()=>{
+  const lbl=todayLabel(); if(DAY_ORDER.indexOf(lbl)<0){ toast('Today isn’t in the plan'); return; }
+  const go2=()=>{ const el=document.getElementById('d-'+lbl.replace(/\s+/g,'-')); if(el) el.scrollIntoView({behavior:'smooth',block:'start'}); };
+  if(state.tab==='plan' && (window._openWk||curWeek())===weekOf(lbl)){ go2(); return; }
+  window._openWk=weekOf(lbl); if(state.tab!=='plan') go('plan'); else paint();
+  setTimeout(go2,120);
+};
+
+/* ================= Exams ================= */
+function capByExam(){ const m={}; capacityRows().rows.forEach(x=>{ m[kitKey(x.f)]=x; }); return m; }
+function kitDone(f){ const its=kitItems(f,'night'), ck=state.examChk[kitKey(f)]||{}; return [its.filter(i=>ck[i.id]).length,its.length]; }
+function boundGridHTML(s){
+  let h=`<div class="bgrid"><span class="hd" style="text-align:left">Paper</span><span class="hd">Max</span>${[2,3,4,5,6,7].map(g=>`<span class="hd" ${TARGET_GRADE[s]===g?'style="color:var(--ink)"':''}>${g}</span>`).join('')}`;
+  PAPER_KEYS[s].forEach(k=>{ const b=((state.bounds[s]||{})[k])||{max:'',g:[]};
+    h+=`<b>${k}</b><input type="number" min="1" value="${b.max===''||b.max==null?'':b.max}" data-s="${s}" data-k="${k}" data-i="max" onchange="setBound(this)" aria-label="${SUBJ[s]} ${k} max marks">`
+      +[0,1,2,3,4,5].map(i=>`<input type="number" min="0" value="${b.g[i]===''||b.g[i]==null?'':b.g[i]}" data-s="${s}" data-k="${k}" data-i="${i}" onchange="setBound(this)" aria-label="${SUBJ[s]} ${k} grade ${i+2}">`).join('');
+  });
+  return h+`</div><div class="note" style="margin:8px 0 0">The lowest raw mark for each grade. Max is what the paper is out of. Leave a grade blank if you don’t know it.</div>`;
+}
+function cutListHTML(x){
+  if(!x||(!x.cuts.length&&!(x.short>0))) return '';
+  return `<div class="cuts">${x.cuts.length?`<div class="note" style="margin:0 0 6px">${x.st==='r'?'Cut':'Trim'} these, non-starred only, in the plan’s cut order:</div>`:''}
+    ${x.cuts.map(t=>`<div class="list-row" style="padding:6px 2px;align-items:center"><span class="sd" style="background:${SCOL[t.s]}"></span><span class="num faint" style="width:74px;flex-shrink:0">${t.day}</span><span class="grow">${esc(t12(headOf(t)))}<br><span class="faint">${CUT_WHY[cutRank(t)]} · ${t.m} min</span></span><button class="b ghost sm" onclick="skipTask('${t.id}')">Skip</button></div>`).join('')}
+    ${x.short>0?`<div class="note" style="margin:8px 0 0;color:${x.st==='r'?'var(--red)':'var(--sub)'}">${x.st==='r'?'Still about '+(x.short/60).toFixed(1)+' h more work than time':'Still above 85% full'}${x.cuts.length?' after these':''}. Nothing else is safe to cut: add hours in Exams, or ask the Coach to replan the starred blocks.</div>`:''}</div>`;
+}
+window.openExam=i=>openSheet(()=>{
+  const f=FINALS[i]; if(!f) return null;
+  const D=daysUntil(f[0]), x=capByExam()[kitKey(f)], s=f[3];
+  const its=kitItems(f,D===0?'day':'night'), ck=state.examChk[kitKey(f)]||{};
+  const ps=state.papers.map((p,j)=>({p,j})).filter(o=>o.p.s===s&&+o.p.tot>0);
+  const weak=state.topics.filter(t=>t.s===s&&(t.rag===1||t.rag===2));
+  let h='';
+  if(x){ const [col,lab]=CAP_ST[x.st], mx=Math.max(x.need,x.have,1);
+    h+=`<div class="sblock"><h4>Does the plan fit?<span class="stbadge" style="background:${col}">${lab}</span></h4>
+      <div class="capbars"><div><span>Work left</span><i><em style="width:${x.need/mx*100}%;background:${col}"></em></i><b>${(x.need/60).toFixed(1)} h</b></div>
+        <div><span>Time free</span><i><em style="width:${x.have/mx*100}%;background:var(--sub)"></em></i><b>${(x.have/60).toFixed(1)} h</b></div></div>
+      ${cutListHTML(x)}</div>`;
+  }
+  h+=`<div class="sblock"><h4>Kit for the day${kitCount(kitKey(f),its,ck,'kitn')}</h4>${its.map(it=>kitRow(kitKey(f),it,ck)).join('')}</div>`;
+  h+=`<div class="sblock"><h4>${SUBJ[s]} papers and grades</h4>${ps.length?ps.map(({p})=>`<div class="list-row" style="align-items:flex-start;padding:7px 2px"><span class="grow">${esc(p.n)} <span class="scorechip">${p.sc}/${p.tot}</span><br>${gradeText(p,gradeInfo(p))}</span></div>`).join(''):'<div class="note" style="margin:0 0 8px">No scored papers yet.</div>'}
+    <div style="margin-top:10px">${boundGridHTML(s)}</div></div>`;
+  if(weak.length) h+=`<div class="sblock"><h4>Weak topics · ${weak.length}<button class="b ghost sm" onclick="closePanel();go('topics')">Topics</button></h4>${whatNext(40).filter(w=>w.t.s===s).slice(0,4).map(w=>`<div class="wn"><span class="rg" style="background:${RAG[w.t.rag].c}"></span><span class="grow">${esc(w.t.t)}<small>${w.stale===null?'never reviewed':'untouched '+w.stale+' d'}</small></span><button class="del" style="opacity:.8" title="Reviewed today" onclick="reviewTopic('${w.t.id}')">✓</button></div>`).join('')}</div>`;
+  return {pre:`<span class="sdot" style="background:${SCOL[s]}"></span>`,title:examName(f),sub:`${f[0]} · ${t12(EXAM_AT[f[1]])} · ${D<0?'done':D===0?'today':D===1?'tomorrow':'in '+D+' days'}`,html:h};
+});
+function vExams(){
+  const cap=capByExam(), nm=nowMin();
+  const up=FINALS.map((f,i)=>({f,i,D:daysUntil(f[0])})).filter(o=>o.D>0||(o.D===0&&nm<hm(EXAM_AT[o.f[1]])+150));
+  const done=FINALS.length-up.length, rows=Object.values(cap), red=rows.filter(x=>x.st==='r').length, amb=rows.filter(x=>x.st==='a').length;
+  const graded=state.papers.filter(p=>{ const g=gradeInfo(p); return g&&!g.none; }).length;
+  let h=`<div class="tiles four">
+    <div class="card tile"><span>Next paper</span><b>${up.length?(up[0].D===0?'Today':up[0].D+' d'):'Done'}</b><small>${up.length?esc(examName(up[0].f)):'all 13 sat'}</small></div>
+    <div class="card tile" style="animation-delay:.04s"><span>Papers left</span><b>${up.length}</b><small>${done} of 13 sat</small></div>
+    <div class="card tile ${red?'hot':''}" style="animation-delay:.08s"><span>Plan fits</span><b style="color:${red?'var(--red)':amb?'var(--warn)':'var(--ok)'}">${red?red+' red':amb?amb+' tight':'All clear'}</b><small>${red||amb?'tap a paper for what to cut':'every paper has room'}</small></div>
+    <div class="card tile" style="animation-delay:.12s"><span>Grades worked out</span><b>${graded}</b><small>of ${state.papers.length} scored papers</small></div></div>`;
+  h+=`<h2>The papers</h2><div class="card board">${FINALS.map((f,i)=>{ const D=daysUntil(f[0]), past=up.every(o=>o.i!==i), x=cap[kitKey(f)], [kd,kt]=kitDone(f), dt=dateOf(f[0]);
+    return `<button class="brow ${past?'past':''}" onclick="openExam(${i})" style="--sc:${SCOL[f[3]]}">
+      <span class="bdate"><small>${WD[dt.getDay()]}</small><b>${dt.getDate()}</b><small>${MON3[dt.getMonth()]}</small></span>
+      <span class="bname"><b><i class="sdot"></i>${esc(examName(f))}</b><small>${t12(EXAM_AT[f[1]])} · ${past?'done':D===0?'today':D===1?'tomorrow':'in '+D+' days'}</small></span>
+      <span class="bcap">${x?`<i class="statusdot" style="background:${CAP_ST[x.st][0]}"></i>${isFinite(x.r)?Math.round(x.r*100)+'% full':'no time left'}`:''}</span>
+      <span class="bkit ${kd===kt?'ok':''}">${past?'':`Kit ${kd}/${kt}`}</span><span class="chev">›</span></button>`; }).join('')}</div>`;
+  const bs=state.bdOpen&&PAPER_KEYS[state.bdOpen]?state.bdOpen:'math';
+  h+=`<div class="egrid"><div><h2>Raw mark to grade</h2>
+      <p class="note">Targets: Maths 4, Physics 4, Chem 6, everything else one grade up. Safe means ${SAFE_LO}-${SAFE_HI} marks above the line, because boundaries move between sessions. Half papers are scaled up.</p>
+      <div class="card" style="padding:4px 2px" id="gradelist">${gradeListHTML()}</div></div>
+    <div><h2>November boundaries</h2><div class="chips">${Object.keys(PAPER_KEYS).map(s=>`<button class="chip ${bs===s?'on':''}" onclick="state.bdOpen='${s}';paint();save()">${SUBJ[s]}<span class="n">${PAPER_KEYS[s].filter(k=>boundsOf(s,k)).length}/${PAPER_KEYS[s].length}</span></button>`).join('')}</div>
+      <div class="card" style="padding:16px 18px">${boundGridHTML(bs)}</div></div></div>`;
+  const c=state.cap, ratio=paceRatio();
+  h+=`<h2>Hours you really have</h2><div class="card" style="padding:16px 18px">
+    <div class="editrow" style="gap:10px 18px">${CAP_L.map(([k,l])=>`<label style="font-size:13px;display:flex;align-items:center;gap:6px">${l}<input type="number" min="0" max="720" step="15" value="${c[k]}" data-cap="${k}" onchange="setCap(this)"> min</label>`).join('')}</div>
+    <div class="note" style="margin:10px 0 0">Used for “Plan fits”: every unfinished task before a paper${ratio!==1?`, times ${ratio.toFixed(2)} because that’s how long your ticked tasks really took`:''}, against these minutes for each day from today. Rest days count as 0. Green is up to 85% full, amber up to 100%, red is more work than time.</div></div>`;
+  return h;
+}
+
 /* ================= shell ================= */
 /* ================= shell: navigation, header ================= */
 // icons: Tabler Icons (MIT), outline set, inlined so the page works offline
@@ -4041,6 +4184,7 @@ function paint(tabSwitch){
   v.innerHTML=V[state.tab]();
   deDash(v); deDash(document.getElementById('pagehead'));
   if(state.tab==='today') settleStrip();
+  if(sheetFn) renderSheet();
 }
 window.go=id=>{
   if(SUBTABS[id]) id=(state.lastSub||{})[id]||SUBTABS[id][0][0];
