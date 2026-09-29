@@ -1358,6 +1358,149 @@ body.bunker .wkp{background:rgba(12,22,16,.78);border-radius:3px}
 body.bunker .wkp.on{background:rgba(67,224,138,.3)}
 @media (prefers-reduced-motion:reduce){.drawer,.drawer.open{transition:none}.pday,.brow,.wksum{animation:none}}
 
+/* =====================================================================
+   LAUNCH CONTROL · "Iron Nest" engine room
+   painted green steel, brass gauges with cream faces, red valve lacquer,
+   green indicator lamps, caged pendant lights. Overrides the older bunker skin.
+   ===================================================================== */
+body.bunker{
+  --ink:#E9DFC2; --sub:#AEB6A2; --faint:#848E80; --edge:rgba(233,223,194,.12); --stroke:rgba(233,223,194,.14);
+  --blue:#C9402C; --red:#E0513A; --ok:#5CF08F; --warn:#E8B04A;
+  --steel:#3A4640; --steel-d:#252E2A; --brass:#C9A04A; --brass-d:#7A5A1C; --cream:#ECE2C6; --lamp:#5CF08F; --valve:#B8322A;
+  --surface:#2E3833; --surface-2:#1C231F; --fill:rgba(233,223,194,.08); --hover:rgba(233,223,194,.05); --scheme:dark;
+  --physics:#8FB4C9; --math:#F08A62; --chem:#6FE0A0; --spanish:#F2BF52; --history:#D896DE; --english:#9EA6FF; --buffer:#8E978A;
+  color:var(--ink);
+  background-color:#141A17;
+  background-image:
+    radial-gradient(420px 260px at 12% 0%, rgba(255,196,110,.20), transparent 70%),
+    radial-gradient(420px 260px at 52% 0%, rgba(255,196,110,.16), transparent 70%),
+    radial-gradient(420px 260px at 90% 0%, rgba(255,196,110,.20), transparent 70%),
+    radial-gradient(1200px 700px at 50% 120%, rgba(150,40,20,.30), transparent 65%),
+    radial-gradient(circle at 12px 12px, #5B6962 1.6px, #1E2622 2.4px, transparent 3.2px),
+    linear-gradient(180deg, rgba(0,0,0,.35) 1px, transparent 2px),
+    linear-gradient(90deg, rgba(0,0,0,.35) 1px, transparent 2px),
+    linear-gradient(180deg,#26302B,#1A211D);
+  background-size:100% 100%,100% 100%,100% 100%,100% 100%,120px 120px,120px 120px,120px 120px,100% 100%;
+  background-attachment:fixed;
+}
+/* no hazard frame: warm lamp light that breathes, plus a heavy vignette */
+body.bunker::before{border:none;border-image:none;opacity:1;z-index:94;
+  background:radial-gradient(900px 420px at 50% -60px, rgba(255,200,120,.10), transparent 70%);animation:lampbreath 6s ease-in-out infinite}
+body.bunker::after{background:radial-gradient(120% 95% at 50% 40%, transparent 50%, rgba(0,0,0,.62) 100%)}
+@keyframes lampbreath{0%,100%{opacity:.85}47%{opacity:1}50%{opacity:.7}53%{opacity:1}}
+
+/* painted steel panels with brass corner bolts */
+body.bunker .card,
+body.bunker .glass:not(.masthead){
+  background:
+    radial-gradient(circle at 12px 12px,#F2D48A 0,#B8903C 2.6px,#5E4412 4.2px,transparent 5px),
+    radial-gradient(circle at calc(100% - 12px) 12px,#F2D48A 0,#B8903C 2.6px,#5E4412 4.2px,transparent 5px),
+    radial-gradient(circle at 12px calc(100% - 12px),#F2D48A 0,#B8903C 2.6px,#5E4412 4.2px,transparent 5px),
+    radial-gradient(circle at calc(100% - 12px) calc(100% - 12px),#F2D48A 0,#B8903C 2.6px,#5E4412 4.2px,transparent 5px),
+    linear-gradient(180deg,rgba(255,255,255,.06),transparent 30%,rgba(0,0,0,.25)),
+    linear-gradient(180deg,var(--steel),var(--steel-d));
+  border:1px solid rgba(0,0,0,.7);border-radius:8px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.12), inset 0 -2px 4px rgba(0,0,0,.45), 0 10px 26px rgba(0,0,0,.55);
+}
+body.bunker .card::before,body.bunker .glass:not(.masthead)::before,
+body.bunker .card::after,body.bunker .glass:not(.masthead)::after{background:none;opacity:0}
+body.bunker .card,body.bunker .stat,body.bunker .tile,body.bunker .ncard,body.bunker .rcard{animation:clunk .6s cubic-bezier(.3,1.5,.5,1) both}
+@keyframes clunk{0%{opacity:0;transform:translateY(-14px)}60%{opacity:1;transform:translateY(2px)}100%{transform:none}}
+body.bunker .task.card{border-radius:6px;box-shadow:inset 0 1px 0 rgba(255,255,255,.1),0 4px 10px rgba(0,0,0,.45)}
+body.bunker .task .xtra{border-left-color:var(--brass);color:var(--sub)}
+
+/* stencilled headings */
+body.bunker h2,body.bunker #view > h2{color:var(--cream);text-shadow:0 1px 0 #000;letter-spacing:2.4px}
+body.bunker #view > .note,body.bunker #view > .note b{color:var(--sub);text-shadow:none}
+
+/* gauges: cream faces in brass rims */
+body.bunker .stat,body.bunker .tile{
+  background:radial-gradient(120% 90% at 50% 0%,#F8F0D8,var(--cream) 55%,#D5C8A4);
+  border:4px solid var(--brass);border-radius:14px;
+  box-shadow:inset 0 0 0 1px var(--brass-d), inset 0 3px 8px rgba(0,0,0,.25), 0 0 0 2px #1a140a, 0 8px 18px rgba(0,0,0,.55);color:#1E1B14}
+body.bunker .stat .l,body.bunker .tile span{color:#5C5540;letter-spacing:1.4px;text-transform:uppercase;font-size:10.5px}
+body.bunker .stat .v,body.bunker .tile b{color:#1B1812;text-shadow:none;font-weight:700}
+body.bunker .stat .s,body.bunker .tile small{color:#6E6650}
+body.bunker .tile.hot b{color:#A8261A}
+body.bunker .tile:hover{transform:translateY(-2px) rotate(-.3deg)}
+
+/* hero countdown as a mechanical counter */
+body.bunker .ncard .big b{display:inline-block;padding:4px 14px;border-radius:6px;background:linear-gradient(180deg,#141210,#2A2620 45%,#141210);
+  color:var(--cream);border:3px solid var(--brass);box-shadow:inset 0 3px 8px #000,0 0 0 2px #1a140a;text-shadow:0 0 12px rgba(255,210,140,.35);letter-spacing:4px}
+body.bunker .ncard .lbl,body.bunker .ncard .wh,body.bunker .ncard .then{color:var(--sub)}
+body.bunker .ncard .nm{color:var(--cream)}
+body.bunker .ring .bg{stroke:#11170F}
+body.bunker .ring .fg{stroke:var(--lamp);filter:drop-shadow(0 0 6px rgba(92,240,143,.8))}
+
+/* control console: nav keys with indicator lamps */
+body.bunker .side{background:linear-gradient(180deg,#44514A,#2A332E);border:1px solid #0c0f0d;border-radius:8px;padding:8px 10px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.18),inset 0 -3px 6px rgba(0,0,0,.5),0 10px 24px rgba(0,0,0,.6)}
+body.bunker .nav{color:var(--sub);padding:8px 12px 8px 26px;position:relative;border-radius:4px}
+body.bunker .nav::before{content:"";position:absolute;left:9px;top:50%;width:9px;height:9px;margin-top:-4.5px;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%,#3a4a3f,#101512);box-shadow:0 0 0 1.5px #0a0d0b}
+body.bunker .nav.on{color:var(--cream);background:rgba(0,0,0,.28);box-shadow:inset 0 2px 5px rgba(0,0,0,.6)}
+body.bunker .nav.on::before{background:radial-gradient(circle at 35% 30%,#D9FFE6,var(--lamp) 45%,#1E8A4A);box-shadow:0 0 0 1.5px #0a0d0b,0 0 10px 2px rgba(92,240,143,.8);animation:lamppulse 2.4s ease-in-out infinite}
+@keyframes lamppulse{0%,100%{box-shadow:0 0 0 1.5px #0a0d0b,0 0 10px 2px rgba(92,240,143,.8)}50%{box-shadow:0 0 0 1.5px #0a0d0b,0 0 16px 4px rgba(92,240,143,.55)}}
+body.bunker .nav .ct{display:inline;margin-left:6px;color:var(--warn)}
+
+/* brass nameplate */
+body.bunker .masthead{border-radius:6px;border:3px solid var(--brass);
+  background:linear-gradient(180deg,rgba(255,255,255,.07),transparent 40%,rgba(0,0,0,.3)),linear-gradient(180deg,var(--steel),var(--steel-d));
+  box-shadow:inset 0 0 0 1px var(--brass-d),0 0 0 2px #120e06,0 12px 28px rgba(0,0,0,.6)}
+body.bunker .masthead::before,body.bunker .masthead::after{display:none}
+body.bunker .masthead h1{display:inline-block;padding:6px 16px;border-radius:4px;color:#2A2010;text-shadow:0 1px 0 rgba(255,255,255,.5);
+  background:linear-gradient(180deg,#F5DC96,#C9A04A 55%,#9A7428);box-shadow:inset 0 1px 0 rgba(255,255,255,.6),0 2px 4px rgba(0,0,0,.6)}
+body.bunker .masthead .meta,body.bunker .masthead .meta b{color:var(--ink)}
+body.bunker .masthead .shine{display:none}
+
+/* red valve buttons, brass-rimmed secondaries */
+body.bunker button.b{background:linear-gradient(180deg,#E0563F,var(--valve) 55%,#7E1C14);color:#FFF1E4;border:1px solid #3A0C08;border-radius:6px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 3px 0 #3A0C08,0 6px 12px rgba(0,0,0,.5);letter-spacing:1.2px;text-shadow:0 1px 0 rgba(0,0,0,.4);
+  transition:transform .12s, box-shadow .12s}
+body.bunker button.b:active{transform:translateY(3px);box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 0 0 #3A0C08,0 2px 6px rgba(0,0,0,.5)}
+body.bunker button.b.ghost{background:linear-gradient(180deg,#4B5850,#2E3833);color:var(--cream);border:1px solid var(--brass-d);box-shadow:inset 0 1px 0 rgba(255,255,255,.15),0 3px 0 #111,0 6px 12px rgba(0,0,0,.45)}
+
+/* indicator-lamp checkboxes */
+body.bunker input[type=checkbox]{width:20px;height:20px;border-radius:50%;border:2px solid #0b0e0c;
+  background:radial-gradient(circle at 35% 30%,#46574B,#121814);box-shadow:inset 0 1px 2px rgba(0,0,0,.8),0 0 0 2px #6A5424}
+body.bunker input[type=checkbox]::before{display:none}
+body.bunker input[type=checkbox]:checked{background:radial-gradient(circle at 35% 30%,#E6FFEE,var(--lamp) 45%,#1E8A4A);
+  box-shadow:0 0 0 2px #6A5424,0 0 12px 3px rgba(92,240,143,.75);animation:lampon .5s steps(1,end)}
+@keyframes lampon{0%{filter:brightness(.4)}20%{filter:brightness(1.4)}35%{filter:brightness(.6)}55%{filter:none}}
+
+/* inputs: recessed dark slots */
+body.bunker .addrow input,body.bunker .addrow select,body.bunker .frm input,body.bunker .frm select,body.bunker textarea,
+body.bunker .editrow input,body.bunker .editrow select,body.bunker .bgrid input,body.bunker .sform input,body.bunker .sform select{
+  background:#0F1411;color:var(--cream);border:1px solid #000;border-radius:4px;box-shadow:inset 0 2px 5px rgba(0,0,0,.9),0 1px 0 rgba(255,255,255,.08)}
+
+/* day strip + week pills as rotary tags */
+body.bunker .ds,body.bunker .wkp{background:linear-gradient(180deg,#3E4A43,#262F2A);border:1px solid #0b0e0c;border-radius:6px;color:var(--ink)}
+body.bunker .ds.on,body.bunker .wkp.on{background:linear-gradient(180deg,#F5DC96,#C9A04A 55%,#9A7428);color:#231A08;border-color:#5E4412}
+body.bunker .ds.on small,body.bunker .wkp.on small{color:#4A3B18;opacity:1}
+body.bunker .chip{background:#1B221E;border:1px solid var(--brass-d);color:var(--ink);border-radius:4px}
+body.bunker .chip.on{background:linear-gradient(180deg,#F5DC96,#C9A04A);color:#231A08;border-color:#5E4412}
+
+/* detail panel = clipboard */
+body.bunker .drawer{background:linear-gradient(180deg,#8A5A2E,#6B4221);border:2px solid #3A230E;border-radius:12px;padding:30px 14px 14px;
+  box-shadow:0 20px 60px rgba(0,0,0,.7),inset 0 1px 0 rgba(255,220,170,.3);color:#221D14}
+body.bunker .drawer::before{content:"";position:absolute;top:-10px;left:50%;width:120px;height:34px;margin-left:-60px;border-radius:8px 8px 14px 14px;
+  background:linear-gradient(180deg,#E4E7E9,#8E969B 60%,#5D6468);box-shadow:inset 0 1px 0 #fff,0 3px 6px rgba(0,0,0,.6)}
+body.bunker .drawerhead,body.bunker .drawerbody{background:#F1E9D2;color:#221D14;--ink:#221D14;--sub:#5C5540;--faint:#7A7158;--edge:rgba(40,30,10,.18);--fill:rgba(40,30,10,.08);--surface-2:#FBF6E6;--scheme:light}
+body.bunker .drawerhead{border-radius:4px 4px 0 0;box-shadow:0 1px 0 rgba(0,0,0,.08)}
+body.bunker .drawerbody{border-radius:0 0 4px 4px;background-image:repeating-linear-gradient(180deg,transparent 0 27px,rgba(80,110,160,.18) 27px 28px)}
+body.bunker .drawerhead h3{font-family:"Courier New",ui-monospace,monospace;letter-spacing:.5px}
+body.bunker .drawer .sform input,body.bunker .drawer .sform select,body.bunker .drawer .bgrid input{background:#FBF6E6;color:#221D14;box-shadow:none;border:1px solid rgba(40,30,10,.3)}
+body.bunker .drawer .list-row,body.bunker .drawer .note{color:#221D14}
+body.bunker .drawer input[type=checkbox]{background:#FBF6E6;box-shadow:0 0 0 2px #221D14;border:none;border-radius:3px}
+body.bunker .drawer input[type=checkbox]:checked{background:#C9402C;box-shadow:0 0 0 2px #221D14}
+
+/* timer lever */
+body.bunker #tmbtn{background:linear-gradient(180deg,#F5DC96,#C9A04A 55%,#9A7428);color:#231A08;border:1px solid #5E4412;border-radius:6px;box-shadow:0 3px 0 #3A2A0A,0 8px 16px rgba(0,0,0,.6)}
+body.bunker #tmbtn.running{background:linear-gradient(180deg,#E6FFEE,var(--lamp) 50%,#1E8A4A);color:#0B2414}
+body.bunker #tmbtn.over{background:linear-gradient(180deg,#E0563F,var(--valve));color:#fff}
+body.bunker .footer{background:transparent;border:none;box-shadow:none}
+@media (prefers-reduced-motion:reduce){body.bunker::before,body.bunker .nav.on::before{animation:none}body.bunker .card,body.bunker .stat,body.bunker .tile,body.bunker .ncard,body.bunker .rcard{animation:none}}
+
 </style>
 </head>
 <body>
