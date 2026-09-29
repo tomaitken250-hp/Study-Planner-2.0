@@ -940,6 +940,8 @@ body.bunker .chip.on{background:rgba(67,224,138,.32);border-color:rgba(67,224,13
 body.bunker .bgrid input{background:#050A07;color:var(--ink);border:1px solid rgba(0,0,0,.85);border-radius:3px}
 body.bunker .tagsel{color-scheme:dark}
 body.bunker .stbadge{border-radius:2px}
+.dropzone{padding:22px 16px;text-align:center;border:1.5px dashed var(--edge);transition:border-color .15s var(--ease),background .15s var(--ease)}
+.dropzone.over{border-color:var(--blue);background:rgba(10,132,255,.08)}
 
 </style>
 </head>
@@ -1008,6 +1010,7 @@ body.bunker .stbadge{border-radius:2px}
 <div id="toast" role="status" aria-live="polite"></div>
 <div id="tmpanel" class="glass"></div>
 <div id="printarea"></div>
+<input type="file" id="libfile" multiple accept=".html,.htm,.pdf,.md,.txt,.png,.jpg,.jpeg" style="display:none" onchange="libFiles(event)">
 <input type="file" id="importfile" accept=".json,application/json" style="display:none" onchange="importFile(event)">
 <script>
 /* ================= storage: artifact storage if present, else this browser ================= */
@@ -1874,11 +1877,14 @@ function normalize(){
   if(!state.cov){ state.cov={}; }
   // later additions: grade boundaries, exam kit ticks, timer pacing, capacity, mistake tags, recall cards
   if(!state.bounds) state.bounds={};
+  Object.keys(PAPER_MAX).forEach(s=>Object.keys(PAPER_MAX[s]).forEach(k=>{ state.bounds[s]=state.bounds[s]||{};
+    const b=state.bounds[s][k]=state.bounds[s][k]||{max:'',g:['','','','','','']}; if(b.max===''||b.max==null) b.max=PAPER_MAX[s][k]; }));
   if(!state.examChk) state.examChk={};
   if(!state.tmCfg) state.tmCfg={};
   if(!state.tmPrefs) state.tmPrefs={read:5,every:15};
   state.cap=Object.assign({},CAP_DEF,state.cap||{});
   state.mistakes.forEach(m=>{ if(!Array.isArray(m.tags)) m.tags=autoTags(m); });
+  if(!Array.isArray(state.library)) state.library=[];
   if(!Array.isArray(state.cards)) state.cards=[];
   const haveC=new Set(state.cards.map(c=>c.id)), delC=new Set(state.cardsDel||[]), seedC={};
   SEED_CARDS.forEach(c=>{ seedC[c.id]=c; if(!haveC.has(c.id)&&!delC.has(c.id)) state.cards.push({...c,box:1,due:localISO(),seed:true,reps:0}); });
@@ -1921,7 +1927,7 @@ function doneMinBySubj(){
 function esc(x){return String(x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
 
 /* ================= views ================= */
-const TABS=[['plan','Plan'],['mistakes','Mistakes'],['cards','Cards'],['exams','Exams'],['recipes','Recipes'],['school','Checklist'],['cover','Cover'],['topics','Topics'],['log','Log it'],['stats','Stats'],['coach','Coach']];
+const TABS=[['plan','Plan'],['mistakes','Mistakes'],['cards','Cards'],['exams','Exams'],['library','Library'],['recipes','Recipes'],['school','Checklist'],['cover','Cover'],['topics','Topics'],['log','Log it'],['stats','Stats'],['coach','Coach']];
 
 function renderStats(){
   const dm=doneMinBySubj();
@@ -2403,7 +2409,9 @@ function writeLeft(){ const l=timerLeft(); return l===null?null:Math.min(state.t
 function inReading(){ const T=state.timer; return !!T && timerLeft()>T.dur; }
 function mmss(s){ const h=Math.floor(s/3600), m=Math.floor(s%3600/60), x=s%60; return (h?h+':'+String(m).padStart(2,'0'):m)+':'+String(x).padStart(2,'0'); }
 // pacing: known totals for papers whose mark count doesn't change; everything else is remembered per paper once entered
-const PACE_DEF={'Maths P1':{marks:110},'Maths P2':{marks:110},'Maths P3':{marks:55}};
+const PACE_DEF={'Maths P1':{marks:110},'Maths P2':{marks:110},'Maths P3':{marks:55},'Physics P1':{marks:60},'Physics P2':{marks:90},
+  'Chem P1':{marks:55},'Chem P2':{marks:50},'Chem P2 half':{marks:25},'History P1':{marks:24},'History P2':{marks:30},'History P3':{marks:45},'History P3 essay':{marks:15},
+  'English P1':{marks:20},'Spanish P1':{marks:30},'Spanish Reading':{marks:40},'Spanish Listening':{marks:25}};
 function paceKey(label){ return String(label).replace(/\s*\(.*\)\s*$/,'').trim(); }
 function qMarks(P){
   const raw=String((P&&P.qs)||'').trim(); if(!raw) return null;
@@ -2536,7 +2544,7 @@ window.importFile=ev=>{
   r.onload=()=>{ try{ const o=JSON.parse(r.result);
       if(!o || !Array.isArray(o.tasks)) throw new Error('not a backup');
       if(!confirm('Replace everything here with this backup ('+o.tasks.filter(t=>t.done).length+' ticks, '+(o.papers||[]).length+' papers, '+(o.mistakes||[]).length+' mistake lines)?')) return;
-      state=o; window.state=state; state.planV=null; normalize(); paint(); save(); toast('Backup restored');
+      const keepLib=state.library; state=o; window.state=state; if(!Array.isArray(state.library)) state.library=keepLib; state.planV=null; normalize(); paint(); save(); toast('Backup restored');
     }catch(e){ alert('That file isn’t an Exam Control backup.'); } };
   r.readAsText(file);
 };
@@ -2742,7 +2750,7 @@ window.forceReseed=()=>{
 };
 window.wipeAll=()=>{
   if(!confirm('Wipe all ticks, ratings, papers and sessions? This cannot be undone.'))return;
-  state={tasks:null,checks:{},sessions:[],papers:[],mistakes:[],timer:null,topics:null,cov:{},covText:null,tab:state.tab,planV:null};
+  state={library:state.library,tasks:null,checks:{},sessions:[],papers:[],mistakes:[],timer:null,topics:null,cov:{},covText:null,tab:state.tab,planV:null};
   state.tasks=SEED_TASKS.map((t,i)=>({id:'t'+i,...t,done:false,doneAt:null}));
   state.topics=SEED_TOPICS.map((t,i)=>({id:'p'+i,...t,rag:t.rag||0,dt:null}));
   state.covText=COVERAGE.map(c=>c.t); state.planV=PLAN_VERSION; state.topicsV=PLAN_VERSION;
@@ -3169,6 +3177,8 @@ window.tglKit=(key,id)=>{
 /* ================= raw mark -> grade ================= */
 const PAPER_KEYS={math:['P1','P2','P3'],physics:['P1','P2'],chem:['P1','P2'],history:['P1','P2','P3'],english:['P1','P2'],spanish:['P1','Reading','Listening']};
 const TARGET_GRADE={math:4,physics:4,chem:6};
+// paper totals from MOCK_DATA.md (English P2 is 25 or 30 — not confirmed, so left blank)
+const PAPER_MAX={math:{P1:110,P2:110,P3:55},physics:{P1:60,P2:90},chem:{P1:55,P2:50},history:{P1:24,P2:30,P3:45},english:{P1:20},spanish:{P1:30,Reading:40,Listening:25}};
 const SAFE_LO=5, SAFE_HI=8;   // marks above the line before a grade counts as safe
 function paperKeyOf(p){
   if(p.pk!==undefined) return p.pk;
@@ -3472,6 +3482,88 @@ document.addEventListener('keydown',e=>{
   else if(cs.shown && /^[1-4]$/.test(e.key)){ e.preventDefault(); csGrade(+e.key); }
 });
 
+/* ================= library: your dossiers and summaries ================= */
+// File contents live in IndexedDB (dossiers can be several MB, far past localStorage);
+// state.library only holds the list: {id,name,title,s,type,size,added}.
+const LIB_DB='exam-control-library', LIB_TYPES='.html,.htm,.pdf,.md,.txt,.png,.jpg,.jpeg';
+function libDB(){ return new Promise((res,rej)=>{ const r=indexedDB.open(LIB_DB,1);
+  r.onupgradeneeded=()=>r.result.createObjectStore('files');
+  r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error); }); }
+async function libPut(id,blob){ const db=await libDB(); return new Promise((res,rej)=>{ const tx=db.transaction('files','readwrite'); tx.objectStore('files').put(blob,id); tx.oncomplete=res; tx.onerror=()=>rej(tx.error); }); }
+async function libGet(id){ const db=await libDB(); return new Promise((res,rej)=>{ const q=db.transaction('files').objectStore('files').get(id); q.onsuccess=()=>res(q.result||null); q.onerror=()=>rej(q.error); }); }
+async function libDel(id){ const db=await libDB(); return new Promise(res=>{ const tx=db.transaction('files','readwrite'); tx.objectStore('files').delete(id); tx.oncomplete=res; tx.onerror=res; }); }
+function libMime(name,type){ const e=String(name).toLowerCase().split('.').pop();
+  return {html:'text/html',htm:'text/html',pdf:'application/pdf',md:'text/plain',txt:'text/plain',png:'image/png',jpg:'image/jpeg',jpeg:'image/jpeg'}[e]||type||'application/octet-stream'; }
+function libGuessSub(name){ const n=name.toLowerCase();
+  return /hist|mao|hitler|mussolini|japan|ww1|wwi|interwar/.test(n)?'history':/math|euler|calc/.test(n)?'math':/phys|relativ/.test(n)?'physics':
+    /chem|kinetic|organic/.test(n)?'chem':/span|espa/.test(n)?'spanish':/engl|l&l|lang/.test(n)?'english':''; }
+function fmtSize(b){ return b>=1048576?(b/1048576).toFixed(1)+' MB':Math.max(1,Math.round(b/1024))+' KB'; }
+async function libAddFiles(files){
+  const sel=document.getElementById('lib-s'), fixed=sel?sel.value:'';
+  let n=0;
+  for(const f of files){
+    const id='lib'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+    try{ await libPut(id,f); }catch(e){ toast('Couldn’t save '+f.name+' — the browser refused the storage'); continue; }
+    state.library.push({id,name:f.name,title:f.name.replace(/\.[^.]+$/,'').replace(/[_-]+/g,' '),s:fixed||libGuessSub(f.name)||'buffer',type:libMime(f.name,f.type),size:f.size,added:localISO()});
+    n++;
+  }
+  if(n){ paint(); save(); toast(n+' file'+(n>1?'s':'')+' added to the library'); }
+}
+window.libPick=()=>{ const f=document.getElementById('libfile'); f.value=''; f.click(); };
+window.libFiles=ev=>libAddFiles([...ev.target.files]);
+window.libDrop=ev=>{ ev.preventDefault(); ev.currentTarget.classList.remove('over'); libAddFiles([...ev.dataTransfer.files]); };
+window.libOpen=async id=>{
+  const it=state.library.find(x=>x.id===id); if(!it) return;
+  const w=window.open('','_blank');            // open first, inside the click, so pop-up blockers allow it
+  const b=await libGet(id).catch(()=>null);
+  if(!b){ if(w) w.close(); toast('That file isn’t stored in this browser — re-upload it'); return; }
+  const url=URL.createObjectURL(new Blob([b],{type:it.type}));
+  if(w) w.location=url; else location.href=url;
+  it.opened=localISO(); save(); setTimeout(()=>URL.revokeObjectURL(url),60000);
+};
+window.libDownload=async id=>{
+  const it=state.library.find(x=>x.id===id), b=it&&await libGet(id).catch(()=>null); if(!b){ toast('File not found in this browser'); return; }
+  const a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download=it.name; document.body.appendChild(a); a.click();
+  setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },500);
+};
+window.libEdit=(id,field,v)=>{ const it=state.library.find(x=>x.id===id); if(!it) return; v=String(v).trim(); if(field==='title'&&!v) return; it[field]=v; if(field==='s') paint(); save(); };
+window.libRemove=async id=>{
+  const i=state.library.findIndex(x=>x.id===id); if(i<0) return; const it=state.library[i];
+  if(!confirm('Remove “'+it.title+'” from the library? The file is deleted from this browser.')) return;
+  state.library.splice(i,1); await libDel(id); paint(); save(); toast('Removed');
+};
+window.libSub=s=>{ state.libSub=s||''; paint(); save(); };
+window.libSearch=v=>{ window._libQ=v; const q=v.toLowerCase();
+  document.querySelectorAll('[data-libq]').forEach(r=>r.style.display=!q||r.dataset.libq.indexOf(q)>-1?'':'none'); };
+function vLibrary(){
+  const sub=state.libSub||'', lib=state.library||[], q=(window._libQ||'').toLowerCase();
+  const subs=Object.keys(SUBJ).filter(s=>lib.some(x=>x.s===s));
+  let h=`<p class="note">Your own dossiers, summaries and notes in one place — HTML dossiers, PDFs, Markdown, text or images. They’re stored in this browser on this laptop and open in a new tab. Export backup doesn’t include the files, so keep the originals too.</p>
+  <div class="card dropzone" ondragover="event.preventDefault();this.classList.add('over')" ondragleave="this.classList.remove('over')" ondrop="libDrop(event)">
+    <b>Drop files here</b> <span class="faint">or</span> <button class="b sm" onclick="libPick()">Choose files</button>
+    <div class="editrow" style="justify-content:center;margin-top:10px"><span class="hint">File under</span>
+      <select id="lib-s"><option value="">guess from the file name</option>${Object.keys(SUBJ).map(s=>`<option value="${s}">${s==='buffer'?'General':SUBJ[s]}</option>`).join('')}</select></div></div>`;
+  if(!lib.length) return h+`<div class="note" style="margin-top:12px">Nothing here yet.</div>`;
+  h+=`<div class="chips" style="margin-top:14px"><button class="chip ${sub?'':'on'}" onclick="libSub('')">All<span class="n">${lib.length}</span></button>${subs.map(s=>`<button class="chip ${sub===s?'on':''}" onclick="libSub('${s}')">${s==='buffer'?'General':SUBJ[s]}<span class="n">${lib.filter(x=>x.s===s).length}</span></button>`).join('')}</div>
+  <div class="addrow" style="margin-top:0"><input type="text" placeholder="Search titles" value="${esc(window._libQ||'')}" oninput="libSearch(this.value)"></div>`;
+  (sub?[sub]:subs).forEach(s=>{
+    const items=lib.filter(x=>x.s===s).sort((a,b)=>a.title.localeCompare(b.title)); if(!items.length) return;
+    h+=`<h2><span class="sd" style="background:${SCOL[s]}"></span>${s==='buffer'?'General':SUBJ[s]} <span class="marks">${items.length}</span></h2><div class="card" style="padding:4px 2px">`;
+    items.forEach(it=>{
+      h+=`<div class="list-row" style="align-items:center" data-libq="${esc((it.title+' '+it.name).toLowerCase())}" ${q&&(it.title+' '+it.name).toLowerCase().indexOf(q)<0?'style="display:none"':''}>
+        <span class="tag" style="flex-shrink:0">${esc(it.name.split('.').pop().toUpperCase())}</span>
+        <span class="grow"><span contenteditable="true" spellcheck="false" title="Click to rename" style="font-weight:600;outline:none" onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur()}" onblur="libEdit('${it.id}','title',this.textContent)">${esc(it.title)}</span>
+          <br><span class="faint">${fmtSize(it.size)} · added ${shortD(it.added)}${it.opened?' · opened '+shortD(it.opened):''}</span></span>
+        <select class="tagsel" title="Subject" onchange="libEdit('${it.id}','s',this.value)">${Object.keys(SUBJ).map(x=>`<option value="${x}" ${x===it.s?'selected':''}>${x==='buffer'?'General':SUBJ[x]}</option>`).join('')}</select>
+        <button class="b sm" onclick="libOpen('${it.id}')">Open</button>
+        <button class="del" title="Download a copy" onclick="libDownload('${it.id}')">⤓</button>
+        <button class="del delx" title="Remove" onclick="libRemove('${it.id}')">×</button></div>`;
+    });
+    h+=`</div>`;
+  });
+  return h;
+}
+
 /* ================= shell ================= */
 function paintTabs(){
   const bar=document.getElementById('tabbar');
@@ -3533,7 +3625,7 @@ function paint(tabSwitch){
   const v=document.getElementById('view');
   if(tabSwitch){v.classList.remove('swap'); void v.offsetWidth; v.classList.add('swap');}
   capAllDues();
-  v.innerHTML={plan:vPlan,mistakes:vMistakes,cards:vCards,exams:vExams,recipes:vRecipes,school:vSchool,cover:vCover,topics:vTopics,log:vLog,stats:vStats,coach:vCoach}[state.tab]();
+  v.innerHTML={plan:vPlan,mistakes:vMistakes,cards:vCards,exams:vExams,library:vLibrary,recipes:vRecipes,school:vSchool,cover:vCover,topics:vTopics,log:vLog,stats:vStats,coach:vCoach}[state.tab]();
 }
 window.go=id=>{state.tab=id;paint(true);save();};
 
