@@ -840,56 +840,6 @@ details.pastday > summary .chev{margin-left:auto}
   .addfrm select#nt-rec,.addfrm button{grid-column:1/-1}
   #toast{max-width:calc(100vw - 32px)}
 }
-/* ================= dark mode (standard theme follows the Mac setting) ================= */
-@media (prefers-color-scheme:dark){
-  body:not(.bunker):not(.force-light){--ink:#F2F2F7;--sub:#AEAEB2;--faint:#7C7C82;--glass:rgba(28,28,32,.66);--glass-strong:rgba(28,28,32,.85);
-    --stroke:rgba(255,255,255,.09);--edge:rgba(255,255,255,.11);--shadow:0 8px 32px rgba(0,0,0,.45),0 1.5px 4px rgba(0,0,0,.3);
-    background:#0E0F12;
-    background-image:radial-gradient(1100px 600px at 12% -8%, rgba(122,111,240,.16), transparent 60%),
-      radial-gradient(900px 550px at 105% 12%, rgba(10,132,255,.12), transparent 55%),
-      radial-gradient(1000px 700px at 50% 115%, rgba(48,181,138,.10), transparent 60%)}
-  body:not(.bunker):not(.force-light) .card{background:rgba(30,30,34,.92)}
-  body:not(.bunker):not(.force-light) summary:hover{background:rgba(255,255,255,.05)}
-  body:not(.bunker):not(.force-light) .tab.on{background:rgba(64,64,72,.95);box-shadow:0 2px 8px rgba(0,0,0,.4)}
-  body:not(.bunker):not(.force-light) .addrow input,body:not(.bunker):not(.force-light) .addrow select,body:not(.bunker):not(.force-light) .frm input,body:not(.bunker):not(.force-light) .frm select,
-  body:not(.bunker):not(.force-light) textarea,body:not(.bunker):not(.force-light) .sheet input,body:not(.bunker):not(.force-light) .editrow select,body:not(.bunker):not(.force-light) .editrow input,
-  body:not(.bunker):not(.force-light) #tmpanel input{background:rgba(44,44,50,.95);color:var(--ink);color-scheme:dark}
-  body:not(.bunker):not(.force-light) button.b.ghost,body:not(.bunker):not(.force-light) .quick button,body:not(.bunker):not(.force-light) .tmgrid button,body:not(.bunker):not(.force-light) .scorechip{background:rgba(52,52,58,.95);color:var(--ink)}
-  body:not(.bunker):not(.force-light) input[type=checkbox]{background:rgba(44,44,50,.95);border-color:rgba(255,255,255,.3)}
-  body:not(.bunker):not(.force-light) .list-row:hover{background:rgba(255,255,255,.04)}
-  body:not(.bunker):not(.force-light) .barrow .track,body:not(.bunker):not(.force-light) .tmbar{background:rgba(255,255,255,.09)}
-  body:not(.bunker):not(.force-light) .tag{background:rgba(255,255,255,.1)}
-  body:not(.bunker):not(.force-light) .rules,body:not(.bunker):not(.force-light) .sheet{background:rgba(10,132,255,.16)}
-  body:not(.bunker):not(.force-light) #toast{background:rgba(245,245,247,.96);color:#1D1D1F}
-  body:not(.bunker):not(.force-light) #toast button{color:#0A84FF}
-  body:not(.bunker):not(.force-light) .stat:hover{box-shadow:0 10px 28px rgba(0,0,0,.45)}
-  body:not(.bunker):not(.force-light) .themebtn{background:rgba(52,52,58,.95);color:var(--ink);border-color:rgba(255,255,255,.14)}
-  body:not(.bunker):not(.force-light) .tab.tab.tmtab{background:rgb(40,40,46)}
-}
-  body.force-dark:not(.bunker){--ink:#F2F2F7;--sub:#AEAEB2;--faint:#7C7C82;--glass:rgba(28,28,32,.66);--glass-strong:rgba(28,28,32,.85);
-    --stroke:rgba(255,255,255,.09);--edge:rgba(255,255,255,.11);--shadow:0 8px 32px rgba(0,0,0,.45),0 1.5px 4px rgba(0,0,0,.3);
-    background:#0E0F12;
-    background-image:radial-gradient(1100px 600px at 12% -8%, rgba(122,111,240,.16), transparent 60%),
-      radial-gradient(900px 550px at 105% 12%, rgba(10,132,255,.12), transparent 55%),
-      radial-gradient(1000px 700px at 50% 115%, rgba(48,181,138,.10), transparent 60%)}
-  body.force-dark:not(.bunker) .card{background:rgba(30,30,34,.92)}
-  body.force-dark:not(.bunker) summary:hover{background:rgba(255,255,255,.05)}
-  body.force-dark:not(.bunker) .tab.on{background:rgba(64,64,72,.95);box-shadow:0 2px 8px rgba(0,0,0,.4)}
-  body.force-dark:not(.bunker) .addrow input,body.force-dark:not(.bunker) .addrow select,body.force-dark:not(.bunker) .frm input,body.force-dark:not(.bunker) .frm select,
-  body.force-dark:not(.bunker) textarea,body.force-dark:not(.bunker) .sheet input,body.force-dark:not(.bunker) .editrow select,body.force-dark:not(.bunker) .editrow input,
-  body.force-dark:not(.bunker) #tmpanel input{background:rgba(44,44,50,.95);color:var(--ink);color-scheme:dark}
-  body.force-dark:not(.bunker) button.b.ghost,body.force-dark:not(.bunker) .quick button,body.force-dark:not(.bunker) .tmgrid button,body.force-dark:not(.bunker) .scorechip{background:rgba(52,52,58,.95);color:var(--ink)}
-  body.force-dark:not(.bunker) input[type=checkbox]{background:rgba(44,44,50,.95);border-color:rgba(255,255,255,.3)}
-  body.force-dark:not(.bunker) .list-row:hover{background:rgba(255,255,255,.04)}
-  body.force-dark:not(.bunker) .barrow .track,body.force-dark:not(.bunker) .tmbar{background:rgba(255,255,255,.09)}
-  body.force-dark:not(.bunker) .tag{background:rgba(255,255,255,.1)}
-  body.force-dark:not(.bunker) .rules,body.force-dark:not(.bunker) .sheet{background:rgba(10,132,255,.16)}
-  body.force-dark:not(.bunker) #toast{background:rgba(245,245,247,.96);color:#1D1D1F}
-  body.force-dark:not(.bunker) #toast button{color:#0A84FF}
-  body.force-dark:not(.bunker) .stat:hover{box-shadow:0 10px 28px rgba(0,0,0,.45)}
-  body.force-dark:not(.bunker) .themebtn{background:rgba(52,52,58,.95);color:var(--ink);border-color:rgba(255,255,255,.14)}
-  body.force-dark:not(.bunker) .tab.tab.tmtab{background:rgb(40,40,46)}
-
 /* ================= exams, tags, pacing, cards ================= */
 .chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 10px}
 .chip{font:inherit;font-size:11.5px;font-weight:600;padding:4px 10px;border-radius:999px;border:1px solid var(--edge);
@@ -925,16 +875,6 @@ details.pastday > summary .chev{margin-left:auto}
 .boxes .bx b{display:block;font-size:18px;font-variant-numeric:tabular-nums}
 .boxes .bx span{font-size:10.5px;color:var(--faint)}
 @media (max-width:520px){.bgrid{grid-template-columns:44px repeat(7,minmax(0,1fr));gap:3px}.bgrid input{padding:5px 1px}}
-@media (prefers-color-scheme:dark){
-  body:not(.bunker):not(.force-light) .chip,body:not(.bunker):not(.force-light) .bgrid input,body:not(.bunker):not(.force-light) .grades button{background:rgba(52,52,58,.95);color:var(--ink);color-scheme:dark}
-  body:not(.bunker):not(.force-light) .chip.on{background:var(--blue);border-color:var(--blue);color:#fff}
-  body:not(.bunker):not(.force-light) .tagsel{color-scheme:dark}
-  body:not(.bunker):not(.force-light) .tmpace{background:rgba(10,132,255,.16)}
-}
-body.force-dark:not(.bunker) .chip,body.force-dark:not(.bunker) .bgrid input,body.force-dark:not(.bunker) .grades button{background:rgba(52,52,58,.95);color:var(--ink);color-scheme:dark}
-body.force-dark:not(.bunker) .chip.on{background:var(--blue);border-color:var(--blue);color:#fff}
-body.force-dark:not(.bunker) .tagsel{color-scheme:dark}
-body.force-dark:not(.bunker) .tmpace{background:rgba(10,132,255,.16)}
 body.bunker .chip,body.bunker .grades button{border-radius:2px;background:rgba(67,224,138,.08);color:var(--ink)}
 body.bunker .chip.on{background:rgba(67,224,138,.32);border-color:rgba(67,224,138,.7);color:#DFFFE9}
 body.bunker .bgrid input{background:#050A07;color:var(--ink);border:1px solid rgba(0,0,0,.85);border-radius:3px}
@@ -943,11 +883,374 @@ body.bunker .stbadge{border-radius:2px}
 .dropzone{padding:22px 16px;text-align:center;border:1.5px dashed var(--edge);transition:border-color .15s var(--ease),background .15s var(--ease)}
 .dropzone.over{border-color:var(--blue);background:rgba(10,132,255,.08)}
 
+/* =====================================================================
+   GRAPHITE UI · design system (every mode except Launch Control)
+   One shape rule: cards 20px · controls pill · inputs 12px.
+   Colour carries meaning only: subject colours, one accent, status.
+   ===================================================================== */
+body:not(.bunker){
+  --r-card:20px; --r-in:12px;
+  --spring:cubic-bezier(.16,1,.3,1);
+  --side-w:248px;
+}
+/* ---------- theme tokens ---------- */
+body[data-theme=light]{
+  --bg:#F3F4F6; --surface:#FFFFFF; --surface-2:#F4F5F7; --fill:rgba(20,24,33,.05); --hover:rgba(20,24,33,.04);
+  --ink:#14161B; --sub:#565B66; --faint:#6F7580; --edge:rgba(20,24,33,.08); --edge-2:rgba(20,24,33,.14);
+  --blue:#2B6FF3; --red:#E5484D; --ok:#20A26B; --warn:#E39A28;
+  --math:#EE6A4F; --physics:#5A7EA8; --chem:#23A37A; --spanish:#E5A035; --history:#B35EC2; --english:#6E66E6; --buffer:#9AA0AA;
+  --shadow-1:0 1px 2px rgba(24,30,44,.05),0 4px 16px rgba(24,30,44,.05);
+  --shadow-2:0 12px 40px rgba(24,30,44,.12),0 2px 6px rgba(24,30,44,.06);
+  --glass-bg:rgba(255,255,255,.72); --scheme:light;
+  --aurora:linear-gradient(120deg,#FFB4D8 0%,#C8B6FF 38%,#9FD8FF 70%,#B8F2D8 100%);
+}
+body[data-theme=dark]{
+  --bg:#0D0E11; --surface:#16171B; --surface-2:#1C1E23; --fill:rgba(255,255,255,.06); --hover:rgba(255,255,255,.04);
+  --ink:#F1F2F4; --sub:#A8ADB7; --faint:#878C96; --edge:rgba(255,255,255,.07); --edge-2:rgba(255,255,255,.13);
+  --blue:#4C8DFF; --red:#FF6166; --ok:#3CC98A; --warn:#F2B04A;
+  --math:#FF8266; --physics:#86A6CC; --chem:#43C495; --spanish:#F2B551; --history:#D07FDC; --english:#8D86FF; --buffer:#7E838D;
+  --shadow-1:0 1px 0 rgba(255,255,255,.03) inset,0 6px 20px rgba(0,0,0,.35);
+  --shadow-2:0 20px 60px rgba(0,0,0,.55),0 2px 8px rgba(0,0,0,.4);
+  --glass-bg:rgba(22,23,27,.7); --scheme:dark;
+  --aurora:linear-gradient(120deg,#FF7EB6 0%,#9F86FF 38%,#5CB8FF 70%,#5FE0B0 100%);
+}
+body[data-theme=midnight]{
+  --bg:#060A13; --surface:#0C1321; --surface-2:#111A2C; --fill:rgba(120,160,255,.08); --hover:rgba(120,160,255,.05);
+  --ink:#E7EDF8; --sub:#A0AEC6; --faint:#7C8AA4; --edge:rgba(120,160,255,.10); --edge-2:rgba(120,160,255,.18);
+  --blue:#3D8BFF; --red:#FF5C6C; --ok:#35C98E; --warn:#F2B04A;
+  --math:#FF8A6E; --physics:#7FA9E0; --chem:#3FCB9A; --spanish:#F0B45A; --history:#C98AF0; --english:#8C95FF; --buffer:#6B7894;
+  --shadow-1:0 1px 0 rgba(140,180,255,.05) inset,0 8px 24px rgba(0,0,0,.45);
+  --shadow-2:0 24px 70px rgba(0,0,0,.6),0 0 0 1px rgba(120,160,255,.08);
+  --glass-bg:rgba(10,16,28,.72); --scheme:dark;
+  --aurora:linear-gradient(120deg,#3D8BFF 0%,#6A7BFF 45%,#3FCBE0 100%);
+}
+body[data-theme=aurora]{
+  --bg:#F5F3FA; --surface:rgba(255,255,255,.74); --surface-2:rgba(255,255,255,.6); --fill:rgba(60,40,110,.05); --hover:rgba(60,40,110,.04);
+  --ink:#1B1830; --sub:#57526F; --faint:#736D8C; --edge:rgba(60,40,110,.08); --edge-2:rgba(60,40,110,.15);
+  --blue:#7A5CF5; --red:#E5486A; --ok:#25A77A; --warn:#E39A28;
+  --math:#F0708A; --physics:#6C8FD8; --chem:#2FB08A; --spanish:#EDA43A; --history:#B866D6; --english:#7A6CF0; --buffer:#A29CB8;
+  --shadow-1:0 1px 2px rgba(80,50,140,.05),0 6px 20px rgba(80,50,140,.07);
+  --shadow-2:0 16px 50px rgba(80,50,140,.16);
+  --glass-bg:rgba(255,255,255,.66); --scheme:light;
+  --aurora:linear-gradient(120deg,#FFB4D8 0%,#C8B6FF 38%,#9FD8FF 70%,#B8F2D8 100%);
+}
+body:not(.bunker){
+  background:var(--bg); background-image:none; color:var(--ink); color-scheme:var(--scheme);
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  font-size:14.5px; letter-spacing:-.005em;
+  transition:background-color .4s var(--spring), color .4s var(--spring);
+}
+body[data-theme=aurora]{
+  background-image:
+    radial-gradient(900px 620px at 8% -6%, rgba(255,170,215,.45), transparent 62%),
+    radial-gradient(900px 700px at 100% 8%, rgba(160,200,255,.45), transparent 60%),
+    radial-gradient(1000px 700px at 60% 110%, rgba(170,240,210,.40), transparent 62%);
+  background-attachment:fixed;
+}
+
+/* ---------- shell: sidebar + main ---------- */
+.app{display:block}
+.side,.bottombar,.pagehead{display:none}
+body:not(.bunker) .app{display:grid;grid-template-columns:var(--side-w) minmax(0,1fr);min-height:100vh}
+body:not(.bunker) .side{display:flex;flex-direction:column;gap:18px;position:sticky;top:0;height:100vh;padding:26px 16px 18px;
+  border-right:1px solid var(--edge);overflow-y:auto}
+body:not(.bunker) .main{padding:30px 44px 90px;min-width:0}
+body:not(.bunker) .mainin{max-width:1260px;margin:0 auto}
+body:not(.bunker) .wrap-legacy{display:none}
+.brand{display:flex;align-items:center;gap:10px;padding:0 10px}
+.brand .mark{width:30px;height:30px;border-radius:9px;background:var(--aurora);box-shadow:inset 0 0 0 1px rgba(255,255,255,.35)}
+.brand b{font-size:15px;font-weight:650;letter-spacing:-.2px}
+.brand span{display:block;font-size:11.5px;color:var(--faint);font-weight:500}
+.navgrp{display:flex;flex-direction:column;gap:2px}
+.navlbl{font-size:11.5px;color:var(--faint);font-weight:600;padding:10px 12px 4px}
+.nav{position:relative;display:flex;align-items:center;gap:11px;width:100%;padding:9px 12px;border:none;background:none;
+  font:inherit;font-size:14px;font-weight:500;color:var(--sub);border-radius:12px;cursor:pointer;text-align:left;
+  transition:color .2s var(--spring), background .2s var(--spring), transform .15s var(--spring)}
+.nav:hover{color:var(--ink);background:var(--hover)}
+.nav:active{transform:scale(.98)}
+.nav .ic{width:18px;height:18px;flex-shrink:0;position:relative;z-index:1}
+.nav .lb{position:relative;z-index:1}
+.nav .ct{margin-left:auto;position:relative;z-index:1;font-size:11.5px;font-weight:600;color:var(--faint);font-variant-numeric:tabular-nums}
+.nav .ct.hot{color:#fff;background:var(--red);border-radius:999px;padding:1px 7px;min-width:20px;text-align:center}
+.nav.on{color:var(--ink);font-weight:600}
+.nav.on .pillbg{position:absolute;inset:0;border-radius:12px;background:var(--surface);box-shadow:var(--shadow-1)}
+@media (min-width:901px){.side .nav.on .pillbg{view-transition-name:navpill}}
+@media (max-width:900px){.bottombar .nav.on .pillbg{view-transition-name:navpill}}
+.side .grow{flex:1}
+.themes{padding:0 6px}
+.themes .navlbl{padding-left:6px}
+.swatches{display:flex;flex-wrap:wrap;gap:6px;padding:4px 4px}
+.sw{width:26px;height:26px;border-radius:50%;border:none;cursor:pointer;position:relative;
+  box-shadow:inset 0 0 0 1px rgba(0,0,0,.12);transition:transform .2s var(--spring)}
+.sw:hover{transform:scale(1.1)}
+.sw.on::after{content:"";position:absolute;inset:-4px;border-radius:50%;box-shadow:0 0 0 2px var(--blue)}
+.sw[data-t=auto]{background:linear-gradient(135deg,#F3F4F6 50%,#16171B 50%)}
+.sw[data-t=light]{background:#F3F4F6}
+.sw[data-t=dark]{background:#16171B}
+.sw[data-t=midnight]{background:linear-gradient(135deg,#0C1321,#1D3E80)}
+.sw[data-t=aurora]{background:linear-gradient(135deg,#FFB4D8,#C8B6FF,#9FD8FF)}
+.sw[data-t=launch]{background:repeating-linear-gradient(45deg,#F2C230 0 5px,#15171A 5px 10px)}
+.themename{font-size:11.5px;color:var(--faint);padding:6px 6px 0}
+
+/* page header */
+.headrow{display:flex;align-items:flex-start;gap:16px}
+body:not(.bunker) .headrow{margin:0 0 26px}
+body:not(.bunker) .pagehead{display:block;flex:1;min-width:0}
+.pagehead .ttl{min-width:0}
+.pagehead h1{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",sans-serif;font-size:34px;font-weight:700;letter-spacing:-.9px;line-height:1.1;margin:0}
+.pagehead .sub{font-size:14px;color:var(--sub);margin-top:4px}
+.pagehead .tools{margin-left:auto;display:flex;align-items:center;gap:10px}
+#tmbtn{font:inherit;font-size:13.5px;font-weight:600;font-variant-numeric:tabular-nums;border:none;cursor:pointer;
+  padding:9px 16px;border-radius:999px;background:var(--surface);color:var(--ink);box-shadow:var(--shadow-1);
+  transition:transform .15s var(--spring), background .25s var(--spring)}
+#tmbtn:active{transform:scale(.97)}
+body:not(.bunker) #tmbtn.running{background:var(--blue);color:#fff}
+body:not(.bunker) #tmbtn.warn{background:var(--warn);color:#fff}
+body:not(.bunker) #tmbtn.over{background:var(--red);color:#fff}
+.seg{display:inline-flex;gap:2px;padding:3px;border-radius:999px;background:var(--fill);margin-top:14px}
+.seg button{position:relative;border:none;background:none;font:inherit;font-size:13px;font-weight:500;color:var(--sub);
+  padding:7px 16px;border-radius:999px;cursor:pointer;transition:color .2s var(--spring)}
+.seg button.on{color:var(--ink);font-weight:600}
+.seg button.on::before{content:"";position:absolute;inset:0;border-radius:999px;background:var(--surface);box-shadow:var(--shadow-1);z-index:-1;view-transition-name:segpill}
+.seg button{z-index:0;isolation:isolate}
+
+/* bottom bar (narrow windows) */
+@media (max-width:900px){
+  body:not(.bunker) .app{grid-template-columns:1fr}
+  body:not(.bunker) .side{position:fixed;left:0;top:0;bottom:0;width:280px;z-index:120;background:var(--surface);
+    transform:translateX(-102%);transition:transform .45s var(--spring);box-shadow:var(--shadow-2)}
+  body:not(.bunker) .side.open{transform:none}
+  body:not(.bunker) .main{padding:20px 16px 110px}
+  body:not(.bunker) .bottombar{display:flex;position:fixed;left:50%;bottom:14px;transform:translateX(-50%);z-index:110;
+    gap:2px;padding:6px;border-radius:999px;background:var(--glass-bg);border:1px solid var(--edge);
+    backdrop-filter:blur(24px) saturate(1.8);-webkit-backdrop-filter:blur(24px) saturate(1.8);box-shadow:var(--shadow-2)}
+  .bottombar .nav{flex-direction:column;gap:2px;padding:7px 12px;font-size:10.5px;border-radius:999px}
+  .bottombar .nav .ct{display:none}
+  .bottombar .nav.on .pillbg{border-radius:999px}
+  .pagehead h1{font-size:28px}
+}
+.scrim{position:fixed;inset:0;z-index:115;background:rgba(0,0,0,.28);opacity:0;pointer-events:none;transition:opacity .3s var(--spring)}
+.scrim.on{opacity:1;pointer-events:auto}
+
+/* ---------- view transitions (Chrome) ---------- */
+@media (prefers-reduced-motion:no-preference){
+  #view{view-transition-name:view}
+  ::view-transition-old(root),::view-transition-new(root){animation:none}
+  ::view-transition-old(view){animation:vtOut .16s ease-in both}
+  ::view-transition-new(view){animation:vtIn .45s var(--spring,cubic-bezier(.16,1,.3,1)) both}
+  ::view-transition-group(navpill),::view-transition-group(segpill){animation-duration:.42s;animation-timing-function:cubic-bezier(.16,1,.3,1)}
+  body:not(.bunker) #view.swap{animation:vtIn .45s cubic-bezier(.16,1,.3,1)}
+}
+@keyframes vtOut{to{opacity:0;transform:translateY(-4px) scale(.995)}}
+@keyframes vtIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+
+/* ---------- base components on tokens ---------- */
+body:not(.bunker) .card{background:var(--surface);border:1px solid var(--edge);border-radius:var(--r-card);box-shadow:var(--shadow-1)}
+body[data-theme=aurora] .card{backdrop-filter:blur(20px) saturate(1.4);-webkit-backdrop-filter:blur(20px) saturate(1.4)}
+body:not(.bunker) .glass{background:var(--glass-bg);border:1px solid var(--edge);border-radius:var(--r-card);box-shadow:var(--shadow-2);
+  backdrop-filter:blur(28px) saturate(1.7);-webkit-backdrop-filter:blur(28px) saturate(1.7)}
+body:not(.bunker) h2{font-size:20px;font-weight:650;letter-spacing:-.35px;margin:34px 0 10px}
+body:not(.bunker) h2 .marks{font-size:13px;color:var(--faint);font-weight:500;letter-spacing:0}
+body:not(.bunker) .note{color:var(--sub);font-size:13px;line-height:1.55}
+body:not(.bunker) summary:hover{background:var(--hover)}
+body:not(.bunker) .list-row{border-radius:12px}
+body:not(.bunker) .list-row:hover{background:var(--hover)}
+body:not(.bunker) .task{padding:14px 16px;border-radius:16px;gap:13px;
+  transition:transform .2s var(--spring), box-shadow .25s var(--spring), opacity .2s}
+body:not(.bunker) .task.card:hover{box-shadow:var(--shadow-2)}
+body:not(.bunker) .task .t{font-size:14.5px;font-weight:500;line-height:1.4}
+body:not(.bunker) .task .m{font-size:12px;color:var(--faint);margin-top:3px}
+body:not(.bunker) .task .xtra{border-left:2px solid var(--edge-2);color:var(--sub)}
+body:not(.bunker) input[type=checkbox]{width:22px;height:22px;border-radius:50%;border:1.5px solid var(--edge-2);background:var(--surface)}
+body:not(.bunker) input[type=checkbox]:checked{background:var(--ok);border-color:var(--ok);animation:pop .35s var(--spring)}
+@keyframes pop{0%{transform:scale(.8)}60%{transform:scale(1.12)}100%{transform:scale(1)}}
+body:not(.bunker) button.b{background:var(--blue);color:#fff;box-shadow:none;font-weight:600;
+  transition:transform .15s var(--spring), filter .2s, opacity .2s}
+body:not(.bunker) button.b:hover{transform:none;filter:brightness(1.08);box-shadow:none}
+body:not(.bunker) button.b:active{transform:scale(.97)}
+body:not(.bunker) button.b.ghost{background:var(--fill);color:var(--ink);border:none;box-shadow:none}
+body:not(.bunker) .addrow input,body:not(.bunker) .addrow select,body:not(.bunker) .frm input,body:not(.bunker) .frm select,
+body:not(.bunker) textarea,body:not(.bunker) .sheet input,body:not(.bunker) .editrow select,body:not(.bunker) .editrow input,
+body:not(.bunker) #tmpanel input,body:not(.bunker) .bgrid input{
+  background:var(--surface-2);color:var(--ink);border:1px solid var(--edge);border-radius:var(--r-in);color-scheme:var(--scheme)}
+body:not(.bunker) .addrow input:focus,body:not(.bunker) .frm input:focus,body:not(.bunker) .frm select:focus,body:not(.bunker) textarea:focus,
+body:not(.bunker) .editrow input:focus,body:not(.bunker) .bgrid input:focus{border-color:var(--blue);box-shadow:0 0 0 4px color-mix(in srgb,var(--blue) 18%,transparent);outline:none}
+body:not(.bunker) .quick button,body:not(.bunker) .tmgrid button,body:not(.bunker) .grades button,body:not(.bunker) .chip{
+  background:var(--fill);color:var(--ink);border:1px solid transparent}
+body:not(.bunker) .chip{padding:6px 12px;font-size:12.5px}
+body:not(.bunker) .chip.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+body:not(.bunker) .tagsel{color-scheme:var(--scheme)}
+body:not(.bunker) .scorechip{background:var(--fill);border:none}
+body:not(.bunker) .tag{background:var(--fill);color:var(--sub)}
+body:not(.bunker) .barrow .track,body:not(.bunker) .tmbar{background:var(--fill)}
+body:not(.bunker) .rules,body:not(.bunker) .sheet,body:not(.bunker) .tmpace{background:color-mix(in srgb,var(--blue) 9%,transparent)}
+body:not(.bunker) .pill{background:var(--blue)}
+body:not(.bunker) #toast{background:var(--ink);color:var(--bg);border-radius:999px;box-shadow:var(--shadow-2)}
+body:not(.bunker) #toast button{color:var(--blue);filter:brightness(1.25)}
+body:not(.bunker) #tmpanel{top:92px;right:max(20px,calc(50vw - 640px + var(--side-w)/2));border-radius:24px;padding:18px 20px;
+  animation:rise .4s var(--spring)}
+body:not(.bunker) .footer{background:none;border:none;box-shadow:none;border-top:1px solid var(--edge);border-radius:0;margin-top:48px;padding:18px 2px}
+body:not(.bunker) details.card > summary{border-radius:var(--r-card)}
+body:not(.bunker) .todayhead .todaydate{letter-spacing:.2px;font-size:12.5px;text-transform:none}
+body:not(.bunker) .overduecard,body:not(.bunker) .todaycard{border-left:1px solid var(--edge)}
+body:not(.bunker) .masthead,body:not(.bunker) #stats,body:not(.bunker) .beaconbay{display:none}
+body.bunker .app{max-width:800px;margin:0 auto;padding:22px 14px 90px}
+body.bunker .bottombar{display:none}
+
+/* ---------- Today ---------- */
+.tgrid{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:18px;align-items:start}
+.tcol{display:flex;flex-direction:column;gap:18px;min-width:0}
+.hero{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:18px;margin-bottom:18px}
+.ncard{position:relative;overflow:hidden;padding:26px 28px;min-height:230px;display:flex;flex-direction:column;animation:rise .55s var(--spring) both}
+.ncard::before{content:"";position:absolute;right:-120px;top:-140px;width:420px;height:420px;border-radius:50%;
+  background:radial-gradient(circle,color-mix(in srgb,var(--sc) 30%,transparent),transparent 65%);pointer-events:none}
+.ncard.examday::after{content:"";position:absolute;inset:0;border-radius:inherit;padding:1.5px;background:var(--aurora);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}
+.ncard .lbl{font-size:13px;color:var(--sub);font-weight:500;display:flex;align-items:center;gap:8px}
+.ncard .dot{width:9px;height:9px;border-radius:50%;background:var(--sc)}
+.ncard .nm{font-size:24px;font-weight:650;letter-spacing:-.5px;margin-top:10px;line-height:1.2;max-width:26ch}
+.ncard .wh{font-size:14px;color:var(--sub);margin-top:4px}
+.ncard .big{margin-top:auto;display:flex;align-items:baseline;gap:10px;padding-top:18px}
+.ncard .big b{font-family:-apple-system,"SF Pro Display",sans-serif;font-size:88px;font-weight:650;letter-spacing:-4px;line-height:.9;font-variant-numeric:tabular-nums}
+.ncard .big span{font-size:18px;color:var(--sub);font-weight:500}
+.ncard .then{position:absolute;right:28px;bottom:26px;text-align:right;font-size:12.5px;color:var(--faint);max-width:40%}
+.ncard .then b{display:block;color:var(--sub);font-weight:600}
+.rcard{padding:24px 26px;display:flex;gap:22px;align-items:center;animation:rise .55s .06s var(--spring) both}
+.ring{position:relative;width:132px;height:132px;flex-shrink:0}
+.ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ring circle{fill:none;stroke-width:11;stroke-linecap:round}
+.ring .bg{stroke:var(--fill)}
+.ring .fg{stroke:var(--ok);transition:stroke-dashoffset 1s var(--spring)}
+.ring.full .fg{stroke:url(#auroraG)}
+.ring .ctr{position:absolute;inset:0;display:grid;place-content:center;text-align:center}
+.ring .ctr b{font-size:30px;font-weight:650;letter-spacing:-1px;font-variant-numeric:tabular-nums}
+.ring .ctr span{font-size:11.5px;color:var(--faint)}
+.rstats{display:flex;flex-direction:column;gap:12px;min-width:0}
+.rstats div{font-size:13px;color:var(--sub)}
+.rstats b{display:block;font-size:20px;font-weight:650;color:var(--ink);letter-spacing:-.4px;font-variant-numeric:tabular-nums}
+.dstrip{display:flex;gap:8px;overflow-x:auto;scroll-snap-type:x proximity;padding:4px 2px 10px;margin:0 -2px;scrollbar-width:none}
+.dstrip::-webkit-scrollbar{display:none}
+.ds{scroll-snap-align:start;flex:0 0 auto;width:62px;padding:10px 0 9px;border-radius:18px;border:1px solid var(--edge);background:var(--surface);
+  display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;font:inherit;color:var(--ink);
+  transition:transform .2s var(--spring), background .25s var(--spring), color .25s}
+.ds:hover{transform:translateY(-2px)}
+.ds:active{transform:scale(.96)}
+.ds small{font-size:11.5px;color:var(--faint);font-weight:500}
+.ds b{font-size:19px;font-weight:650;font-variant-numeric:tabular-nums;letter-spacing:-.3px}
+.ds i{display:flex;gap:3px;height:6px;align-items:center}
+.ds i em{width:5px;height:5px;border-radius:50%}
+.ds.rest{opacity:.55}
+.ds.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.ds.on small{color:inherit;opacity:.7}
+.ds.ex{box-shadow:inset 0 0 0 2px var(--exc)}
+.dayhead{display:flex;align-items:baseline;gap:10px;margin:6px 2px 12px}
+.dayhead h3{margin:0;font-size:20px;font-weight:650;letter-spacing:-.35px}
+.dayhead span{font-size:13px;color:var(--faint)}
+.dayhead .b{margin-left:auto}
+.tl{display:flex;flex-direction:column;gap:10px}
+.tl > *{animation:rise .5s var(--spring) both}
+.tl > *:nth-child(2){animation-delay:.03s}.tl > *:nth-child(3){animation-delay:.06s}.tl > *:nth-child(4){animation-delay:.09s}
+.tl > *:nth-child(5){animation-delay:.12s}.tl > *:nth-child(n+6){animation-delay:.15s}
+.empty{padding:34px 24px;text-align:center;color:var(--sub)}
+.empty b{display:block;font-size:17px;color:var(--ink);margin-bottom:4px;font-weight:600}
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.tile{padding:16px 18px;cursor:pointer;text-align:left;font:inherit;color:inherit;display:flex;flex-direction:column;gap:2px;
+  transition:transform .2s var(--spring), box-shadow .25s var(--spring);animation:rise .55s var(--spring) both}
+.tile:hover{transform:translateY(-2px);box-shadow:var(--shadow-2)}
+.tile:active{transform:scale(.98)}
+.tile span{font-size:12.5px;color:var(--sub);font-weight:500}
+.tile b{font-size:30px;font-weight:650;letter-spacing:-1px;font-variant-numeric:tabular-nums;line-height:1.15}
+.tile small{font-size:12px;color:var(--faint)}
+.tile.hot b{color:var(--red)}
+.panel{padding:18px 20px}
+.panel h4{margin:0 0 10px;font-size:15px;font-weight:650;letter-spacing:-.2px;display:flex;align-items:center;gap:8px}
+.panel h4 .b{margin-left:auto}
+.wn{display:flex;gap:10px;align-items:center;padding:8px 0;border-top:1px solid var(--edge);font-size:13px}
+.wn:first-of-type{border-top:none}
+.wn .rg{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.wn .grow{min-width:0}
+.wn .grow small{display:block;color:var(--faint);font-size:12px}
+.statusdot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;vertical-align:1px}
+@media (max-width:1180px){.hero,.tgrid{grid-template-columns:1fr}}
+@media (max-width:620px){.ncard .big b{font-size:64px}.ncard .then{position:static;text-align:left;max-width:none;margin-top:12px}.rcard{flex-direction:column;align-items:flex-start}}
+
+/* Launch Control keeps its own look; give the new shell a console finish there */
+body.bunker .side{display:flex;flex-direction:row;flex-wrap:wrap;gap:4px;align-items:center;padding:6px;margin-bottom:22px;border-radius:5px;
+  background:linear-gradient(180deg,#4A5257,#333A3F);border:1px solid rgba(255,255,255,.16);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.28), inset 0 -3px 7px rgba(0,0,0,.55), 0 6px 18px rgba(0,0,0,.6)}
+body.bunker .side .brand,body.bunker .side .navlbl,body.bunker .side .grow{display:none}
+body.bunker .side .navgrp{flex-direction:row;flex-wrap:wrap;gap:3px}
+body.bunker .nav{width:auto;color:#A9B8BE;border-radius:3px;padding:7px 10px;font-size:12px;letter-spacing:.6px;text-transform:uppercase;font-family:inherit;background:none;border:none;cursor:pointer}
+body.bunker .nav .ic,body.bunker .nav .ct{display:none}
+body.bunker .nav.on{color:#DFFFE9;background:linear-gradient(180deg,rgba(67,224,138,.28),rgba(18,58,40,.55));box-shadow:inset 0 0 0 1px rgba(67,224,138,.6)}
+body.bunker .themes{display:flex;align-items:center;gap:6px;margin-left:auto}
+body.bunker .themes .navlbl,body.bunker .themename{display:none}
+body.bunker .sw{width:20px;height:20px}
+body.bunker .pagehead{display:none}
+body.bunker #tmbtn{position:fixed;right:18px;bottom:18px;z-index:80;font-family:inherit;padding:9px 14px;border-radius:3px;border:1px solid rgba(67,224,138,.5);background:rgba(10,18,13,.9);color:#DFFFE9}
+body.bunker .tile b,body.bunker .ncard .big b{text-shadow:0 0 10px rgba(67,224,138,.35)}
+body.bunker .ncard,body.bunker .rcard,body.bunker .tile,body.bunker .panel{padding:16px 18px}
+body.bunker .hero,body.bunker .tgrid{grid-template-columns:1fr}
+body.bunker .ds{background:rgba(12,22,16,.78);border-radius:3px;color:var(--ink)}
+body.bunker .ds.on{background:rgba(67,224,138,.3)}
+body.bunker .ncard .big b{font-size:56px;letter-spacing:0}
+body.bunker .ring .fg{stroke:#43E08A}
+body.bunker .ncard .then{position:static;text-align:left;max-width:none;margin-top:10px}
+@media (prefers-reduced-motion:reduce){.ncard,.rcard,.tile,.tl > *{animation:none}}
+@media (prefers-reduced-transparency:reduce){body:not(.bunker) .glass,body:not(.bunker) .bottombar{background:var(--surface);backdrop-filter:none;-webkit-backdrop-filter:none}}
+
+/* ---------- polish pass: type scale, spacing, scrolling, focus ---------- */
+body:not(.bunker){--fs-title:34px;--fs-h2:20px;--fs-h3:17px;--fs-body:14.5px;--fs-cap:12.5px;--fs-micro:11.5px;
+  text-rendering:optimizeLegibility;font-optical-sizing:auto;font-kerning:normal}
+body:not(.bunker) .pagehead h1,body:not(.bunker) .ncard .big b,body:not(.bunker) .tile b,body:not(.bunker) .ring .ctr b{
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI Variable Display","Segoe UI",sans-serif}
+html{scroll-behavior:smooth;scroll-padding-top:24px}
+body:not(.bunker) .side{overscroll-behavior:contain;scrollbar-width:none}
+body:not(.bunker) ::-webkit-scrollbar{width:10px;height:10px}
+body:not(.bunker) ::-webkit-scrollbar-thumb{background:var(--edge-2);border-radius:999px;border:3px solid transparent;background-clip:content-box}
+body:not(.bunker) ::-webkit-scrollbar-track{background:transparent}
+.dstrip{-webkit-mask-image:linear-gradient(90deg,#000 0,#000 calc(100% - 48px),transparent);mask-image:linear-gradient(90deg,#000 0,#000 calc(100% - 48px),transparent);padding-right:40px}
+.ds.on.rest{opacity:1}
+.tcol > .dayhead{margin:2px 2px -6px}
+.tcol > .dstrip{margin-bottom:-4px}
+.tcol > .note{margin:-8px 2px 0}
+.tl .task.card,#view .tl .task.card{margin:0}
+.tcol > .card,.tcol > .tiles{margin:0}
+body:not(.bunker) .todayhead{align-items:center;margin-bottom:12px}
+body:not(.bunker) .todayhead .todaydate{font-size:15px;font-weight:650;letter-spacing:-.2px;color:var(--ink);display:flex;flex-direction:column}
+body:not(.bunker) .todayhead .todaydate small{font-size:12.5px;font-weight:500;color:var(--faint);letter-spacing:0;margin-top:1px}
+body:not(.bunker) .todayhead .todaycount{font-size:12.5px;font-weight:600;color:var(--warn)}
+body:not(.bunker) .todayhead .todaycount.clearcount{color:var(--ok)}
+body:not(.bunker) .fcard .fg{text-transform:none;letter-spacing:0;font-size:12.5px;font-weight:600}
+body.bunker .todaydate,body.bunker .fcard .fg{text-transform:uppercase}
+body.bunker .todaydate small{display:block;opacity:.7}
+.star{color:var(--warn);font-size:.82em;margin-right:4px;position:relative;top:-.5px}
+body:not(.bunker) .task.done .star{color:inherit}
+body:not(.bunker) .reviewcard .barrow .lab{width:74px;color:var(--sub)}
+body:not(.bunker) :is(.nav,.ds,.tile,.sw,.seg button,button.b,.chip):focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+body:not(.bunker) #tmpanel{background:var(--surface);backdrop-filter:none;-webkit-backdrop-filter:none;top:84px;
+  right:calc(44px + max(0px,(100vw - var(--side-w) - 1348px)/2));width:min(360px,calc(100vw - 32px));max-height:calc(100vh - 110px)}
+body:not(.bunker) .tmgrid button{border-radius:12px;padding:8px 11px}
+body:not(.bunker) .tmgrid button span{color:var(--faint)}
+@media (max-width:900px){
+  body:not(.bunker) #tmpanel{right:16px;top:74px}
+  body:not(.bunker) #toast{bottom:96px}
+}
+
 </style>
 </head>
 <body>
 <div id="alarmwash"></div>
-<div class="wrap">
+<div class="app">
+  <aside class="side" id="side" aria-label="Sections">
+    <div class="brand"><span class="mark"></span><div><b>Exam Control</b><span>Tom · November 2026</span></div></div>
+    <nav class="navgrp" id="navmain"></nav>
+    <div class="navgrp" id="navmore"></div>
+    <div class="grow"></div>
+    <div class="themes"><div class="navlbl">Appearance</div><div class="swatches" id="swatches"></div><div class="themename" id="themename"></div></div>
+  </aside>
+  <main class="main"><div class="mainin">
   <div class="beaconbay" id="beaconbay">
     <div class="lamp clear" id="statuslight">
       <div class="wallglow"></div>
@@ -975,37 +1278,33 @@ body.bunker .stbadge{border-radius:2px}
     </div>
   </div>
   <div class="masthead glass">
-    <button class="themebtn" id="modebtn" onclick="cycleMode()" style="right:170px">Auto</button>
-    <button class="themebtn" id="themebtn" onclick="tglTheme()">Launch Control</button>
     <span class="shine"></span>
     <h1>Exam Control</h1>
     <div class="meta">
       <span>Candidate <b>Tom</b></span>
-      <span>First exam <b>Thu 29 Oct</b> · <b id="days-left">–</b> days</span>
-      <span>Last exam <b>Fri 13 Nov</b> · <b id="days-final">–</b> days</span>
-      <span>Study <b>1–6 pm</b> · tick what you <b>actually</b> did</span>
+      <span>First exam <b>Thu 29 Oct</b> · <b id="days-left">-</b> days</span>
+      <span>Last exam <b>Fri 13 Nov</b> · <b id="days-final">-</b> days</span>
+      <span>Study <b>1-6 pm</b> · tick what you <b>actually</b> did</span>
     </div>
-    
   </div>
-
   <div class="statgrid" id="stats"></div>
-
-  <div class="tabbar glass" id="tabbar" style="position:sticky"></div>
-
+  <div class="headrow"><header class="pagehead" id="pagehead"></header><button id="tmbtn" onclick="tglTimerPanel()">⏱ Timer</button></div>
   <div id="view"></div>
-
   <div class="footer card">
-    Log the real minutes, not the planned ones — the plan follows what actually happened.
+    Log the real minutes, not the planned ones. The plan follows what actually happened.
     Ticks save in this browser. The Coach only works when this page is open inside Claude.
-    <div style="margin-top:8px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-      <span id="planv" style="font-size:11px"></span><span id="lastbk" style="font-size:11px"></span>
-      <button class="b ghost" style="height:28px;padding:0 12px;font-size:12px" onclick="forceReseed()">Reload latest plan</button>
-      <button class="b ghost" style="height:28px;padding:0 12px;font-size:12px" onclick="exportData()">Export backup</button>
-      <button class="b ghost" style="height:28px;padding:0 12px;font-size:12px" onclick="importData()">Import backup</button>
-      <button class="b ghost" style="height:28px;padding:0 12px;font-size:12px" onclick="wipeAll()">Wipe everything</button>
+    <div style="margin-top:10px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+      <span id="planv" style="font-size:11.5px"></span><span id="lastbk" style="font-size:11.5px"></span>
+      <button class="b ghost sm" onclick="forceReseed()">Reload latest plan</button>
+      <button class="b ghost sm" onclick="exportData()">Export backup</button>
+      <button class="b ghost sm" onclick="importData()">Import backup</button>
+      <button class="b ghost sm" onclick="wipeAll()">Wipe everything</button>
     </div>
   </div>
+  </div></main>
 </div>
+<nav class="bottombar" id="bottombar" aria-label="Sections"></nav>
+<div class="scrim" id="scrim" onclick="closeSide()"></div>
 
 <div id="toast" role="status" aria-live="polite"></div>
 <div id="tmpanel" class="glass"></div>
@@ -1927,7 +2226,6 @@ function doneMinBySubj(){
 function esc(x){return String(x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
 
 /* ================= views ================= */
-const TABS=[['plan','Plan'],['mistakes','Mistakes'],['cards','Cards'],['exams','Exams'],['library','Library'],['recipes','Recipes'],['school','Checklist'],['cover','Cover'],['topics','Topics'],['log','Log it'],['stats','Stats'],['coach','Coach']];
 
 function renderStats(){
   const dm=doneMinBySubj();
@@ -2017,7 +2315,7 @@ let toastT=null, toastFn=null;
 function toast(msg,act,fn,ms){
   const el=document.getElementById('toast'); if(!el) return;
   toastFn=fn||null;
-  el.innerHTML=`<span>${esc(msg)}</span>${act?`<button onclick="toastAct()">${esc(act)}</button>`:''}`;
+  el.innerHTML=`<span>${esc(String(msg).replace(/\s+[\u2014\u2013]\s+/g,' · ').replace(/[\u2014\u2013]/g,'-'))}</span>${act?`<button onclick="toastAct()">${esc(act)}</button>`:''}`;
   el.classList.add('on'); clearTimeout(toastT); toastT=setTimeout(hideToast, ms||7000);
 }
 function hideToast(){ const el=document.getElementById('toast'); if(el) el.classList.remove('on'); toastFn=null; }
@@ -2041,7 +2339,7 @@ function taskBody(t,where){
     +(rest?`<div style="margin-bottom:6px">${esc(t12(rest))}</div>`:'')
     +(rp?`<div style="opacity:.75;font-size:11.5px"><b>${esc(rp.n)}</b>${steps}</div>`:'')
     +(isPaper&&t.rec!=='exam'?`<button class="b ghost sm" style="margin-top:8px" data-lbl="${esc(paperName(t))}" onclick="event.stopPropagation();startTimer(this.dataset.lbl,${presetFor(t)})">⏱ Start timer · ${fmtDur(presetFor(t))}</button>`:'');
-  return `<div class="t" onclick="xtra(event,'${t.id}')"><span class="sd" style="background:${SCOL[t.s]}"></span>${t.slipped?'<span style="color:var(--spanish);font-weight:600">↳ moved · </span>':''}${esc(t12(head))}<span class="caret">▶</span></div>
+  return `<div class="t" onclick="xtra(event,'${t.id}')"><span class="sd" style="background:${SCOL[t.s]}"></span>${t.slipped?'<span style="color:var(--spanish);font-weight:600">↳ moved · </span>':''}${esc(t12(head)).replace(/^★\s*/,'<span class="star" title="Protected: do this even if the day shrinks">★</span>')}<span class="caret">▶</span></div>
     <div class="m">${meta}</div>
     ${detail?`<div class="xtra">${detail}</div>`:''}${ownsForm(t,where)?sheetHTML(t):''}`;
 }
@@ -2052,7 +2350,7 @@ function sheetHTML(t){
   const p=src?state.papers.find(x=>x.srcId===src.id):null;
   return `<div class="sheet" onclick="event.stopPropagation()">
     <label>Took <input type="number" id="am-${t.id}" value="${t.am!=null?t.am:t.m}" min="1" max="600"> min</label>
-    ${src?`<label>Score <input type="number" id="sc-${t.id}" value="${p?p.sc:''}" min="0" placeholder="–"> / <input type="number" id="tot-${t.id}" value="${p?p.tot:''}" min="1" placeholder="out of"></label>
+    ${src?`<label>Score <input type="number" id="sc-${t.id}" value="${p?p.sc:''}" min="0" placeholder="-"> / <input type="number" id="tot-${t.id}" value="${p?p.tot:''}" min="1" placeholder="out of"></label>
       <span class="hint">${esc(paperName(src))} · leave blank if not marked yet</span>`:''}
     <span class="sheetbtns"><button class="b sm" onclick="saveSheet('${t.id}')">Save</button>
     <button class="b ghost sm" onclick="closeSheet('${t.id}')">Skip</button></span></div>`;
@@ -2205,7 +2503,7 @@ window.startRedo=()=>{
 };
 function redoSessionHTML(){
   if(!rs) return '';
-  const head=`REDO SESSION · WRONG ANSWERS ONLY${rs.tag?' · '+MTAG_L[rs.tag].toUpperCase():''}`;
+  const head=`Redo session · wrong answers only${rs.tag?' · '+MTAG_L[rs.tag]:''}`;
   if(rs.i>=rs.ids.length) return `<div class="card fcard" style="border-left:3px solid var(--red)"><div class="fg">${head}</div>
     <div class="fq">Done — ${rs.right} right, ${rs.wrong} wrong</div>
     <div class="note" style="margin:6px 0 12px">Right ones are marked fixed. Wrong ones got a new redo date, earlier if that exam is close.</div>
@@ -2259,7 +2557,7 @@ function reviewHTML(){
   const papers=state.papers.filter(p=>p.d>=si&&p.d<ei);
   const openN=openMistakes().length, fixedN=(state.mistakes||[]).filter(m=>m.fixed&&m.fixedAt>=si&&m.fixedAt<ei).length;
   return `<div class="card reviewcard" style="padding:14px 16px;margin-bottom:14px">
-    <div class="todayhead"><span class="todaydate">WEEKLY REVIEW · ${labelOf(s).toUpperCase()} – ${labelOf(new Date(e-86400000)).toUpperCase()}</span></div>
+    <div class="todayhead"><span class="todaydate">Weekly review · ${labelOf(s)} to ${labelOf(new Date(e-86400000))}</span></div>
     <div class="barwrap">${subs.map(k=>{ const dn=(done[k]||0)/60, pl=plan[k]/60, mx=Math.max(pl,dn,.1);
       return `<div class="barrow"><span class="lab">${SUBJ[k]}</span><span class="track"><span class="fill" style="width:${Math.min(100,dn/mx*100)}%;background:${SCOL[k]}"></span><span class="tgt" style="left:${pl/mx*100}%"></span></span><span class="num">${dn.toFixed(1)} / ${pl.toFixed(1)} h</span></div>`; }).join('')}</div>
     <div class="note" style="margin:0">
@@ -2276,7 +2574,7 @@ function tomorrowHTML(){
   const mins=ts.filter(t=>!isOpt(t)).reduce((a,t)=>a+t.m,0);
   const papers=ts.filter(t=>t.rec==='paper');
   return `<details class="card tomcard" style="padding:2px 12px 6px;margin-bottom:14px" ${state.tomOpen?'open':''} ontoggle="state.tomOpen=this.open">
-    <summary style="font-size:13px;padding:10px 2px"><span class="todaydate">TOMORROW · ${lbl.toUpperCase()}</span>
+    <summary style="font-size:13px;padding:10px 2px"><span class="todaydate">Tomorrow · ${lbl}</span>
     <span style="font-weight:400;color:var(--faint);font-size:12px">${rest?'rest day':ts.length+' tasks · '+(mins/60).toFixed(1)+' h'}</span><span class="chev">›</span></summary>
     ${papers.length?`<div class="note" style="margin:0 2px 8px"><b>Find tonight (with mark schemes):</b> ${papers.map(p=>esc(paperName(p).replace(/ \(.*\)$/,''))).join(' · ')}</div>`:''}
     ${ts.map(t=>`<div class="list-row" style="padding:5px 2px"><span class="sd" style="background:${SCOL[t.s]};margin-top:6px"></span><span class="num" style="width:62px;color:var(--faint)">${taskTime(t)?t12(taskTime(t)):''}</span><span class="grow">${esc(t12(headOf(t)))}</span><span class="num" style="color:var(--faint)">${t.m} min</span></div>`).join('')}</details>`;
@@ -2285,40 +2583,9 @@ function tomorrowHTML(){
 /* ================= plan view ================= */
 function vPlan(){
   const wk=curWeek();
-  const tLbl=todayLabel(), tTasks=todayTasks(), tCount=tTasks.filter(x=>!isOpt(x)&&!x.skipped), tRem=tTasks.filter(isActive), od=overdueTasks();
+  // today, redos, overdue, exam kit and capacity now live on the Today screen
   let h='';
-  if(state.orphans){
-    h+=`<div class="card" style="padding:10px 14px;margin-bottom:12px;border-left:3px solid var(--spanish)">
-      <div class="note" style="margin:0"><b>${state.orphans} task${state.orphans>1?'s':''} moved</b> — ${state.orphans>1?'they were':'it was'} on a date that isn’t in the plan. Now placed on the correct day.</div></div>`;
-    state.orphans=0;
-  }
-  h+=examKitHTML();
-  const isSun=new Date().getDay()===0;
-  if(isSun || tTasks.some(t=>t.rec==='review')) h+=reviewHTML();
-  if(tTasks.length){
-    h+=`<div class="card todaycard" style="padding:14px 16px;margin-bottom:14px">
-      <div class="todayhead"><span class="todaydate">TODAY · ${tLbl.toUpperCase()}${REST_DAYS.indexOf(tLbl)>-1?' · REST DAY':''}</span>
-      <span class="todaycount ${tRem.length?'':'clearcount'}" id="todaycount">${tRem.length?tRem.length+' of '+tCount.length+' left':(tCount.length?'day complete':'nothing required')}</span></div>`;
-    tTasks.forEach(t=>{ h+=taskCard(t,'today'); });
-    h+=`</div>`;
-  }
-  const due=dueMistakes();
-  if(due.length){
-    h+=`<div class="card" style="padding:12px 14px;margin-bottom:14px;border-left:3px solid var(--red)">
-      <div class="todayhead"><span class="todaydate" style="color:var(--red)">REDOS DUE · ${due.length}</span>
-      <button class="b ghost sm" onclick="go('mistakes')">Mistake log</button></div>
-      ${due.slice(0,5).map(m=>mistakeRow(m,true)).join('')}${due.length>5?`<div class="note" style="margin:6px 0 0">…and ${due.length-5} more in the Mistakes tab</div>`:''}</div>`;
-  }
-  h+=tomorrowHTML();
-  h+=capBannerHTML();
-  if(od.length){
-    h+=`<div class="card overduecard" id="overduecard" style="padding:12px 16px;margin-bottom:16px">
-      <div class="todayhead"><span class="todaydate" id="overduecount" style="color:var(--spanish)">${od.length} TASK${od.length>1?'S':''} OVERDUE</span>
-      <button class="b ghost sm" onclick="slipAllOverdue()">Move all to next study day</button></div>
-      <div class="note" id="overduelist" style="margin:6px 0 0">${od.slice(0,6).map(t=>esc(t.day+' · '+SUBJ[t.s]+': '+t12(headOf(t)))).join('<br>')}${od.length>6?'<br>…and '+(od.length-6)+' more':''}</div>
-    </div>`;
-  }
-  h+=`<h2>The plan <button class="b ghost sm" style="margin-left:auto" onclick="jumpToday()">Jump to today</button></h2>
+  h+=`<div style="display:flex;justify-content:flex-end;margin:-6px 0 12px"><button class="b ghost sm" onclick="jumpToday()">Jump to today</button></div>
   <details class="card" style="padding:2px 10px 4px;margin-bottom:12px"><summary style="font-size:12.5px;padding:8px 4px">How this plan works<span class="chev">›</span></summary>
   <div class="note" style="padding:2px 4px 8px">
   <b>Study 1–6 pm</b> on most days. Rest days: Sun 4 and Sun 11 Oct. Leavers’ week ~2.5 h a day; Sundays are light.<br><br>
@@ -2370,7 +2637,7 @@ function vPlan(){
     <input type="time" id="nt-at" title="Start time (optional)">
     <select id="nt-s">${Object.keys(SUBJ).map(s=>`<option value="${s}">${SUBJ[s]}</option>`).join('')}</select>
     <input type="number" id="nt-m" value="45" min="5" max="300" title="Minutes">
-    <input class="full" type="text" id="nt-t" placeholder="Specific task — verb + deliverable">
+    <input class="full" type="text" id="nt-t" placeholder="Specific task: verb + deliverable">
     <select id="nt-rec"><option value="">Guide: pick for me</option>${opts}</select>
     <button class="b" onclick="addTask()">Add task</button></div>`;
   h+=finalsHTML();
@@ -2725,22 +2992,27 @@ function vTopics(){
   });
   return h;
 }
-const MODES=['auto','light','dark'];
+/* ================= appearance ================= */
+const THEMES=[['auto','Auto · follows your Mac'],['light','Light'],['dark','Dark'],['midnight','Midnight'],['aurora','Aurora'],['launch','Launch Control']];
+const mqDark=window.matchMedia('(prefers-color-scheme: dark)');
+function themeNow(){ return state.theme||(state.bunker?'launch':(state.mode||'auto')); }
 function applyMode(){
-  const m=state.mode||'auto';
-  document.body.classList.toggle('force-light',m==='light');
-  document.body.classList.toggle('force-dark',m==='dark');
-  const b=document.getElementById('modebtn'); if(b) b.textContent={auto:'Auto',light:'Light',dark:'Dark'}[m];
+  const t=themeNow(), launch=t==='launch', r=t==='auto'?(mqDark.matches?'dark':'light'):t;
+  document.body.dataset.theme=launch?'launch':r;
+  document.body.classList.toggle('bunker',launch); state.bunker=launch;
+  const dark=r==='dark'||r==='midnight';
+  document.body.classList.toggle('force-dark',!launch&&dark);
+  document.body.classList.toggle('force-light',!launch&&!dark);
 }
-window.cycleMode=()=>{ state.mode=MODES[(MODES.indexOf(state.mode||'auto')+1)%3]; applyMode(); save(); };
-window.tglTheme=()=>{
-  state.bunker=!state.bunker;
-  document.body.classList.toggle('bunker',state.bunker);
-  document.getElementById('themebtn').textContent=state.bunker?'Standard':'Launch Control';
-  paintLight();
-  paintTabs();
-  save();
-};
+if(mqDark.addEventListener) mqDark.addEventListener('change',()=>{ if(themeNow()==='auto'){ applyMode(); paint(); } });
+window.setTheme=t=>{ vt(()=>{ state.theme=t; applyMode(); paint(); }); save(); };
+window.cycleMode=()=>{ const i=THEMES.findIndex(x=>x[0]===themeNow()); setTheme(THEMES[(i+1)%THEMES.length][0]); };
+window.tglTheme=()=>setTheme(themeNow()==='launch'?'auto':'launch');
+// run a DOM change as a view transition where the browser supports it
+function vt(fn){
+  if(document.startViewTransition && !matchMedia('(prefers-reduced-motion: reduce)').matches) document.startViewTransition(fn);
+  else fn();
+}
 window.setOpenSub=(e,sub)=>{ state.openSub=(state.openSub===sub)?null:sub; setTimeout(()=>paint(),0); };
 window.tglHideGreen=()=>{state.hideGreen=!state.hideGreen;paint();save();};
 window.forceReseed=()=>{
@@ -2855,7 +3127,7 @@ function vCoach(){
     <button onclick="ask('Look at my paper scores and open mistake-log lines. Which topics should my next 3 targeted-revision blocks cover?')">Pick my next 3 blocks</button>
     <button onclick="ask('Rewrite this week: retime anything mis-sized, rename anything vague, add what is missing and remove what is not worth doing. Then give me the actions.')">Let the coach edit the plan</button>
   </div>
-  <textarea id="coach-q" placeholder="Or ask anything — e.g. 'Marking the Maths P1 took 90 min, rebalance this week'"></textarea>
+  <textarea id="coach-q" placeholder="Or ask anything: e.g. 'Marking the Maths P1 took 90 min, rebalance this week'"></textarea>
   <div style="margin-top:8px;position:relative"><button class="b" id="coach-btn" onclick="ask()">Ask the coach</button></div>
   <div class="out" id="coach-out"></div><div id="actionbox"></div></div>`;
 }
@@ -3148,7 +3420,7 @@ function kitCount(key,its,ck,cls,style){ const n=its.filter(i=>ck[i.id]).length;
 function kitCard(f,mode){
   const key=kitKey(f), its=kitItems(f,mode), ck=state.examChk[key]||{};
   return `<div class="card" style="padding:12px 14px;margin-bottom:14px;border-left:3px solid ${SCOL[f[3]]}">
-    <div class="todayhead"><span class="todaydate">${mode==='night'?'NIGHT BEFORE':'EXAM DAY'} · ${esc(examName(f).toUpperCase())} · ${mode==='night'?'TOMORROW':'TODAY'} ${t12(EXAM_AT[f[1]]).toUpperCase()}</span>
+    <div class="todayhead"><span class="todaydate">${mode==='night'?'Night before':'Exam day'} · ${esc(examName(f))}<small>${mode==='night'?'Tomorrow':'Today'} at ${t12(EXAM_AT[f[1]])}</small></span>
     ${kitCount(key,its,ck,'todaycount')}</div>
     ${its.map(i=>kitRow(key,i,ck)).join('')}</div>`;
 }
@@ -3332,7 +3604,7 @@ function capacityHTML(){
 function capBannerHTML(){
   const x=capacityRows().rows.find(r=>r.st==='r'); if(!x) return '';
   return `<div class="card" style="padding:12px 14px;margin-bottom:14px;border-left:3px solid var(--red)">
-    <div class="todayhead"><span class="todaydate" style="color:var(--red)">OVER-PLANNED · ${esc(examName(x.f).toUpperCase())}</span><button class="b ghost sm" onclick="go('exams')">See what to cut</button></div>
+    <div class="todayhead"><span class="todaydate"><span class="statusdot" style="background:var(--red)"></span>Over-planned · ${esc(examName(x.f))}</span><button class="b ghost sm" onclick="go('exams')">See what to cut</button></div>
     <div class="note" style="margin:0">${(x.need/60).toFixed(1)} h of work left before ${x.f[0]}, ${t12(EXAM_AT[x.f[1]])} — but only ${(x.have/60).toFixed(1)} h free.</div></div>`;
 }
 window.setCap=el=>{ state.cap[el.dataset.cap]=Math.max(0,Math.min(720,+el.value||0)); paint(); save(); };
@@ -3356,7 +3628,7 @@ function whatNext(n){
 function whatNextHTML(){
   const q=whatNext(8);
   if(!q.length) return `<div class="card" style="padding:12px 16px;margin-bottom:12px"><b>What next</b><div class="note" style="margin:4px 0 0">Rate topics red or amber below. The ones you’ve left longest — weighted by how close that subject’s exam is — queue up here.</div></div>`;
-  return `<div class="card" style="padding:12px 14px;margin-bottom:12px"><div class="todayhead"><span class="todaydate">WHAT NEXT · RED/AMBER · LONGEST UNTOUCHED · NEAREST EXAM</span></div>
+  return `<div class="card" style="padding:12px 14px;margin-bottom:12px"><div class="todayhead"><span class="todaydate">What next<small>Red and amber topics, longest untouched, weighted by how close the exam is</small></span></div>
     ${q.map(x=>`<div class="list-row" style="padding:6px 2px;align-items:center"><span style="width:24px;height:18px;border-radius:999px;display:grid;place-content:center;font-size:10px;font-weight:700;color:#fff;background:${RAG[x.t.rag].c};flex-shrink:0">${RAG[x.t.rag].l}</span>
       <span class="grow">${esc(x.t.t)}<br><span class="faint">${SUBJ[x.t.s]} · ${x.stale===null?'never reviewed':x.stale===0?'reviewed today':'untouched '+x.stale+' day'+(x.stale>1?'s':'')} · ${esc(examName(x.ex))} ${inDays(x.ex[0])}</span></span>
       <button class="b ghost sm" onclick="reviewTopic('${x.t.id}')">✓ Reviewed</button></div>`).join('')}
@@ -3426,7 +3698,7 @@ window.csGrade=k=>{
 window.endCards=()=>{ cs=null; paint(); };
 function cardSessionHTML(){
   if(!cs) return '';
-  if(cs.i>=cs.ids.length) return `<div class="card fcard"><div class="fg">SESSION DONE · ${cs.i} CARDS</div>
+  if(cs.i>=cs.ids.length) return `<div class="card fcard"><div class="fg">Session done · ${cs.i} cards</div>
     <div class="fq">${[1,2,3,4].map(k=>GRADE_L[k]+' '+cs.n[k]).join(' · ')}</div>
     <div class="note" style="margin:4px 0 12px">Misses are back in box 1 for tomorrow; the rest moved up.</div><button class="b" onclick="endCards()">Close</button></div>`;
   const c=state.cards.find(x=>x.id===cs.ids[cs.i]); if(!c){ cs.i++; return cardSessionHTML(); }
@@ -3434,7 +3706,7 @@ function cardSessionHTML(){
     <div class="fq">${esc(c.q)}</div>
     ${cs.shown?`${cs.try?`<div class="ftry"><b>Your try:</b> ${esc(cs.try)}</div>`:''}<div class="fa">${esc(c.a)}</div>
       <div class="grades">${[1,2,3,4].map(k=>`<button onclick="csGrade(${k})" style="${k===1?'color:var(--red)':k===4?'color:var(--chem)':''}">${GRADE_L[k]}<kbd>${k}</kbd></button>`).join('')}</div>`
-    :`<textarea id="cs-try" rows="2" placeholder="Type your try (optional) — Enter to reveal" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();csShow()}"></textarea>
+    :`<textarea id="cs-try" rows="2" placeholder="Type your try (optional): Enter to reveal" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();csShow()}"></textarea>
       <div style="margin-top:12px;display:flex;gap:8px;justify-content:center"><button class="b" onclick="csShow()">Show answer <span style="opacity:.7;font-weight:500">· Space</span></button><button class="b ghost" onclick="endCards()">End</button></div>`}</div>`;
 }
 function vCards(){
@@ -3448,8 +3720,8 @@ function vCards(){
   h+=`<h2>Add your own card</h2><div class="frm">
     <select id="cd-s">${Object.keys(SUBJ).filter(s=>s!=='buffer').map(s=>`<option value="${s}" ${(state.cdS||sub)===s?'selected':''}>${SUBJ[s]}</option>`).join('')}</select>
     <input type="text" id="cd-g" placeholder="Topic (e.g. Kinetics)" value="${esc(state.cdG||'')}">
-    <textarea class="full" id="cd-q" rows="2" style="width:100%" placeholder="Front — the question or cue"></textarea>
-    <textarea class="full" id="cd-a" rows="2" style="width:100%" placeholder="Back — the rule, in a line or two"></textarea>
+    <textarea class="full" id="cd-q" rows="2" style="width:100%" placeholder="Front: the question or cue"></textarea>
+    <textarea class="full" id="cd-a" rows="2" style="width:100%" placeholder="Back: the rule, in a line or two"></textarea>
     <button class="b full" onclick="addCard()">Add card</button></div>`;
   const groups={}; all.forEach(c=>{ (groups[c.g||'Other']=groups[c.g||'Other']||[]).push(c); });
   h+=`<details class="card" style="padding:2px 6px 6px;margin-top:14px"><summary>All cards <span class="marks" style="margin-left:6px;font-weight:400;color:var(--faint)">${all.length}</span><span class="chev">›</span></summary><div style="padding:0 6px 6px">`;
@@ -3565,19 +3837,157 @@ function vLibrary(){
 }
 
 /* ================= shell ================= */
-function paintTabs(){
-  const bar=document.getElementById('tabbar');
-  bar.innerHTML='';
-  TABS.forEach(([id,l])=>{
-    const b=document.createElement('button');
-    b.className='tab'+(state.tab===id?' on':'');
-    b.textContent=l;
-    b.onclick=()=>go(id);
-    bar.appendChild(b);
-  });
-  const tb=document.createElement('button'); tb.id='tmbtn'; tb.className='tab tmtab'; tb.onclick=()=>tglTimerPanel();
-  bar.appendChild(tb); paintTimer();
+/* ================= shell: navigation, header ================= */
+// icons: Tabler Icons (MIT), outline set, inlined so the page works offline
+const ICONS={
+ home:'<path d="M5 12l-2 0l9 -9l9 9l-2 0"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7"/><path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6"/>',
+ calendar:'<path d="M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12z"/><path d="M16 3v4"/><path d="M8 3v4"/><path d="M4 11h16"/>',
+ target:'<path d="M12 12m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"/><path d="M12 12m-5 0a5 5 0 1 0 10 0a5 5 0 1 0 -10 0"/><path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0"/>',
+ clip:'<path d="M9 5h-2a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-12a2 2 0 0 0 -2 -2h-2"/><path d="M9 3m0 2a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v0a2 2 0 0 1 -2 2h-2a2 2 0 0 1 -2 -2z"/><path d="M9 14l2 2l4 -4"/>',
+ trend:'<path d="M3 17l6 -6l4 4l8 -8"/><path d="M14 7l7 0l0 7"/>',
+ books:'<path d="M5 4m0 1a1 1 0 0 1 1 -1h2a1 1 0 0 1 1 1v14a1 1 0 0 1 -1 1h-2a1 1 0 0 1 -1 -1z"/><path d="M9 4m0 1a1 1 0 0 1 1 -1h2a1 1 0 0 1 1 1v14a1 1 0 0 1 -1 1h-2a1 1 0 0 1 -1 -1z"/><path d="M5 8h4"/><path d="M9 16h4"/><path d="M13.803 4.56l2.184 -.53c.562 -.135 1.133 .19 1.282 .732l3.695 13.418a1.02 1.02 0 0 1 -.634 1.219l-.133 .041l-2.184 .53c-.562 .135 -1.133 -.19 -1.282 -.732l-3.695 -13.418a1.02 1.02 0 0 1 .634 -1.219l.133 -.041z"/><path d="M14 9l4 -1"/><path d="M16 16l3.923 -.98"/>',
+ list:'<path d="M3.5 5.5l1.5 1.5l2.5 -2.5"/><path d="M3.5 11.5l1.5 1.5l2.5 -2.5"/><path d="M3.5 17.5l1.5 1.5l2.5 -2.5"/><path d="M11 6l9 0"/><path d="M11 12l9 0"/><path d="M11 18l9 0"/>',
+ notebook:'<path d="M6 4h11a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-11a1 1 0 0 1 -1 -1v-14a1 1 0 0 1 1 -1m3 0v18"/><path d="M13 8l2 0"/><path d="M13 12l2 0"/>',
+ chat:'<path d="M3 20l1.3 -3.9c-2.324 -3.437 -1.426 -7.872 2.1 -10.374c3.526 -2.501 8.59 -2.296 11.845 .48c3.255 2.777 3.695 7.266 1.029 10.501c-2.666 3.235 -7.615 4.215 -11.574 2.293l-4.7 1"/>',
+ menu:'<path d="M4 6l16 0"/><path d="M4 12l16 0"/><path d="M4 18l16 0"/>'
+};
+function icon(k){ return `<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[k]||''}</svg>`; }
+const SPACES=[['today','Today','home'],['plan','Plan','calendar'],['practice','Practice','target'],['exams','Exams','clip'],['progress','Progress','trend']];
+const MORE=[['library','Library','books'],['school','Checklist','list'],['recipes','Recipes','notebook'],['coach','Coach','chat']];
+const SUBTABS={practice:[['mistakes','Mistakes'],['cards','Recall cards']],progress:[['stats','Scores & hours'],['topics','Topics'],['cover','Cover'],['log','Log']]};
+function spaceOf(tab){ for(const k in SUBTABS) if(SUBTABS[k].some(x=>x[0]===tab)) return k; return tab; }
+function navBtn(id,label,ic,count,hot){
+  const on=spaceOf(state.tab)===id;
+  return `<button class="nav ${on?'on':''}" onclick="go('${id}')" ${on?'aria-current="page"':''}>${on?'<span class="pillbg"></span>':''}${icon(ic)}<span class="lb">${label}</span>${count?`<span class="ct ${hot?'hot':''}">${count}</span>`:''}</button>`;
 }
+function paintTabs(){
+  const rem=todayRemaining().length, prac=dueMistakes().length+cardsDue('').length;
+  const cnt={today:[rem,false],practice:[prac,prac>0]};
+  const main=SPACES.map(([id,l,ic])=>navBtn(id,l,ic,(cnt[id]||[])[0],(cnt[id]||[])[1])).join('');
+  const nm=document.getElementById('navmain'); if(nm) nm.innerHTML=main;
+  const mo=document.getElementById('navmore'); if(mo) mo.innerHTML='<div class="navlbl">More</div>'+MORE.map(([id,l,ic])=>navBtn(id,l,ic)).join('');
+  const bb=document.getElementById('bottombar');
+  if(bb) bb.innerHTML=main+`<button class="nav" onclick="openSide()">${icon('menu')}<span class="lb">More</span></button>`;
+  const sw=document.getElementById('swatches'), t=themeNow();
+  if(sw) sw.innerHTML=THEMES.map(([k,l])=>`<button class="sw ${k===t?'on':''}" data-t="${k}" title="${l}" aria-label="${l}" onclick="setTheme('${k}')"></button>`).join('');
+  const tn=document.getElementById('themename'); if(tn) tn.textContent=(THEMES.find(x=>x[0]===t)||[,''])[1];
+  paintTimer();
+}
+window.openSide=()=>{ document.getElementById('side').classList.add('open'); document.getElementById('scrim').classList.add('on'); };
+window.closeSide=()=>{ const s=document.getElementById('side'); if(s) s.classList.remove('open'); const c=document.getElementById('scrim'); if(c) c.classList.remove('on'); };
+const WD_LONG=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const MON_LONG=['January','February','March','April','May','June','July','August','September','October','November','December'];
+function paintHead(){
+  const el=document.getElementById('pagehead'); if(!el) return;
+  const sp=spaceOf(state.tab), d=new Date();
+  const T={
+    today:[WD_LONG[d.getDay()]+' '+d.getDate()+' '+MON_LONG[d.getMonth()], daysLeft()>0?`${daysLeft()} days to your first exam, ${daysFinal()} to the last.`:(daysFinal()>0?`Exams are on. ${daysFinal()} days to the last one.`:'Exams are done.')],
+    plan:['Plan','Every study day up to 13 November. Tap a task for its steps.'],
+    practice:['Practice',''],
+    exams:['Exams','13 papers, 29 October to 13 November.'],
+    progress:['Progress',''],
+    library:['Library','Your dossiers and summaries.'],
+    school:['Checklist','One-off jobs for this week.'],
+    recipes:['Recipes','How each kind of task is done.'],
+    coach:['Coach','Ask about your plan, using your live data.']
+  }[sp]||['',''];
+  const seg=SUBTABS[sp]?`<div class="seg" role="tablist">${SUBTABS[sp].map(([id,l])=>`<button role="tab" class="${state.tab===id?'on':''}" onclick="go('${id}')">${l}</button>`).join('')}</div>`:'';
+  el.innerHTML=`<div class="ttl"><h1>${esc(T[0])}</h1>${T[1]?`<div class="sub">${esc(T[1])}</div>`:''}${seg}</div>`;
+}
+// display only: long dashes in stored task text are shown as a middle dot or hyphen
+function deDash(root){
+  if(!root) return;
+  const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,{acceptNode:n=>/[—–]/.test(n.nodeValue)&&!(n.parentElement&&n.parentElement.closest('textarea,[contenteditable]'))?1:3});
+  const ns=[]; while(w.nextNode()) ns.push(w.currentNode);
+  ns.forEach(n=>{ n.nodeValue=n.nodeValue.replace(/\s+[—–]\s+/g,' · ').replace(/[—–]/g,'-'); });
+}
+
+/* ================= Today ================= */
+function nextExamAny(){ const nm=nowMin(); return FINALS.find(f=>{ const d=daysUntil(f[0]); return d>0||(d===0&&nm<hm(EXAM_AT[f[1]])+150); })||null; }
+function todaySel(){
+  const t=todayLabel();
+  if(window._daySel && DAY_ORDER.indexOf(window._daySel)>-1) return window._daySel;
+  if(DAY_ORDER.indexOf(t)>-1) return t;
+  return DAY_ORDER.find(d=>daysUntil(d)>=0)||DAY_ORDER[DAY_ORDER.length-1];
+}
+window.pickDay=d=>{ vt(()=>{ window._daySel=d; paint(); }); };
+function settleStrip(){
+  const st=document.querySelector('.dstrip'); if(!st) return;
+  if(window._stripX!=null) st.scrollLeft=window._stripX;
+  const on=st.querySelector('.ds.on');
+  if(on){ const l=on.offsetLeft-st.offsetLeft, r=l+on.offsetWidth;
+    if(l<st.scrollLeft+8||r>st.scrollLeft+st.clientWidth-8) st.scrollTo({left:Math.max(0,l-st.clientWidth/2+on.offsetWidth/2),behavior:'smooth'}); }
+  st.onscroll=()=>{ window._stripX=st.scrollLeft; };
+  // a vertical mouse wheel scrolls the strip sideways
+  st.onwheel=e=>{ if(Math.abs(e.deltaY)>Math.abs(e.deltaX) && st.scrollWidth>st.clientWidth){ e.preventDefault(); st.scrollBy({left:e.deltaY*1.4,behavior:'smooth'}); } };
+}
+function stripHTML(sel){
+  const days=DAY_ORDER.filter(d=>daysUntil(d)>=0);
+  return `<div class="dstrip" role="tablist" aria-label="Days">${days.map(d=>{
+    const dt=dateOf(d), ts=state.tasks.filter(t=>t.day===d&&!isOpt(t)&&!t.skipped);
+    const subs=[...new Set(ts.filter(t=>t.s!=='buffer').map(t=>t.s))].slice(0,4);
+    const ex=FINALS.find(f=>f[0]===d), rest=REST_DAYS.indexOf(d)>-1;
+    return `<button class="ds ${d===sel?'on':''} ${rest?'rest':''} ${ex?'ex':''}" ${ex?`style="--exc:${SCOL[ex[3]]}"`:''} onclick="pickDay('${d}')" title="${d}${ex?' · exam':rest?' · rest day':''}">
+      <small>${daysUntil(d)===0?'Today':WD[dt.getDay()]}</small><b>${dt.getDate()}</b><i>${subs.map(s=>`<em style="background:${SCOL[s]}"></em>`).join('')}</i></button>`;
+  }).join('')}</div>`;
+}
+function ringSVG(frac,full){
+  const r=54, c=2*Math.PI*r, off=c*(1-Math.max(0,Math.min(1,frac)));
+  return `<svg viewBox="0 0 132 132" aria-hidden="true"><defs><linearGradient id="auroraG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FF7EB6"/><stop offset=".5" stop-color="#9F86FF"/><stop offset="1" stop-color="#5FE0B0"/></linearGradient></defs>
+    <circle class="bg" cx="66" cy="66" r="${r}"/><circle class="fg" cx="66" cy="66" r="${r}" stroke-dasharray="${c.toFixed(1)}" stroke-dashoffset="${off.toFixed(1)}"/></svg>`;
+}
+function vToday(){
+  const tLbl=todayLabel(), sel=todaySel(), isToday=sel===tLbl;
+  const tm=new Date(); tm.setDate(tm.getDate()+1); const tmLbl=labelOf(tm);
+  let h='';
+  // --- hero: next exam + today's progress
+  const ex=nextExamAny();
+  if(ex){
+    const D=daysUntil(ex[0]), after=FINALS[FINALS.indexOf(ex)+1];
+    h+=`<div class="hero"><section class="card ncard ${D===0?'examday':''}" style="--sc:${SCOL[ex[3]]}">
+      <div class="lbl"><span class="dot"></span>${D===0?'Exam today':'Next exam'} · ${SUBJ[ex[3]]}</div>
+      <div class="nm">${esc(examName(ex))}</div>
+      <div class="wh">${ex[0]} · ${t12(EXAM_AT[ex[1]])}</div>
+      <div class="big">${D===0?`<b>${t12(EXAM_AT[ex[1]])}</b><span>today</span>`:`<b>${D}</b><span>${D===1?'day · tomorrow':'days'}</span>`}</div>
+      ${after?`<div class="then">Then<b>${esc(examName(after))}</b>${after[0]} · ${t12(EXAM_AT[after[1]])}</div>`:''}</section>`;
+  } else h+=`<div class="hero"><section class="card ncard examday" style="--sc:var(--chem)"><div class="lbl">Exams</div><div class="nm">All 13 papers done.</div><div class="big"><b>✓</b></div></section>`;
+  const tt=state.tasks.filter(t=>t.day===tLbl&&!isOpt(t)&&!t.skipped), dn=tt.filter(t=>t.done);
+  const planned=tt.reduce((a,t)=>a+t.m,0), doneMin=doneTodayMin(), st=listenStreak(), full=tt.length&&dn.length===tt.length;
+  h+=`<section class="card rcard"><div class="ring ${full?'full':''}">${ringSVG(tt.length?dn.length/tt.length:0)}
+      <div class="ctr"><b>${tt.length?dn.length+'/'+tt.length:'0'}</b><span>${tt.length?(full?'day done':'tasks today'):(REST_DAYS.indexOf(tLbl)>-1?'rest day':'nothing planned')}</span></div></div>
+    <div class="rstats"><div><b>${(doneMin/60).toFixed(1)} h</b>done today${planned?' of '+(planned/60).toFixed(1)+' h':''}</div>
+      <div><b>${st.n===null?'Done':st.n+' day'+(st.n===1?'':'s')}</b>${st.n===null?'listening exam is over':'listening streak'+(st.today?'':' · not yet today')}</div></div></section></div>`;
+  // --- left: day strip + timeline
+  const ts=state.tasks.filter(t=>t.day===sel), cnt=ts.filter(t=>!isOpt(t)&&!t.skipped), rem=ts.filter(isActive);
+  const mins=cnt.reduce((a,t)=>a+t.m,0), rest=REST_DAYS.indexOf(sel)>-1;
+  const papers=sel!==tLbl?ts.filter(t=>t.rec==='paper'):[];
+  let L=stripHTML(sel)+`<div class="dayhead"><h3>${isToday?'Today':sel===tmLbl?'Tomorrow':sel}</h3><span>${cnt.length?(rem.length?rem.length+' of '+cnt.length+' left':'all done')+' · '+(mins/60).toFixed(1)+' h':(rest?'rest day':'')}</span>
+    <button class="b ghost sm" onclick="jumpTo('${sel}')">Open in Plan</button></div>`;
+  if(papers.length) L+=`<div class="note" style="margin:-4px 2px 12px">Find ${sel===tmLbl?'tonight':'the day before'}, with mark schemes: ${papers.map(p=>esc(paperName(p).replace(/ \(.*\)$/,''))).join(' · ')}</div>`;
+  L+=ts.length?`<div class="tl">${ts.map(t=>taskCard(t,isToday?'today':'week')).join('')}</div>`
+    :`<div class="card empty"><b>${rest?'Rest day':'Nothing planned'}</b>${rest?'Nothing required. A walk counts.':'Pick another day above, or add a task in Plan.'}</div>`;
+  if(isToday && (new Date().getDay()===0 || ts.some(t=>t.rec==='review'))) L+=reviewHTML();
+  // --- right: heads-up, tiles, what next
+  let R='';
+  if(state.orphans){ R+=`<div class="card panel"><div class="note" style="margin:0"><b>${state.orphans} task${state.orphans>1?'s':''} moved.</b> ${state.orphans>1?'They were':'It was'} on a date that isn’t in the plan, and now sit on the right day.</div></div>`; state.orphans=0; }
+  R+=examKitHTML()+capBannerHTML();
+  const od=overdueTasks();
+  if(od.length) R+=`<div class="card panel"><h4><span class="statusdot" style="background:var(--warn)"></span>${od.length} overdue<button class="b ghost sm" onclick="slipAllOverdue()">Move to next study day</button></h4>
+    <div class="note" style="margin:0">${od.slice(0,4).map(t=>esc(t.day+' · '+t12(headOf(t)))).join('<br>')}${od.length>4?'<br>and '+(od.length-4)+' more':''}</div></div>`;
+  const dm=dueMistakes().length, cd=cardsDue('').length, cap=capacityRows().rows[0];
+  R+=`<div class="tiles">
+    <button class="card tile ${dm?'hot':''}" onclick="go('mistakes')"><span>Redos due</span><b>${dm}</b><small>${openMistakes().length} open in the log</small></button>
+    <button class="card tile" onclick="go('cards')" style="animation-delay:.04s"><span>Recall cards</span><b>${cd}</b><small>due of ${(state.cards||[]).length}</small></button>
+    <button class="card tile" onclick="go('exams')" style="animation-delay:.08s"><span>Plan fits</span><b style="color:${cap?CAP_ST[cap.st][0]:'var(--ok)'}">${cap&&isFinite(cap.r)?Math.round(cap.r*100)+'%':'-'}</b><small>${cap?'full before '+esc(examName(cap.f)):'no exams left'}</small></button>
+    <button class="card tile" onclick="go('stats')" style="animation-delay:.12s"><span>Papers scored</span><b>${state.papers.length}</b><small>${state.papers.length?'see the trends':'score a ticked paper'}</small></button></div>`;
+  const wn=whatNext(3);
+  R+=`<div class="card panel"><h4>What next<button class="b ghost sm" onclick="go('topics')">All topics</button></h4>${wn.length?wn.map(x=>`<div class="wn"><span class="rg" style="background:${RAG[x.t.rag].c}"></span>
+    <span class="grow">${esc(x.t.t)}<small>${SUBJ[x.t.s]} · ${x.stale===null?'never reviewed':'untouched '+x.stale+' d'} · exam ${inDays(x.ex[0])}</small></span>
+    <button class="del" style="opacity:.8" title="Reviewed today" onclick="reviewTopic('${x.t.id}')">✓</button></div>`).join(''):'<div class="note" style="margin:0">Rate topics red or amber in Topics and the ones you’ve left longest show here.</div>'}</div>`;
+  return h+`<div class="tgrid"><div class="tcol">${L}</div><div class="tcol">${R}</div></div>`;
+}
+window.jumpTo=d=>{ window._openWk=weekOf(d); go('plan'); setTimeout(()=>{ const el=document.getElementById('d-'+d.replace(/\s+/g,'-')); if(el) el.scrollIntoView({behavior:'smooth',block:'start'}); },80); };
+
 function todayLabel(){
   const d=new Date(), D=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],
         M=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
@@ -3622,19 +4032,32 @@ function paint(tabSwitch){
   renderStats();
   paintLight();
   paintTabs();
+  paintHead();
   const v=document.getElementById('view');
   if(tabSwitch){v.classList.remove('swap'); void v.offsetWidth; v.classList.add('swap');}
   capAllDues();
-  v.innerHTML={plan:vPlan,mistakes:vMistakes,cards:vCards,exams:vExams,library:vLibrary,recipes:vRecipes,school:vSchool,cover:vCover,topics:vTopics,log:vLog,stats:vStats,coach:vCoach}[state.tab]();
+  const V={today:vToday,plan:vPlan,mistakes:vMistakes,cards:vCards,exams:vExams,library:vLibrary,recipes:vRecipes,school:vSchool,cover:vCover,topics:vTopics,log:vLog,stats:vStats,coach:vCoach};
+  if(!V[state.tab]) state.tab='today';
+  v.innerHTML=V[state.tab]();
+  deDash(v); deDash(document.getElementById('pagehead'));
+  if(state.tab==='today') settleStrip();
 }
-window.go=id=>{state.tab=id;paint(true);save();};
+window.go=id=>{
+  if(SUBTABS[id]) id=(state.lastSub||{})[id]||SUBTABS[id][0][0];
+  const sp=spaceOf(id); if(SUBTABS[sp]){ state.lastSub=state.lastSub||{}; state.lastSub[sp]=id; }
+  closeSide();
+  if(id==='today' && state.tab!=='today') window._daySel=null;
+  const swap=!document.startViewTransition;
+  vt(()=>{ state.tab=id; paint(swap); window.scrollTo({top:0,behavior:'instant'}); });
+  save();
+};
 
-(async()=>{await load(); window.state=state; if(!state.tab)state.tab='plan';
-  if(state.bunker){document.body.classList.add('bunker');}
+(async()=>{await load(); window.state=state;
+  if(state.uiV!==2){ state.uiV=2; state.tab='today'; }      // first open after the redesign lands on Today
+  if(!state.tab) state.tab='today';
   applyMode();
   paint();
   paintTimer(); setInterval(timerTick,1000);
-  const tb=document.getElementById('themebtn'); if(tb)tb.textContent=state.bunker?'Standard':'Launch Control';
   let lastDay=todayLabel();
   function checkRollover(){
     const now=todayLabel();
