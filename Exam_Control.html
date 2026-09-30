@@ -1766,6 +1766,37 @@ details.fold>summary small{font-size:13px;font-weight:500;color:var(--sub);lette
 @media (max-width:560px){.mrow{flex-wrap:wrap}.mrow .grow{flex:1 1 calc(100% - 40px)}.mrow>.b{margin-left:22px}}
 @media (max-width:560px){.seg button{padding:7px 10px;font-size:12.5px}}
 body.bunker:not([data-sp=today]) .masthead,body.bunker:not([data-sp=today]) #stats,body.bunker:not([data-sp=today]) #beaconbay,body.bunker:not([data-sp=today]) .beaconbay{display:none}
+
+/* ===== onboarding fixes + tour ===== */
+#onb{z-index:300}
+body.bunker #onb{background:#141A17 radial-gradient(1200px 600px at 50% -10%,rgba(201,160,74,.12),transparent)}
+body.bunker .ob-nav{background:rgba(20,26,23,.92)}
+body.bunker .ob-step h2{font-family:inherit;letter-spacing:.02em}
+@media (max-width:700px){
+  .ob-wrap{padding:18px 16px 130px}
+  .ob-donut{max-width:220px;margin:0 auto}
+  .ob-row{gap:8px}.ob-row .nm{width:88px;font-size:14px}.ob-row .pc{width:auto;min-width:40px}.ob-row .pc .h{display:none}
+  .ob-nav{padding:12px 16px calc(12px + env(safe-area-inset-bottom))}
+  .ob-nav .note{display:none}
+  .ob-sub{grid-template-columns:14px 1fr auto;row-gap:10px}.ob-sub .ob-grade{grid-column:1/-1;min-width:0}
+}
+#tour{position:fixed;inset:0;z-index:280;display:none;pointer-events:auto}
+#tour.on{display:block}
+#tour .spot{position:fixed;border-radius:16px;box-shadow:0 0 0 9999px rgba(8,10,14,.58),0 0 0 2px rgba(255,255,255,.9),0 0 30px 6px rgba(43,111,243,.45);
+  transition:left .5s cubic-bezier(.2,.9,.2,1),top .5s cubic-bezier(.2,.9,.2,1),width .5s cubic-bezier(.2,.9,.2,1),height .5s cubic-bezier(.2,.9,.2,1);pointer-events:none}
+#tour .spot::after{content:"";position:absolute;inset:-6px;border-radius:20px;border:2px solid rgba(43,111,243,.6);animation:tourPulse 1.8s ease-out infinite}
+@keyframes tourPulse{from{opacity:1;transform:scale(1)}to{opacity:0;transform:scale(1.06)}}
+#tour .tip{position:fixed;width:min(340px,calc(100vw - 32px));background:var(--surface);color:var(--ink);border:1px solid var(--edge);border-radius:18px;padding:18px 18px 14px;box-shadow:var(--shadow-2);
+  transition:left .5s cubic-bezier(.2,.9,.2,1),top .5s cubic-bezier(.2,.9,.2,1)}
+#tour .tip.pop{animation:tipPop .45s cubic-bezier(.2,.9,.2,1)}
+@keyframes tipPop{from{opacity:0;transform:translateY(8px) scale(.97)}to{opacity:1;transform:none}}
+#tour .tip .k{font-size:12px;color:var(--sub);font-weight:600;display:flex;gap:4px;align-items:center;margin-bottom:6px}
+#tour .tip .k i{width:6px;height:6px;border-radius:50%;background:var(--edge-2)}#tour .tip .k i.on{background:var(--blue);width:16px;border-radius:4px;transition:width .3s}
+#tour .tip h4{margin:0 0 6px;font-size:17px;letter-spacing:-.01em}
+#tour .tip p{margin:0 0 14px;color:var(--sub);font-size:14.5px;line-height:1.5}
+#tour .tip .row{display:flex;gap:8px;align-items:center}#tour .tip .row .sp{flex:1}
+body.bunker #tour .spot{border-radius:6px;box-shadow:0 0 0 9999px rgba(6,9,7,.66),0 0 0 2px var(--brass),0 0 26px 6px rgba(201,160,74,.35)}
+@media (prefers-reduced-motion:reduce){#tour .spot,#tour .tip{transition:none}#tour .spot::after,#tour .tip.pop{animation:none}}
 </style>
 </head>
 <body>
@@ -1828,6 +1859,7 @@ body.bunker:not([data-sp=today]) .masthead,body.bunker:not([data-sp=today]) #sta
 <aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-hidden="true"></aside>
 
 <div id="search" onclick="if(event.target===this)closeSearch()"><div class="box"><input id="sq" placeholder="Search tasks, topics, dossiers, mistakes, cards" autocomplete="off" oninput="runSearch()" onkeydown="searchKey(event)"><div class="res" id="sres"></div></div></div>
+<div id="tour" role="dialog" aria-label="Tour"><div class="spot"></div><div class="tip"></div></div>
 <div id="onb" role="dialog" aria-modal="true" aria-label="Setup"></div>
 <div id="toast" role="status" aria-live="polite"></div>
 <div id="tmpanel" class="glass"></div>
@@ -5136,9 +5168,58 @@ function vSettings(){
       ${state.custom?'<button class="b ghost sm" onclick="revertPlan()">Back to original plan</button>':'<button class="b ghost sm" onclick="forceReseed()">Reload latest plan</button>'}</div></div>
     ${hoursCardHTML()}
     <div class="card"><h3>How this works</h3><p class="note">Log the real minutes, not the planned ones; the plan follows what actually happened. John Claude only works when this page is open inside Claude.</p>
-      <div class="row"><button class="b ghost sm" onclick="wipeAll()" style="color:var(--red)">Wipe everything</button></div></div>
+      <div class="row"><button class="b sm" onclick="startTour()">Take the tour</button><button class="b ghost sm" onclick="wipeAll()" style="color:var(--red)">Wipe everything</button></div></div>
   </div>`;
 }
+/* ---- guided tour ---- */
+function onScreen(e){ if(!e||!e.getClientRects().length) return false; const r=e.getBoundingClientRect(); return r.width>0&&r.right>0&&r.left<innerWidth; }
+function navEl(id){ const c=[`#navmain [onclick="go('${id}')"]`,`#navmore [onclick="go('${id}')"]`,`#bottombar [onclick="go('${id}')"]`,'#bottombar .nav:last-child'];
+  for(const q of c){ const e=document.querySelector(q); if(onScreen(e)) return e; } return null; }
+function firstEl(q){ for(const e of document.querySelectorAll(q)) if(onScreen(e)) return e; return null; }
+const TOUR=[
+  {tab:'today',el:()=>firstEl('.ncard'),t:'Your next exam',x:'The countdown to your next paper, and what comes after it. On exam day this turns into your exam card.'},
+  {tab:'today',el:()=>firstEl('.rcard'),t:'Today at a glance',x:'Tasks ticked, hours done and hours left. Lost the day? “Spread it out” moves today’s work onto the next study days.'},
+  {tab:'today',el:()=>firstEl('.dstrip'),t:'Any day, one tap',x:'Peek at tomorrow or next week. The dots are the subjects planned that day.'},
+  {tab:'today',el:()=>firstEl('#view .tl .task'),t:'Tick what you actually did',x:'Tap the circle when a task is done. Tap the task for its steps. Hover for edit, skip on purpose, and move to the next study day.'},
+  {tab:'plan',el:()=>firstEl('.wkpills')||navEl('plan'),t:'The whole plan',x:'Every study day up to your last exam, week by week. Missed days fold away and show what slipped.'},
+  {tab:'mistakes',el:()=>navEl('practice'),t:'Practice',x:'Log every lost mark, then redo it cold a few days later. Recall cards drill the rules you keep forgetting.'},
+  {tab:'exams',el:()=>firstEl('.board')||navEl('exams'),t:'Every paper',x:'Exam dates, your kit checklist, and whether the work left before each paper actually fits the hours you have.'},
+  {tab:'stats',el:()=>navEl('progress'),t:'Progress',x:'Scores and trends, topics rated red, amber and green, and what each subject needs to be exam-ready.'},
+  {tab:'today',el:()=>firstEl('.navsearch')||navEl('_more'),t:'Find anything',x:'Search tasks, topics, dossiers, mistakes and cards. Press ⌘K or / on a keyboard, or open More.'},
+  {tab:'today',el:()=>document.getElementById('tmbtn'),t:'Timed papers',x:'Start a paper timer with reading time and pacing marks, or go full screen for exam conditions.'},
+  {tab:'coach',el:()=>navEl('coach'),t:'John Claude',x:'Ask about your plan with your live data: “I lost 2 hours, rebalance this week.” It suggests changes; you decide.'},
+  {tab:'settings',el:()=>navEl('settings'),t:'Settings',x:'Back up your progress, change your hours, replan with Claude, or replay this tour.'},
+];
+window.startTour=()=>{ closeSide&&closeSide(); window._tourI=0; window._tourHome=state.tab; document.getElementById('tour').classList.add('on'); tourShow(); };
+window.endTour=()=>{ state.tourDone=true; save(); document.getElementById('tour').classList.remove('on'); const h=(state.onb&&state.onb.home)||'today'; if(state.tab!==h) go(h); };
+window.tourStep=d=>{ const n=window._tourI+d; if(n<0) return; if(n>=TOUR.length){ endTour(); toast('You’re all set'); return; } window._tourI=n; tourShow(); };
+function tourShow(){
+  const st=TOUR[window._tourI]; if(!st) return;
+  if(state.tab!==st.tab){ state.tab=st.tab; paint(true); }
+  setTimeout(()=>{
+    const el=st.el(); const spot=document.querySelector('#tour .spot'), tip=document.querySelector('#tour .tip');
+    if(el&&!el.closest('#bottombar,.side,#tmbtn')) el.scrollIntoView({block:'center',behavior:'instant'});
+    const W=innerWidth,H=innerHeight;
+    let r=el?el.getBoundingClientRect():{left:W/2-60,top:H/2-30,width:120,height:60};
+    const pad=8, x=Math.max(6,r.left-pad), y=Math.max(6,r.top-pad), w=Math.min(W-12,r.width+pad*2), h=Math.min(H-12,r.height+pad*2);
+    Object.assign(spot.style,{left:x+'px',top:y+'px',width:w+'px',height:h+'px'});
+    const n=TOUR.length, i=window._tourI;
+    tip.innerHTML=`<div class="k">${TOUR.map((_,j)=>`<i class="${j===i?'on':''}"></i>`).join('')}<span style="margin-left:auto">${i+1} of ${n}</span></div>
+      <h4>${st.t}</h4><p>${st.x}</p><div class="row"><button class="b ghost sm" onclick="endTour()">Skip tour</button><span class="sp"></span>
+      ${i?'<button class="b ghost sm" onclick="tourStep(-1)">Back</button>':''}<button class="b sm" onclick="tourStep(1)">${i===n-1?'Finish':'Next'}</button></div>`;
+    tip.classList.remove('pop'); void tip.offsetWidth; tip.classList.add('pop');
+    const tw=tip.offsetWidth, th=tip.offsetHeight, gap=14;
+    let tx, ty;
+    if(y+h+gap+th<H-10){ ty=y+h+gap; } else if(y-gap-th>10){ ty=y-gap-th; }
+    else { ty=H-th-16; }                                   // tall target: pin to the bottom
+    if(x+w+gap+tw<W-10 && h>H*.5){ tx=x+w+gap; ty=Math.max(16,Math.min(H-th-16,y)); }   // tall and room on the right
+    else tx=Math.max(16,Math.min(W-tw-16,x+w/2-tw/2));
+    Object.assign(tip.style,{left:tx+'px',top:ty+'px'});
+  },state.tab===st.tab?30:260);
+}
+document.addEventListener('keydown',e=>{ const t=document.getElementById('tour'); if(!t||!t.classList.contains('on')) return;
+  if(e.key==='ArrowRight'||e.key==='Enter'){ e.preventDefault(); tourStep(1); } else if(e.key==='ArrowLeft'){ tourStep(-1); } else if(e.key==='Escape'){ endTour(); } });
+addEventListener('resize',()=>{ const t=document.getElementById('tour'); if(t&&t.classList.contains('on')) tourShow(); });
 /* ---- ⌘K search ---- */
 window.openSearch=()=>{ closeSide&&closeSide(); const s=document.getElementById('search'); s.classList.add('on'); const q=document.getElementById('sq'); q.value=''; q.focus(); runSearch(); };
 window.closeSearch=()=>document.getElementById('search').classList.remove('on');
@@ -5253,7 +5334,7 @@ function obDefaults(){
 }
 function ob(){ state.onb=Object.assign(obDefaults(),state.onb||{}); return state.onb; }
 window.openOnboard=()=>{ const o=ob(); o.step=Math.min(o.step||0,OB_STEPS.length-1); closeSide&&closeSide(); obRender(); document.getElementById('onb').classList.add('on'); document.body.style.overflow='hidden'; };
-window.closeOnboard=(finish)=>{ const o=ob(); if(finish) o.done=true; else o.skipped=true; save(); document.getElementById('onb').classList.remove('on'); document.body.style.overflow=''; paint(true); };
+window.closeOnboard=(finish)=>{ const o=ob(); if(finish) o.done=true; else o.skipped=true; save(); document.getElementById('onb').classList.remove('on'); document.body.style.overflow=''; paint(true); if(!state.tourDone) setTimeout(startTour,650); };
 window.obGo=d=>{ const o=ob(); o.step=Math.max(0,Math.min(OB_STEPS.length-1,o.step+d)); window._obDir=d; save(); obRender(); document.getElementById('onb').scrollTop=0; };
 window.obJump=i=>{ const o=ob(); window._obDir=i-o.step; o.step=i; save(); obRender(); };
 function obShares(){ const o=ob(), ids=o.subjects.map(s=>s.id), tot=ids.reduce((a,k)=>a+(+o.split[k]||0),0)||1; const r={}; ids.forEach(k=>r[k]=(+o.split[k]||0)/tot); return r; }
@@ -5298,7 +5379,7 @@ function obStepHTML(){
     <div class="ob-split"><div class="ob-donut">${obDonut()}<div class="mid"><b id="obwh">${wh}h</b><span>a week</span></div></div>
     <div class="ob-card">${o.subjects.map((s,i)=>`<div class="ob-row"><span class="nm"><span class="sdot" style="background:${colOf(i)}"></span>${esc(s.name||'Subject')}</span>
       <input type="range" min="0" max="100" value="${+o.split[s.id]||0}" style="--c:${colOf(i)};--p:${+o.split[s.id]||0}%" oninput="obSplit('${s.id}',this)">
-      <span class="pc" id="obpc-${s.id}"><b>${Math.round(sh[s.id]*100)}%</b> · ${(sh[s.id]*wh).toFixed(1)}h</span></div>`).join('')}
+      <span class="pc" id="obpc-${s.id}"><b>${Math.round(sh[s.id]*100)}%</b><span class="h"> · ${(sh[s.id]*wh).toFixed(1)}h</span></span></div>`).join('')}
       <div style="display:flex;gap:8px;margin-top:8px"><button class="b ghost sm" onclick="obSuggest()">Suggest from levels and targets</button><button class="b ghost sm" onclick="obEven()">Even</button></div></div></div>
     <div style="margin-top:14px" id="obsplittip">${low?obTip('hlsplit',`<b>${esc(low.name)}</b> is HL but gets less time than an SL subject. HL papers are longer and the syllabus bigger, so it usually needs about 1.5× the time.`):''}${obTip('split','Don’t zero anything. Even a strong subject needs a little time for recall and a timed paper before its exam.')}</div>`;
   }
@@ -5364,7 +5445,7 @@ function obDonut(){
 function obRefreshSplit(){
   const o=ob(), sh=obShares(), wh=obWeekHours(), R=42, C=2*Math.PI*R; let off=0;
   o.subjects.forEach(s=>{ const c=document.getElementById('obd-'+s.id), len=sh[s.id]*C; if(c){ c.setAttribute('stroke-dasharray',Math.max(0,len-1.2)+' '+C); c.setAttribute('stroke-dashoffset',-off); } off+=len;
-    const p=document.getElementById('obpc-'+s.id); if(p) p.innerHTML=`<b>${Math.round(sh[s.id]*100)}%</b> · ${(sh[s.id]*wh).toFixed(1)}h`; });
+    const p=document.getElementById('obpc-'+s.id); if(p) p.innerHTML=`<b>${Math.round(sh[s.id]*100)}%</b><span class="h"> · ${(sh[s.id]*wh).toFixed(1)}h</span>`; });
 }
 window.obSplit=(id,el)=>{ ob().split[id]=+el.value; el.style.setProperty('--p',el.value+'%'); obRefreshSplit(); save(); };
 window.obSuggest=()=>{ const o=ob(); o.subjects.forEach(s=>{ o.split[s.id]=Math.round(Math.min(100,(s.lvl==='HL'?42:28)*(0.7+s.target*0.1)+(s.weak?8:0))); }); save(); obRender(); };
