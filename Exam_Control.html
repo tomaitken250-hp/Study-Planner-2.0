@@ -30,7 +30,6 @@ body{
     radial-gradient(1000px 700px at 50% 115%, rgba(48,181,138,.14), transparent 60%);
   background-attachment:fixed;
 }
-.wrap{max-width:800px;margin:0 auto;padding:22px 14px 90px}
 
 /* glass primitives */
 .glass{
@@ -63,9 +62,6 @@ body{
 .stat .l{font-size:10.5px;color:var(--sub);text-transform:uppercase;letter-spacing:.7px;font-weight:600}
 .stat .v{font-size:24px;font-weight:700;letter-spacing:-.5px;font-variant-numeric:tabular-nums;margin-top:1px}
 .stat .s{font-size:11px;color:var(--faint)}
-
-/* tab pill */
-.tabbar{position:sticky;top:10px;z-index:40;display:flex;gap:2px;padding:4px;margin-bottom:18px;border-radius:999px}
 .tab{flex:1;min-width:0;padding:9px 4px;text-align:center;font-size:13px;font-weight:500;cursor:pointer;
   border:none;background:transparent;font-family:inherit;color:var(--sub);border-radius:999px;
   transition:color .25s var(--ease);white-space:nowrap;position:relative;z-index:2}
@@ -91,7 +87,6 @@ summary::-webkit-details-marker{display:none}
 summary .chev{margin-left:auto;font-size:12px;color:var(--faint);transition:transform .35s var(--ease)}
 details[open] summary .chev{transform:rotate(90deg)}
 summary:hover{background:rgba(255,255,255,.55)}
-.pill{font-size:10.5px;font-weight:600;color:#fff;background:var(--blue);padding:2px 9px;border-radius:999px}
 
 .day-h{font-weight:600;font-size:13px;color:var(--sub);margin:14px 4px 6px;letter-spacing:-.1px}
 .task{display:flex;gap:11px;align-items:flex-start;padding:11px 13px;margin-bottom:7px;
@@ -119,17 +114,12 @@ input[type=checkbox]::before{content:"";width:11px;height:11px;transform:scale(0
 input[type=checkbox]:checked{background:var(--blue);border-color:var(--blue)}
 input[type=checkbox]:checked::before{transform:scale(1)}
 input[type=checkbox]:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
-
-/* forms */
-.addrow{display:flex;flex-wrap:wrap;gap:7px;margin:10px 0 4px}
-.addrow input,.addrow select,.frm input,.frm select,textarea{
+.frm input,.frm select,textarea{
   font-family:inherit;font-size:13px;padding:9px 12px;border:1px solid var(--edge);
   background:rgba(255,255,255,.85);color:var(--ink);border-radius:var(--r-sm);
   transition:border-color .25s var(--ease), box-shadow .25s var(--ease)}
-.addrow input:focus,.frm input:focus,.frm select:focus,textarea:focus,.addrow select:focus{
+.frm input:focus,.frm select:focus,textarea:focus{
   outline:none;border-color:var(--blue);box-shadow:0 0 0 3.5px rgba(10,132,255,.18)}
-.addrow input[type=text]{flex:1;min-width:150px}
-.addrow input[type=number]{width:74px}
 button.b{font-family:inherit;font-size:13.5px;font-weight:600;padding:9px 18px;border:none;border-radius:999px;
   background:var(--blue);color:#fff;cursor:pointer;
   box-shadow:0 3px 10px rgba(10,132,255,.32);
@@ -213,7 +203,6 @@ body.bunker h2{font-family:inherit;font-size:13px;letter-spacing:2.2px;text-tran
 body.bunker h2 .marks{letter-spacing:.4px;text-transform:none}
 body.bunker .stat .l{color:#5F9A72;letter-spacing:1.4px}
 body.bunker .stat .v{font-family:inherit;font-size:21px;color:#DFFFE9;text-shadow:0 0 10px rgba(67,224,138,.35)}
-body.bunker .tabbar{border-radius:4px;background:rgba(10,18,13,.8)}
 body.bunker .tab{border-radius:2px}
 body.bunker body.bunker .tab.on{color:#DFFFE9}
 body.bunker summary{letter-spacing:1.2px;text-transform:uppercase;font-size:12.5px}
@@ -225,10 +214,9 @@ body.bunker button.b{border-radius:3px;background:rgba(67,224,138,.16);color:#DF
 body.bunker button.b.ghost{background:transparent}
 body.bunker .quick button{border-radius:2px;background:rgba(67,224,138,.08);color:var(--ink);
   border:1px solid var(--edge);letter-spacing:.8px}
-body.bunker .addrow input,body.bunker .addrow select,body.bunker .frm input,
+body.bunker .frm input,
 body.bunker .frm select,body.bunker textarea{background:rgba(0,0,0,.45);color:var(--ink);
   border:1px solid var(--edge);border-radius:2px;font-family:inherit}
-body.bunker .pill{background:var(--red);border-radius:2px;letter-spacing:1.2px}
 body.bunker .coach h3{background:none;-webkit-text-fill-color:#8FE8AE;color:#8FE8AE;letter-spacing:2px;text-transform:uppercase}
 body.bunker .coach::before{background:linear-gradient(135deg,rgba(67,224,138,.07),transparent 60%)}
 body.bunker .barrow .track{background:rgba(0,0,0,.5);border:1px solid var(--edge);border-radius:2px}
@@ -237,31 +225,19 @@ body.bunker .barrow .tgt{background:#DFFFE9}
 body.bunker .scorechip{background:rgba(0,0,0,.4);border-color:var(--edge);border-radius:2px}
 body.bunker .list-row:hover{background:rgba(67,224,138,.07)}
 body.bunker .footer{border-radius:3px}
-
-/* status light */
-.statusbar{display:flex;align-items:center;gap:10px;margin:10px 0 0;padding-top:9px;border-top:1px solid var(--edge)}
-.slight{width:13px;height:13px;border-radius:50%;flex-shrink:0}
-.slight.clear{background:#2ED573;box-shadow:0 0 10px rgba(46,213,115,.8)}
-.slight.alert{background:#FF3B30;animation:beacon 1.15s infinite}
 @keyframes beacon{
   0%,100%{background:#FF3B30;box-shadow:0 0 4px rgba(255,59,48,.6)}
   50%{background:#FF6B60;box-shadow:0 0 20px 5px rgba(255,59,48,.85)}
 }
 #statustext{font-size:11.5px;letter-spacing:1.6px;font-weight:600}
 body.bunker #statustext{color:#8FE8AE}
-.slight.alert ~ #statustext{color:var(--red)}
 body.bunker.alertmode{animation:roomglow 2.3s infinite}
 @keyframes roomglow{
   0%,100%{box-shadow:inset 0 0 120px rgba(255,59,48,0)}
   50%{box-shadow:inset 0 0 160px rgba(255,59,48,.10)}
 }
-.themebtn{position:absolute;top:16px;right:16px;font-family:inherit;font-size:10.5px;letter-spacing:1.2px;
-  padding:6px 12px;border-radius:999px;cursor:pointer;border:1px solid var(--edge);
-  background:rgba(255,255,255,.7);color:var(--ink);text-transform:uppercase;
-  transition:background .15s var(--ease)}
-body.bunker .themebtn{background:rgba(67,224,138,.12);border-color:rgba(67,224,138,.4);border-radius:3px}
 .masthead{position:relative}
-@media (prefers-reduced-motion:reduce){.slight.alert{animation:none}body.bunker.alertmode{animation:none}}
+@media (prefers-reduced-motion:reduce){body.bunker.alertmode{animation:none}}
 
 
 /* ===== brushed steel console panel ===== */
@@ -292,12 +268,7 @@ body.bunker .masthead::after{bottom:0}
 body.bunker .masthead h1{color:#EDF3F5;text-shadow:0 1px 0 rgba(0,0,0,.8),0 0 18px rgba(120,220,255,.28)}
 body.bunker .masthead .meta{color:#B9C6CB}
 body.bunker .masthead .meta b{color:#EDF3F5}
-body.bunker .statusbar{border-top:1px solid rgba(0,0,0,.45);box-shadow:0 -1px 0 rgba(255,255,255,.10)}
 body.bunker #statustext{color:#D7E4E8}
-body.bunker .themebtn{
-  background:linear-gradient(180deg,#5C666B,#394045);color:#EDF3F5;
-  border:1px solid rgba(255,255,255,.25);border-radius:2px;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 2px 5px rgba(0,0,0,.5)}
 /* hazard frame around the whole viewport */
 body.bunker::before{
   content:"";position:fixed;inset:0;pointer-events:none;z-index:97;
@@ -311,38 +282,13 @@ body.bunker .stat{
   border:1px solid rgba(255,255,255,.10);
   box-shadow:inset 0 1px 0 rgba(255,255,255,.10), inset 0 -2px 6px rgba(0,0,0,.6);
 }
-
-/* ===== rotating alarm beacon ===== */
-.beacon{position:relative;width:26px;height:26px;flex-shrink:0}
-.beacon .dome{
-  position:absolute;inset:0;border-radius:50%;
-  background:radial-gradient(circle at 34% 28%, #FFC9C2 0%, #FF6B5E 26%, #C21F13 62%, #6E0F08 100%);
-  box-shadow:inset 0 -3px 6px rgba(0,0,0,.6), inset 0 2px 4px rgba(255,255,255,.5), 0 0 0 2px rgba(0,0,0,.45);
-}
-.beacon .dome::after{
-  content:"";position:absolute;left:20%;top:12%;width:34%;height:24%;border-radius:50%;
-  background:linear-gradient(180deg,rgba(255,255,255,.85),rgba(255,255,255,0));
-}
-.beacon .sweep{
-  position:absolute;inset:-26px;border-radius:50%;pointer-events:none;opacity:0;
-  background:conic-gradient(from 0deg,
-    rgba(255,45,25,.62) 0deg, rgba(255,45,25,.06) 34deg, transparent 62deg,
-    transparent 180deg, rgba(255,45,25,.62) 180deg, rgba(255,45,25,.06) 214deg, transparent 242deg);
-  transition:opacity .25s var(--ease);
-  filter:blur(1px);
-}
-.beacon.spin .sweep{opacity:1;animation:beaconspin .95s linear infinite}
-.beacon.spin .dome{animation:beaconglow .95s linear infinite}
 @keyframes beaconspin{to{transform:rotate(360deg)}}
 @keyframes beaconglow{
   0%,100%{box-shadow:inset 0 -3px 6px rgba(0,0,0,.6), inset 0 2px 4px rgba(255,255,255,.5), 0 0 6px rgba(255,45,25,.5), 0 0 0 2px rgba(0,0,0,.45)}
   50%{box-shadow:inset 0 -3px 6px rgba(0,0,0,.5), inset 0 2px 4px rgba(255,255,255,.7), 0 0 26px 8px rgba(255,45,25,.9), 0 0 0 2px rgba(0,0,0,.45)}
 }
-.beacon.idlealert .dome{animation:beaconglow 1.5s ease-in-out infinite}
-.beacon.clear .dome{background:radial-gradient(circle at 34% 28%, #DFFFE9 0%, #59E88F 26%, #16924E 62%, #08421F 100%)}
 #alarmwash{position:fixed;inset:0;pointer-events:none;z-index:96;opacity:0}
 @media (prefers-reduced-motion:reduce){
-  .beacon.spin .sweep,.beacon.spin .dome,.beacon.idlealert .dome{animation:none}
   #alarmwash.on{animation:none}
 }
 
@@ -435,16 +381,9 @@ body.bunker .stat{
     0 0 0 3px #2C3338, 0 0 0 4px rgba(255,255,255,.14), 0 0 0 6px #23292D,
     0 5px 14px rgba(0,0,0,.6);
 }
-body.bunker .tabbar{
-  background:linear-gradient(180deg,#4A5257,#333A3F);
-  border:1px solid rgba(255,255,255,.16);border-radius:5px;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.28), inset 0 -3px 7px rgba(0,0,0,.55), 0 6px 18px rgba(0,0,0,.6);
-  backdrop-filter:none;
-}
 body.bunker .tab{color:#C2CFD4}
 body.bunker .tab.on{color:#DFFFE9}
-body.bunker /* inputs = recessed panel slots */
-body.bunker .addrow input,body.bunker .addrow select,body.bunker .frm input,
+body.bunker .frm input,
 body.bunker .frm select,body.bunker textarea{
   background:#050A07;border:1px solid rgba(0,0,0,.85);border-radius:3px;
   box-shadow:inset 0 2px 6px rgba(0,0,0,.85), 0 0 0 1px rgba(255,255,255,.1);
@@ -505,20 +444,12 @@ body.bunker input[type=checkbox]:checked{
 .task.open .caret{transform:rotate(90deg)}
 body.bunker .task .xtra{border-left-color:rgba(140,255,190,.25);color:#8FB8A0}
 
-
-/* status beacon is a Launch Control feature only \u2014 clean UI stays clean */
-.statusbar{display:none}
-body.bunker .statusbar{display:flex}
-
-/* tab bar: identical geometry in both modes, only the finish differs */
-.tabbar{padding:4px}
+/* tab bar: identical geometry in both modes{padding:4px}
 .tab{padding:9px 6px;font-size:12.5px;letter-spacing:0;text-transform:none;line-height:1.2}
 body.bunker .tab{font-size:12.5px;letter-spacing:.6px;text-transform:uppercase}
 
 
-/* tab bar: no measured thumb, so nothing can drift */
-.tabbar{display:flex;gap:3px;padding:4px;overflow-x:auto;-webkit-overflow-scrolling:touch}
-.tabbar::-webkit-scrollbar{display:none}
+/* tab bar: no measured thumb{display:flex;gap:3px;padding:4px;overflow-x:auto;-webkit-overflow-scrolling:touch}
 .tab{flex:1 1 0;min-width:64px;padding:9px 6px;font-size:12.5px;letter-spacing:0;text-transform:none;
   line-height:1.2;border:none;background:transparent;color:var(--sub);font-family:inherit;
   border-radius:999px;cursor:pointer;white-space:nowrap;
@@ -621,12 +552,6 @@ body.bunker .beaconbay{
   background:linear-gradient(180deg,#8A9296,#4C5357);
   box-shadow:inset 0 1px 0 rgba(255,255,255,.4), 0 3px 6px rgba(0,0,0,.6);
 }
-.bayreadout{
-  flex:1;min-width:0;padding:9px 14px;border-radius:3px;align-self:center;
-  background:linear-gradient(180deg,#0B1410,#060C09);
-  border:1px solid rgba(0,0,0,.8);
-  box-shadow:inset 0 0 16px rgba(0,0,0,.9), 0 0 0 2px #2C3338, 0 0 0 3px rgba(255,255,255,.12), 0 4px 10px rgba(0,0,0,.6);
-}
 body.bunker #statustext{font-size:12px;letter-spacing:1.8px;font-weight:700;color:#8FE8AE}
 
 /* --- STATES --- */
@@ -696,8 +621,6 @@ body.bunker #statustext{font-size:12px;letter-spacing:1.8px;font-weight:700;colo
 .odo-bolts i:nth-child(2){right:4px;top:4px}
 .odo-bolts i:nth-child(3){left:4px;bottom:4px}
 .odo-bolts i:nth-child(4){right:4px;bottom:4px}
-.odo-sub{font-size:9.5px;letter-spacing:1.5px;font-weight:700;color:#8FE8AE;text-align:center}
-.odo.alert .odo-sub{color:#FF6B60}
 .odo.alert .digit{background:linear-gradient(180deg,#2A1210,#FFE2DE 18%,#FFF3F1 50%,#FFDDD8 82%,#2A1210)}
 .odo.alert .strip span{color:#5E0E06}
 .odo.rolling .odo-body{animation:odoknock .3s var(--ease)}
@@ -710,7 +633,6 @@ body.bunker .task.card{margin-bottom:11px}
 body.bunker details.card{margin-bottom:16px}
 body.bunker #view > h2{margin-top:34px;margin-bottom:8px}
 body.bunker .day-h{margin:20px 4px 9px}
-body.bunker .tabbar{margin-bottom:24px}
 body.bunker .masthead{margin-bottom:22px}
 body.bunker .beaconbay{gap:26px;margin:6px 0 26px}
 body.bunker .list-row{padding-top:8px;padding-bottom:8px}
@@ -735,7 +657,6 @@ body.bunker .barwrap{margin:12px 0 6px}
 body.bunker .barrow{margin-bottom:10px}
 body.bunker .quick{margin:4px 0 16px}
 body.bunker .frm{gap:12px;margin-bottom:16px}
-body.bunker .addrow{gap:10px;margin:14px 0 8px}
 body.bunker summary{padding:13px 14px}
 /* same rhythm, lighter, in the clean theme */
 #view .day-h{margin:18px 4px 7px}
@@ -748,21 +669,6 @@ body.bunker summary{padding:13px 14px}
 .todaydate{font-size:11px;font-weight:700;letter-spacing:1.6px;color:var(--sub)}
 .todaycount{font-size:11.5px;font-weight:600;color:var(--red)}
 .todaycount.clearcount{color:var(--chem)}
-.todaycard{border-left:3px solid var(--blue)}
-.overduecard{border-left:3px solid var(--spanish)}
-body.bunker .todaycard{box-shadow:inset 0 0 22px rgba(0,0,0,.9), inset 0 0 0 1px rgba(140,255,190,.14), 0 0 0 3px #2C3338, 0 0 0 4px rgba(255,255,255,.14), 0 0 0 7px #23292D, 0 6px 16px rgba(0,0,0,.6), 0 0 26px rgba(67,224,138,.16)}
-body.bunker .overduecard{box-shadow:inset 0 0 22px rgba(0,0,0,.9), inset 0 0 0 1px rgba(255,190,60,.2), 0 0 0 3px #2C3338, 0 0 0 4px rgba(255,255,255,.14), 0 0 0 7px #23292D, 0 6px 16px rgba(0,0,0,.6)}
-/* day states */
-.day-h.daypast{opacity:.42}
-.day-h.dayfuture{opacity:.72}
-.day-h.daynow{color:var(--blue)}
-body.bunker .day-h.daynow{color:#7DF3B4}
-.nowtag{font-size:9px;font-weight:700;letter-spacing:1.2px;color:#fff;background:var(--blue);
-  padding:2px 7px;border-radius:999px;margin-left:8px;vertical-align:middle}
-body.bunker .nowtag{background:#1E9B5C;border-radius:2px}
-.odtag{font-size:9px;font-weight:700;letter-spacing:1px;color:#fff;background:var(--spanish);
-  padding:2px 7px;border-radius:999px;margin-left:8px;vertical-align:middle}
-body.bunker .odtag{border-radius:2px}
 
 /* ================= features ================= */
 button.b.sm{font-size:12px;padding:5px 12px;height:auto;box-shadow:none}
@@ -784,19 +690,13 @@ button.b.sm{font-size:12px;padding:5px 12px;height:auto;box-shadow:none}
 .editrow{display:flex;flex-wrap:wrap;gap:7px;align-items:center}
 .editrow select,.editrow input{font:inherit;font-size:12.5px;padding:6px 9px;border:1px solid var(--edge);border-radius:9px;background:rgba(255,255,255,.9);color:var(--ink)}
 .editrow input[type=number]{width:70px}
-.misstag{margin-left:8px;font-size:11px;font-weight:700;color:var(--red)}
 .day-h{display:flex;align-items:center;flex-wrap:wrap}
-.day-h .pill{margin-left:6px}
-details.pastday{margin:0}
-details.pastday > summary.day-h{padding:3px 4px;margin:10px 0 4px;font-size:13px;font-weight:600;border-radius:8px}
-details.pastday > summary .chev{margin-left:auto}
 .faint{color:var(--faint)}
 .mrow{align-items:flex-start;gap:8px}
 .mrow .b.sm{flex-shrink:0}
 #toast{position:fixed;left:50%;bottom:22px;transform:translate(-50%,30px);opacity:0;pointer-events:none;z-index:90;display:flex;gap:14px;align-items:center;background:rgba(29,29,31,.92);color:#fff;padding:10px 18px;border-radius:999px;font-size:13px;box-shadow:0 8px 24px rgba(0,0,0,.25);transition:opacity .25s var(--ease),transform .25s var(--ease);max-width:calc(100vw - 40px)}
 #toast.on{opacity:1;transform:translate(-50%,0);pointer-events:auto}
 #toast button{background:none;border:none;color:#6CB4FF;font:inherit;font-weight:700;cursor:pointer;padding:0}
-.tab.tab.tmtab{flex:0 0 auto!important;position:sticky;right:0;padding:9px 12px;font-variant-numeric:tabular-nums;color:var(--ink);font-weight:600;background:rgb(250,250,252);box-shadow:-8px 0 12px -6px rgba(31,38,64,.18)}
 #tmbtn.running{background:var(--blue);color:#fff}
 #tmbtn.warn{background:var(--spanish);color:#fff}
 #tmbtn.over{background:var(--red);color:#fff;animation:pulse 1s infinite}
@@ -818,11 +718,6 @@ details.pastday > summary .chev{margin-left:auto}
 .spark{width:100%;height:90px;display:block;margin-top:6px;overflow:visible}
 .spark .gl{stroke:var(--ink);stroke-dasharray:4 4;opacity:.35;stroke-width:1;vector-effect:non-scaling-stroke}
 .spark .ln{fill:none;stroke-width:2;vector-effect:non-scaling-stroke}
-.addfrm{grid-template-columns:1.3fr 1fr 1fr .8fr}
-.addfrm .full{grid-column:1/-1}
-.addfrm select#nt-rec{grid-column:span 2}
-.addfrm button{grid-column:span 2}
-.addfrm input,.addfrm select{min-width:0}
 #printarea{display:none}
 @media print{
   body.printing{background:#fff!important;background-image:none!important}
@@ -836,8 +731,6 @@ details.pastday > summary .chev{margin-left:auto}
   #printarea i{color:#666}
 }
 @media (max-width:620px){
-  .addfrm{grid-template-columns:1fr 1fr}
-  .addfrm select#nt-rec,.addfrm button{grid-column:1/-1}
   #toast{max-width:calc(100vw - 32px)}
 }
 /* ================= exams, tags, pacing, cards ================= */
@@ -956,7 +849,6 @@ body:not(.bunker) .side{display:flex;flex-direction:column;gap:18px;position:sti
   border-right:1px solid var(--edge);overflow-y:auto}
 body:not(.bunker) .main{padding:30px 44px 90px;min-width:0}
 body:not(.bunker) .mainin{max-width:1260px;margin:0 auto}
-body:not(.bunker) .wrap-legacy{display:none}
 .brand{display:flex;align-items:center;gap:10px;padding:0 10px}
 .brand .mark{width:30px;height:30px;border-radius:9px;background:var(--aurora);box-shadow:inset 0 0 0 1px rgba(255,255,255,.35)}
 .brand b{font-size:15px;font-weight:650;letter-spacing:-.2px}
@@ -999,7 +891,6 @@ body:not(.bunker) .pagehead{display:block;flex:1;min-width:0}
 .pagehead .ttl{min-width:0}
 .pagehead h1{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",sans-serif;font-size:34px;font-weight:700;letter-spacing:-.9px;line-height:1.1;margin:0}
 .pagehead .sub{font-size:14px;color:var(--sub);margin-top:4px}
-.pagehead .tools{margin-left:auto;display:flex;align-items:center;gap:10px}
 #tmbtn{font:inherit;font-size:13.5px;font-weight:600;font-variant-numeric:tabular-nums;border:none;cursor:pointer;
   padding:9px 16px;border-radius:999px;background:var(--surface);color:var(--ink);box-shadow:var(--shadow-1);
   transition:transform .15s var(--spring), background .25s var(--spring)}
@@ -1070,11 +961,11 @@ body:not(.bunker) button.b{background:var(--blue);color:#fff;box-shadow:none;fon
 body:not(.bunker) button.b:hover{transform:none;filter:brightness(1.08);box-shadow:none}
 body:not(.bunker) button.b:active{transform:scale(.97)}
 body:not(.bunker) button.b.ghost{background:var(--fill);color:var(--ink);border:none;box-shadow:none}
-body:not(.bunker) .addrow input,body:not(.bunker) .addrow select,body:not(.bunker) .frm input,body:not(.bunker) .frm select,
+body:not(.bunker) .frm input,body:not(.bunker) .frm select,
 body:not(.bunker) textarea,body:not(.bunker) .sheet input,body:not(.bunker) .editrow select,body:not(.bunker) .editrow input,
 body:not(.bunker) #tmpanel input,body:not(.bunker) .bgrid input{
   background:var(--surface-2);color:var(--ink);border:1px solid var(--edge);border-radius:var(--r-in);color-scheme:var(--scheme)}
-body:not(.bunker) .addrow input:focus,body:not(.bunker) .frm input:focus,body:not(.bunker) .frm select:focus,body:not(.bunker) textarea:focus,
+body:not(.bunker) .frm input:focus,body:not(.bunker) .frm select:focus,body:not(.bunker) textarea:focus,
 body:not(.bunker) .editrow input:focus,body:not(.bunker) .bgrid input:focus{border-color:var(--blue);box-shadow:0 0 0 4px color-mix(in srgb,var(--blue) 18%,transparent);outline:none}
 body:not(.bunker) .quick button,body:not(.bunker) .tmgrid button,body:not(.bunker) .grades button,body:not(.bunker) .chip{
   background:var(--fill);color:var(--ink);border:1px solid transparent}
@@ -1085,7 +976,6 @@ body:not(.bunker) .scorechip{background:var(--fill);border:none}
 body:not(.bunker) .tag{background:var(--fill);color:var(--sub)}
 body:not(.bunker) .barrow .track,body:not(.bunker) .tmbar{background:var(--fill)}
 body:not(.bunker) .rules,body:not(.bunker) .sheet,body:not(.bunker) .tmpace{background:color-mix(in srgb,var(--blue) 9%,transparent)}
-body:not(.bunker) .pill{background:var(--blue)}
 body:not(.bunker) #toast{background:var(--ink);color:var(--bg);border-radius:999px;box-shadow:var(--shadow-2)}
 body:not(.bunker) #toast button{color:var(--blue);filter:brightness(1.25)}
 body:not(.bunker) #tmpanel{top:92px;right:max(20px,calc(50vw - 640px + var(--side-w)/2));border-radius:24px;padding:18px 20px;
@@ -1093,7 +983,6 @@ body:not(.bunker) #tmpanel{top:92px;right:max(20px,calc(50vw - 640px + var(--sid
 body:not(.bunker) .footer{background:none;border:none;box-shadow:none;border-top:1px solid var(--edge);border-radius:0;margin-top:48px;padding:18px 2px}
 body:not(.bunker) details.card > summary{border-radius:var(--r-card)}
 body:not(.bunker) .todayhead .todaydate{letter-spacing:.2px;font-size:12.5px;text-transform:none}
-body:not(.bunker) .overduecard,body:not(.bunker) .todaycard{border-left:1px solid var(--edge)}
 body:not(.bunker) .masthead,body:not(.bunker) #stats,body:not(.bunker) .beaconbay{display:none}
 body.bunker .app{max-width:800px;margin:0 auto;padding:22px 14px 90px}
 body.bunker .bottombar{display:none}
@@ -1468,8 +1357,7 @@ body.bunker input[type=checkbox]:checked{background:radial-gradient(circle at 35
   box-shadow:0 0 0 2px #6A5424,0 0 12px 3px rgba(92,240,143,.75);animation:lampon .5s steps(1,end)}
 @keyframes lampon{0%{filter:brightness(.4)}20%{filter:brightness(1.4)}35%{filter:brightness(.6)}55%{filter:none}}
 
-/* inputs: recessed dark slots */
-body.bunker .addrow input,body.bunker .addrow select,body.bunker .frm input,body.bunker .frm select,body.bunker textarea,
+body.bunker .frm input,body.bunker .frm select,body.bunker textarea,
 body.bunker .editrow input,body.bunker .editrow select,body.bunker .bgrid input,body.bunker .sform input,body.bunker .sform select{
   background:#0F1411;color:var(--cream);border:1px solid #000;border-radius:4px;box-shadow:inset 0 2px 5px rgba(0,0,0,.9),0 1px 0 rgba(255,255,255,.08)}
 
@@ -2943,7 +2831,9 @@ function editHTML(t){
     </div>
     <div class="editrow"><button class="b sm" onclick="saveEdit('${t.id}')">Save</button><button class="b ghost sm" onclick="cancelEdit('${t.id}')">Cancel</button></div></div>`;
 }
-window.editTask=id=>{ state.tasks.forEach(x=>x.editing=false); const t=state.tasks.find(x=>x.id===id); if(!t) return; t.editing=true; paint(); };
+window.editTask=id=>{ state.tasks.forEach(x=>x.editing=false); const t=state.tasks.find(x=>x.id===id); if(!t) return; t.editing=true;
+  if(state.tab==='plan'){ window._pastOpen=window._pastOpen||{}; window._pastOpen[t.day]=true; window._openWk=t.wk; }   // the form must be on screen
+  paint(); };
 window.cancelEdit=id=>{ const t=state.tasks.find(x=>x.id===id); if(t) t.editing=false; paint(); };
 window.saveEdit=id=>{
   const t=state.tasks.find(x=>x.id===id); if(!t) return;
@@ -2958,7 +2848,7 @@ window.saveEdit=id=>{
 };
 window.saveSheet=id=>{
   const t=state.tasks.find(x=>x.id===id); if(!t) return;
-  const am=+document.getElementById('am-'+id).value; if(am>0) t.am=am;
+  const amEl=document.getElementById('am-'+id), am=amEl?+amEl.value:0; if(am>0) t.am=am;
   const sc=document.getElementById('sc-'+id), tot=document.getElementById('tot-'+id);
   if(sc && sc.value!=='' && +tot.value>0){
     const src=paperSource(t);
@@ -3137,20 +3027,6 @@ function reviewHTML(){
       <b>Mistake log:</b> ${openN} open · ${fixedN} fixed this week<br>
       ${lag?`<b>Lagging:</b> ${SUBJ[lag[0]]} (${Math.round(lag[1]*100)}% of planned) → move time towards it next week.`:''}</div></div>`;
 }
-function tomorrowHTML(){
-  const ti=todayIdx(); let lbl;
-  if(ti<0){ const d=new Date(); d.setDate(d.getDate()+1); lbl=labelOf(d); } else lbl=DAY_ORDER[ti+1];
-  if(!lbl || DAY_ORDER.indexOf(lbl)<0) return '';
-  const ts=state.tasks.filter(t=>t.day===lbl && !t.skipped);
-  const rest=REST_DAYS.indexOf(lbl)>-1;
-  const mins=ts.filter(t=>!isOpt(t)).reduce((a,t)=>a+t.m,0);
-  const papers=ts.filter(t=>t.rec==='paper');
-  return `<details class="card tomcard" style="padding:2px 12px 6px;margin-bottom:14px" ${state.tomOpen?'open':''} ontoggle="state.tomOpen=this.open">
-    <summary style="font-size:13px;padding:10px 2px"><span class="todaydate">Tomorrow · ${lbl}</span>
-    <span style="font-weight:400;color:var(--faint);font-size:12px">${rest?'rest day':ts.length+' tasks · '+(mins/60).toFixed(1)+' h'}</span><span class="chev">›</span></summary>
-    ${papers.length?`<div class="note" style="margin:0 2px 8px"><b>Find tonight (with mark schemes):</b> ${papers.map(p=>esc(paperName(p).replace(/ \(.*\)$/,''))).join(' · ')}</div>`:''}
-    ${ts.map(t=>`<div class="list-row" style="padding:5px 2px"><span class="sd" style="background:${SCOL[t.s]};margin-top:6px"></span><span class="num" style="width:62px;color:var(--faint)">${taskTime(t)?t12(taskTime(t)):''}</span><span class="grow">${esc(t12(headOf(t)))}</span><span class="num" style="color:var(--faint)">${t.m} min</span></div>`).join('')}</details>`;
-}
 
 /* ================= plan view ================= */
 /* ================= print ================= */
@@ -3162,7 +3038,7 @@ window.printWeek=w=>{
     h+=`<h2>${day}${REST_DAYS.indexOf(day)>-1?' — rest day':''}</h2>`;
     d.forEach(t=>{ const tm=taskTime(t); h+=`<div class="pr"><span class="bx">${t.done?'✓':''}</span><span class="tm">${tm?t12(tm):''}</span><span class="tx">${esc(t12(headOf(t)))} <i>(${SUBJ[t.s]}, ${t.m} min)</i></span></div>`; });
   });
-  const pa=document.getElementById('printarea'); pa.innerHTML=h;
+  const pa=document.getElementById('printarea'); pa.innerHTML=h; deDash(pa);
   document.body.classList.add('printing');
   const done=()=>{ document.body.classList.remove('printing'); window.removeEventListener('afterprint',done); };
   window.addEventListener('afterprint',done);
@@ -3375,14 +3251,11 @@ function applyMode(){
 }
 if(mqDark.addEventListener) mqDark.addEventListener('change',()=>{ if(themeNow()==='auto'){ applyMode(); paint(); } });
 window.setTheme=t=>{ vt(()=>{ state.theme=t; applyMode(); paint(); }); save(); };
-window.cycleMode=()=>{ const i=THEMES.findIndex(x=>x[0]===themeNow()); setTheme(THEMES[(i+1)%THEMES.length][0]); };
-window.tglTheme=()=>setTheme(themeNow()==='launch'?'auto':'launch');
 // run a DOM change as a view transition where the browser supports it
 function vt(fn){
   if(document.startViewTransition && !matchMedia('(prefers-reduced-motion: reduce)').matches){ window._vt=document.startViewTransition(fn); window._vt.finished.finally(()=>{ window._vt=null; }); }
   else fn();
 }
-window.setOpenSub=(e,sub)=>{ state.openSub=(state.openSub===sub)?null:sub; setTimeout(()=>paint(),0); };
 window.tglHideGreen=()=>{state.hideGreen=!state.hideGreen;paint();save();};
 window.forceReseed=()=>{
   if(!confirm('Reload the plan from the built-in version? Your ticks, times and edits are kept.')) return;
@@ -3819,7 +3692,6 @@ function gradeText(p,gi){
   if(-gap<SAFE_LO) return x+` · <span style="color:var(--spanish);font-weight:600">at ${tl}, only ${dn(-gap)} above the line</span> — ${up(SAFE_LO+gap)}–${up(SAFE_HI+gap)} more to be safe`;
   return x+` · <span style="color:var(--chem);font-weight:600">safe ${tl}: ${dn(-gap)} above the line</span>`;
 }
-function gchip(p){ const gi=gradeInfo(p); return gi&&!gi.none?`<span class="scorechip" title="Grade from your ${SUBJ[p.s]} ${gi.k} boundaries">G${gi.g}</span>`:''; }
 function gradeListHTML(){
   const ps=state.papers.map((p,i)=>({p,i})).filter(x=>+x.p.tot>0&&PAPER_KEYS[x.p.s]).sort((a,b)=>(a.p.d||'')<(b.p.d||'')?1:-1);
   if(!ps.length) return '<div class="list-row faint">No scored papers yet — tick a paper or marking task and enter the score.</div>';
@@ -4090,7 +3962,6 @@ async function libAddFiles(files){
 window.libPick=()=>{ const f=document.getElementById('libfile'); f.value=''; f.click(); };
 window.libFiles=ev=>libAddFiles([...ev.target.files]);
 window.libDrop=ev=>{ ev.preventDefault(); ev.currentTarget.classList.remove('over'); libAddFiles([...ev.dataTransfer.files]); };
-window.libOpen=id=>openReader(id);
 window.libOriginal=async id=>{
   const it=state.library.find(x=>x.id===id); if(!it) return;
   const w=window.open('','_blank');            // open first, inside the click, so pop-up blockers allow it
@@ -5035,8 +4906,6 @@ function overdueTasks(){
   const ti=todayIdx(); if(ti<0) return [];
   return state.tasks.filter(t=>isDue(t) && dayIdx(t.day)>-1 && dayIdx(t.day)<ti);
 }
-function todayTasks(){ const t=todayLabel(); return state.tasks.filter(x=>x.day===t); }
-function refreshDayCounters(){ /* every change repaints the view now */ }
 function paintOdo(n){
   const box=document.getElementById('odo'); if(!box) return;
   const d=String(Math.min(99,n)).padStart(2,'0');
