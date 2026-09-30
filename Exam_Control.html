@@ -3531,13 +3531,19 @@ window.slipAllOverdue=()=>{
   od.forEach(t=>moveTo(t,target));
   paint(); save(); toast(od.length+' task'+(od.length>1?'s':'')+' moved to '+target);
 };
-// out of action today: spread today's unfinished tasks over the next few study days, lightest day first
+// out of action today: spread today's unfinished tasks over the rest of the week
+// rest of this week (at least 3 study days), nearest-exam subjects first, lightest day wins, never on/after that subject's exam
 function spreadOver(list,fromIdx){
   const days=[]; let i=fromIdx;
-  while(days.length<3){ const d=nextStudyDay(i); if(!d) break; days.push(d); i=dayIdx(d)+1; }
+  const start=dateOf(nextStudyDay(fromIdx)||'')||new Date(), sun=new Date(start); sun.setDate(sun.getDate()+((7-sun.getDay())%7));
+  while(true){ const d=nextStudyDay(i); if(!d) break; if(days.length>=3&&dateOf(d)>sun) break; days.push(d); i=dayIdx(d)+1; }
   if(!days.length){ alert('No study day left to move them to.'); return 0; }
-  const load=d=>state.tasks.filter(t=>t.day===d&&isActive(t)).reduce((a,t)=>a+t.m,0);
-  list.slice().sort((a,b)=>b.m-a.m).forEach(t=>{ const d=days.slice().sort((x,y)=>load(x)-load(y))[0]; moveTo(t,d); });
+  const load={}; days.forEach(d=>load[d]=state.tasks.filter(t=>t.day===d&&isActive(t)).reduce((a,t)=>a+t.m,0));
+  const exD=t=>{ const e=nextExam(t.s,1); return e?dateOf(e[0]):new Date(2100,0,1); };
+  list.slice().sort((a,b)=>(exD(a)-exD(b))||(b.m-a.m)).forEach(t=>{
+    const ok=days.filter(d=>dateOf(d)<exD(t)), pool=ok.length?ok:[days[0]];
+    const d=pool.map((d,k)=>[d,load[d]+k*15]).sort((x,y)=>x[1]-y[1])[0][0];
+    moveTo(t,d); load[d]+=t.m; });
   return days;
 }
 window.catchUp=()=>{
@@ -3548,13 +3554,9 @@ window.catchUp=()=>{
 window.lostToday=()=>{
   const td=todayLabel(), left=state.tasks.filter(t=>t.day===td&&isActive(t)&&t.rec!=='exam');
   if(!left.length){ toast('Nothing left today'); return; }
-  const days=[]; let i=todayIdx()+1;
-  while(days.length<3){ const d=nextStudyDay(i); if(!d) break; days.push(d); i=dayIdx(d)+1; }
-  if(!days.length){ alert('No study day left to move them to.'); return; }
-  if(!confirm('Spread '+left.length+' task'+(left.length>1?'s':'')+' from today over '+days.join(', ')+'?')) return;
-  const load=d=>state.tasks.filter(t=>t.day===d&&isActive(t)).reduce((a,t)=>a+t.m,0);
-  left.sort((a,b)=>b.m-a.m).forEach(t=>{ const d=days.slice().sort((x,y)=>load(x)-load(y))[0]; moveTo(t,d); });
-  paint(); save(); toast(left.length+' task'+(left.length>1?'s':'')+' moved, rest up');
+  if(!confirm('Spread today’s '+left.length+' unfinished task'+(left.length>1?'s':'')+' over the rest of the week?')) return;
+  const days=spreadOver(left,todayIdx()+1); if(!days) return;
+  paint(); save(); toast(left.length+' task'+(left.length>1?'s':'')+' spread over '+days.length+' days, rest up');
 };
 function moveTo(t,target){ if(!t.slipped){ t.origDay=t.day; t.origBlk=t.blk; t.origWk=t.wk; } t.day=target; t.wk=weekOf(target); t.blk='BUF'; t.slipped=true; }
 window.xtra=(e,id)=>{
@@ -5049,7 +5051,7 @@ function vToday(){
       <div class="ctr"><b>${tt.length?dn.length+'/'+tt.length:'0'}</b><span>${tt.length?(full?'day done':'tasks today'):(REST_DAYS.indexOf(tLbl)>-1?'rest day':'nothing planned')}</span></div></div>
     <div class="rstats"><div><b>${(doneMin/60).toFixed(1)} h</b>done today${planned?' of '+(planned/60).toFixed(1)+' h':''}</div>
       ${st.n?`<div><b>${st.n} day${st.n===1?'':'s'}</b>listening streak${st.today?'':' · not yet today'}</div>`:`<div><b>${(tt.filter(isActive).reduce((a,t)=>a+t.m,0)/60).toFixed(1)} h</b>left to do today</div>`}
-      ${tt.filter(isActive).length&&!dn.length&&nowMin()>=12*60?`<button class="lostlink" onclick="lostToday()">Out of action today? <b>Spread it out</b></button>`:''}</div></section></div>`;
+      ${tt.filter(isActive).length&&nowMin()>=12*60?`<span class="lostlink">Out of action today? <button class="lostlink" onclick="lostToday()"><b>Spread it out</b></button></span>`:''}</div></section></div>`;
   // --- left: day strip + timeline
   const ts=state.tasks.filter(t=>t.day===sel), cnt=ts.filter(t=>!isOpt(t)&&!t.skipped), rem=ts.filter(isActive);
   const mins=cnt.reduce((a,t)=>a+t.m,0), rest=REST_DAYS.indexOf(sel)>-1;
@@ -5067,7 +5069,7 @@ function vToday(){
   const od=overdueTasks();
   if(od.length){ const since=od.map(t=>t.day).sort((a,b)=>dayIdx(a)-dayIdx(b))[0];
     R+=`<div class="card panel"><h4><span class="statusdot" style="background:var(--warn)"></span>Missed since ${since.replace(/^\w+ /,'')}<button class="b sm" onclick="catchUp()">Spread them</button></h4>
-    <div class="note" style="margin:0">${od.length} unfinished task${od.length>1?'s':''} (${(od.reduce((a,t)=>a+t.m,0)/60).toFixed(1)} h) from earlier days. Spreading puts them on your next 3 study days, lightest first.</div></div>`; }
+    <div class="note" style="margin:0">${od.length} unfinished task${od.length>1?'s':''} (${(od.reduce((a,t)=>a+t.m,0)/60).toFixed(1)} h) from earlier days. Spreading shares them over the rest of the week, nearest exam first.</div></div>`; }
   const lb=state.lastBackup?Math.round((new Date()-dateFromISO(state.lastBackup))/86400000):null;
   if((lb===null||lb>=7) && state.tasks.some(t=>t.done)) R+=`<div class="card slim"><span class="grow"><b>Back up your progress.</b> ${lb===null?'Never backed up':'Last backup '+lb+' days ago'}. Everything lives in this browser.</span><button class="b ghost sm" onclick="exportData()">Back up</button></div>`;
   const dm=dueMistakes().length, cd=cardsDue('').length, cap=capacityRows().rows[0];
