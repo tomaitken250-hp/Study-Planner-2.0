@@ -1509,6 +1509,25 @@ body[data-theme=dark] .nav.on .pillbg,body[data-theme=midnight] .nav.on .pillbg{
 .seg button{white-space:nowrap;flex-shrink:0}
 @media (max-width:700px){.ptools{flex-direction:column;align-items:stretch}.wkpills{flex:none;width:100%}.pbtns{justify-content:flex-start}}
 
+/* entry animations play only right after a tab switch or on open (body.entering), never on the
+   repaint that follows a tick, so nothing already on screen replays */
+body:not(.entering) :is(.card,.stat,.tile,.ncard,.rcard,.pday,.brow,.wksum,.tl > *){animation:none!important}
+body:not(.bunker) input[type=checkbox]:checked{animation:none}
+body:not(.bunker) .justdone input[type=checkbox]:checked{animation:pop .35s var(--spring)}
+body.bunker input[type=checkbox]:checked{animation:none}
+body.bunker .justdone input[type=checkbox]:checked{animation:lampon .5s steps(1,end)}
+/* lamps behind: lighter scroll cost than a fixed multi-layer background */
+body.bunker{background-attachment:scroll}
+
+/* red room glow while work is outstanding: fade a fixed layer's opacity (composited) instead of
+   animating the body's shadow, which repainted the whole riveted background every frame */
+body.bunker.alertmode{animation:none}
+body.bunker::after{will-change:opacity}
+body.bunker.alertmode::after{background:radial-gradient(120% 95% at 50% 40%, transparent 50%, rgba(0,0,0,.62) 100%),
+  radial-gradient(90% 70% at 50% 110%, rgba(255,50,30,.16), transparent 70%);animation:redroom 2.4s ease-in-out infinite}
+@keyframes redroom{0%,100%{opacity:.8}50%{opacity:1}}
+@media (prefers-reduced-motion:reduce){body.bunker.alertmode::after{animation:none}}
+
 </style>
 </head>
 <body>
@@ -2635,7 +2654,7 @@ function taskCard(t,where){
       <button class="del" title="${t.slipped?'Move back':'Move to next study day'}" onclick="slip('${t.id}')">${t.slipped?'↩':'→'}</button>`}
       ${where==='week'?`<button class="del delx" title="Delete" onclick="delTask('${t.id}')">×</button>`:''}</span>`;
   if(t.editing && ownsForm(t,where)) return `<div class="task card editing" data-tid="${t.id}">${editHTML(t)}</div>`;
-  return `<div class="task card ${t.done?'done':''} ${t.skipped?'skipped':''}" data-tid="${t.id}" ${t.slipped&&where==='week'?'style="border-left:3px solid var(--spanish)"':''}>
+  return `<div class="task card ${t.done?'done':''} ${t.skipped?'skipped':''} ${t.id===window._justTicked?'justdone':''}" data-tid="${t.id}" ${t.slipped&&where==='week'?'style="border-left:3px solid var(--spanish)"':''}>
     <input type="checkbox" ${t.done?'checked':''} ${t.skipped?'disabled':''} onchange="tgl('${t.id}')">
     <div class="body">${taskBody(t,where)}</div>${btns}</div>`;
 }
@@ -2998,7 +3017,7 @@ function timerTick(){
     if(ev && wl>60){ const k=Math.floor(el/ev);
       if(k>0 && k>(T.warn.cp||0)){ T.warn.cp=k; beep(2,660); const pt=paceText(T); toast(k*ev+' min in · '+(pt||mmss(wl)+' left'),null,null,12000); save(); } }
   }
-  if(!T.paused && !T.warn.end && left===0){ T.warn.end=true; beep(3); toast('Time’s up — pens down',null,null,15000); save(); }
+  if(!T.paused && !T.warn.end && left===0){ T.warn.end=true; beep(3); fireAlarm(); toast('Time’s up — pens down',null,null,15000); save(); }
   paintTimer();
 }
 
@@ -3335,6 +3354,7 @@ function fireAlarm(){
   window._alarmT=setTimeout(()=>{ b.classList.remove('spin'); if(w)w.classList.remove('on'); }, 2900);
 }
 window.tgl=id=>{const t=state.tasks.find(x=>x.id===id);if(!t)return;
+  window._justTicked=id; clearTimeout(window._jtT); window._jtT=setTimeout(()=>{ window._justTicked=null; },900);
   t.done=!t.done; t.doneAt=t.done?localISO():null;
   if(t.done){ t.sheet=wantsSheet(t); t.skipped=false; } else { t.sheet=false; delete t.am; }
   paint(); if(t.done) fireAlarm(); save();
@@ -4005,7 +4025,7 @@ document.addEventListener('keydown',e=>{ if(e.key==='Escape' && sheetFn) closePa
 const WK_SHORT={H1:'Holidays 1',H2:'Holidays 2',LV:'Leavers’ week',SL:'Study leave',X1:'Exams 1',X2:'Exams 2',X3:'Exams 3'};
 function wkParts(w){ const l=((WEEKS.find(x=>x[0]===w)||[,''])[1]).split(' · ');
   return {name:(l[0]||'').replace(/\bwk\b/,'week'),dates:(l[1]||'').replace(/[–—]/g,'-'),what:l[2]||''}; }
-window.pickWeek=w=>{ vt(()=>{ window._openWk=w; paint(); window.scrollTo({top:0,behavior:'instant'}); }); };
+window.pickWeek=w=>{ enter(); vt(()=>{ window._openWk=w; paint(); window.scrollTo({top:0,behavior:'instant'}); }); };
 window.tglPast=d=>{ window._pastOpen=window._pastOpen||{}; window._pastOpen[d]=!window._pastOpen[d]; paint(); };
 window.openHelp=()=>openSheet(()=>({title:'How this plan works',html:`<div class="note drawernote">
   <p><b>Study 1-6 pm</b> on most days. Rest days are Sun 4 and Sun 11 Oct. Leavers’ week is about 2.5 h a day, and Sundays are light.</p>
@@ -4337,7 +4357,9 @@ function paint(tabSwitch){
   if(state.tab==='today') settleStrip();
   if(sheetFn) renderSheet();
 }
+function enter(){ document.body.classList.add('entering'); clearTimeout(window._entT); window._entT=setTimeout(()=>document.body.classList.remove('entering'),1100); }
 window.go=id=>{
+  enter();
   if(SUBTABS[id]) id=(state.lastSub||{})[id]||SUBTABS[id][0][0];
   const sp=spaceOf(id); if(SUBTABS[sp]){ state.lastSub=state.lastSub||{}; state.lastSub[sp]=id; }
   closeSide();
@@ -4352,7 +4374,7 @@ window.go=id=>{
   if(!state.tab) state.tab='today';
   applyMode();
   paint();
-  paintTimer(); setInterval(timerTick,1000);
+  enter(); paintTimer(); setInterval(timerTick,1000);
   let lastDay=todayLabel();
   function checkRollover(){
     const now=todayLabel();
