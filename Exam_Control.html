@@ -1606,6 +1606,40 @@ body.bunker .libcard::before{background:var(--sc);width:6px}
 body.bunker .lctitle{color:var(--cream)}
 body.bunker .rprog{background:var(--lamp);box-shadow:0 0 8px var(--lamp)}
 
+/* ---------- focus layer (sessions, timer) ---------- */
+.focus{position:fixed;inset:0;z-index:118;display:flex;flex-direction:column;align-items:center;padding:22px 24px 40px;overflow:auto;
+  background:color-mix(in srgb,var(--bg,#111) 86%,transparent);backdrop-filter:blur(22px) saturate(1.3);-webkit-backdrop-filter:blur(22px) saturate(1.3);
+  opacity:0;visibility:hidden;transition:opacity .35s cubic-bezier(.16,1,.3,1),visibility 0s linear .35s}
+.focus.on{opacity:1;visibility:visible;transition:opacity .35s cubic-bezier(.16,1,.3,1)}
+body.focusing{overflow:hidden}
+.fxtop{width:min(760px,100%);display:flex;align-items:center;gap:14px}
+.fxbar{flex:1;height:6px;border-radius:999px;background:var(--fill);overflow:hidden}
+.fxbar span{display:block;height:100%;border-radius:999px;background:var(--blue);transition:width .5s cubic-bezier(.16,1,.3,1)}
+.fxn{font-size:12.5px;color:var(--faint);font-variant-numeric:tabular-nums;white-space:nowrap}
+.fxclose{border:none;background:var(--fill);color:var(--ink);font:inherit;font-size:12.5px;font-weight:600;padding:7px 12px;border-radius:999px;cursor:pointer}
+.fxclose kbd{font:inherit;font-size:11px;color:var(--faint);margin-left:4px}
+.fxin{width:min(760px,100%);margin:auto 0;padding:30px 0}
+.focus .fcard{padding:44px 44px 34px;text-align:center;border-radius:28px;box-shadow:var(--shadow-2);position:relative;overflow:hidden;animation:fxin .45s cubic-bezier(.16,1,.3,1)}
+.focus .fcard::before{content:"";position:absolute;left:0;top:0;right:0;height:5px;background:var(--sc,var(--blue))}
+.focus .fcard .fg{font-size:13px;color:var(--sub)}
+.focus .fcard .fq{font-size:26px;font-weight:650;letter-spacing:-.5px;line-height:1.3;margin:16px 0 8px}
+.focus .fcard .fa{font-size:18px;line-height:1.55;margin-top:22px;padding-top:20px;text-align:center}
+.focus .fcard.shown .fa{animation:flipin .5s cubic-bezier(.16,1,.3,1)}
+.focus .fcard textarea{min-height:64px;font-size:15px}
+.focus .grades{margin-top:24px;gap:10px}
+.focus .grades button{padding:14px 6px;font-size:14px;border-radius:16px}
+@keyframes fxin{from{opacity:0;transform:translateY(16px) scale(.98)}to{opacity:1;transform:none}}
+@keyframes flipin{from{opacity:0;transform:perspective(700px) rotateX(-70deg);transform-origin:top}to{opacity:1;transform:none}}
+@media (max-width:700px){.focus .fcard{padding:30px 22px 24px}.focus .fcard .fq{font-size:21px}}
+@media (prefers-reduced-motion:reduce){.focus,.focus.on{transition:none}.focus .fcard,.focus .fcard.shown .fa{animation:none}}
+body.bunker .focus{background:rgba(8,12,10,.86)}
+body.bunker .focus .fcard{background:radial-gradient(120% 90% at 50% 0%,#F8F0D8,var(--cream) 55%,#D5C8A4);color:#1E1B14;border:5px solid var(--brass);border-radius:18px;--ink:#1E1B14;--sub:#5C5540;--faint:#6E6650;--edge:rgba(40,30,10,.18);--fill:rgba(40,30,10,.08)}
+body.bunker .focus .fcard .fq,body.bunker .focus .fcard .fa{color:#1E1B14}
+body.bunker .fxbar span{background:var(--lamp);box-shadow:0 0 8px var(--lamp)}
+/* ---------- Mistakes ---------- */
+.mlist{padding:4px 2px}
+.mwk{font-size:13px;font-weight:600;color:var(--sub);margin:16px 4px 8px}
+
 </style>
 </head>
 <body>
@@ -1673,6 +1707,7 @@ body.bunker .rprog{background:var(--lamp);box-shadow:0 0 8px var(--lamp)}
 </div>
 <nav class="bottombar" id="bottombar" aria-label="Sections"></nav>
 <div class="scrim" id="scrim" onclick="closeSide()"></div>
+<div class="focus" id="focus" role="dialog" aria-modal="true" aria-hidden="true"></div>
 <div class="scrim" id="drawerscrim" onclick="closePanel()"></div>
 <aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-hidden="true"></aside>
 
@@ -2854,34 +2889,41 @@ function mistakeRow(m,compact){
       `<button class="b sm" onclick="redoRight('${m.id}')">✓ Right</button><button class="b ghost sm" onclick="redoWrong('${m.id}')">✗ Wrong</button>`}
     ${compact?'':`<button class="del delx" title="Delete" onclick="delMistake('${m.id}')">×</button>`}</div>`;
 }
+function mistakeFormHTML(){
+  const papers=[...new Set(state.papers.map(p=>p.n).concat(state.tasks.filter(t=>t.rec==='paper').map(paperName)))];
+  const autoLine=['math','physics','chem','history','english','spanish'].map(s=>{ const r=redoPlan(s,3); return SUBJ[s]+' '+(r.n===0?'today':r.n+' d'); }).join(' · ');
+  return `<div class="sform">
+    <div class="srow"><label>Subject<select id="mk-s">${Object.keys(SUBJ).filter(s=>s!=='buffer').map(s=>`<option value="${s}" ${state.mkS===s?'selected':''}>${SUBJ[s]}</option>`).join('')}</select></label>
+      <label>Question<input type="text" id="mk-q" placeholder="e.g. Q11b"></label></div>
+    <label>Paper<input type="text" id="mk-p" list="mk-plist" placeholder="e.g. Maths P1 (Mon 5 Oct)" value="${esc(state.mkP||'')}"></label>
+    <datalist id="mk-plist">${papers.map(p=>`<option value="${esc(p)}">`).join('')}</datalist>
+    <label>What I did<input type="text" id="mk-w" placeholder="e.g. used (1,2,1) as the normal"></label>
+    <label>Rule or fix, one line<input type="text" id="mk-f" placeholder="e.g. read the normal off the plane equation"></label>
+    <label>Weak area<span class="chips" id="mk-tags" style="margin:2px 0 0">${MTAGS.map(t=>`<button type="button" class="chip" data-tag="${t[0]}" onclick="this.classList.toggle('on')">${t[1]}</button>`).join('')}</span></label>
+    <label>Redo in (days)<input type="number" id="mk-in" min="0" max="21" placeholder="auto"></label>
+    <div class="note" style="margin:-6px 0 0">Blank means auto: the gap shrinks as that exam gets closer and never lands after it. Today: ${autoLine}. No tag picked means it’s tagged from the text.</div>
+    <button class="b" onclick="addMistake()">Add to log</button></div>`;
+}
+window.openMistakeForm=()=>{ openSheet(()=>({title:'Log a mistake',sub:'One line per lost mark. The panel stays open so you can log a whole paper.',html:mistakeFormHTML()}));
+  setTimeout(()=>{ const q=document.getElementById('mk-q'); if(q) q.focus(); },120); };
+function weekLabel(iso){ const d=dateFromISO(iso), m=new Date(d); m.setDate(d.getDate()-((d.getDay()+6)%7));
+  const [s0]=weekBounds(), diff=Math.round((m-s0)/604800000);
+  return diff===0?'This week':diff===1?'Next week':'Week of '+labelOf(m); }
 function vMistakes(){
   const ms=state.mistakes||[], td=localISO(), tf=state.mkFilter||'';
   const due=ms.filter(m=>!m.fixed&&m.due<=td&&hasTag(m,tf)).sort((a,b)=>a.due<b.due?-1:1);
   const up=ms.filter(m=>!m.fixed&&m.due>td&&hasTag(m,tf)).sort((a,b)=>a.due<b.due?-1:1);
   const fixed=ms.filter(m=>m.fixed&&hasTag(m,tf));
-  const papers=[...new Set(state.papers.map(p=>p.n).concat(state.tasks.filter(t=>t.rec==='paper').map(paperName)))];
-  const autoLine=['math','physics','chem','history','english','spanish'].map(s=>{ const r=redoPlan(s,3); return SUBJ[s]+' '+(r.n===0?'today':r.n+' d'); }).join(' · ');
-  let h=redoSessionHTML()+`<p class="note">One line per lost mark. Redo it cold on the redo date — it only counts as fixed when the redo is right.</p>
-  <h2>Add a line</h2><div class="frm">
-    <select id="mk-s">${Object.keys(SUBJ).filter(s=>s!=='buffer').map(s=>`<option value="${s}" ${state.mkS===s?'selected':''}>${SUBJ[s]}</option>`).join('')}</select>
-    <input type="text" id="mk-p" list="mk-plist" placeholder="Paper (e.g. Maths P1 (Mon 5 Oct))" value="${esc(state.mkP||'')}">
-    <datalist id="mk-plist">${papers.map(p=>`<option value="${esc(p)}">`).join('')}</datalist>
-    <input type="text" id="mk-q" placeholder="Question (e.g. Q11b)">
-    <input type="number" id="mk-in" min="0" max="21" placeholder="Redo in: auto" title="Redo in N days (blank = auto)">
-    <input class="full" type="text" id="mk-w" placeholder="What I did (e.g. used (1,2,1) as the normal)">
-    <input class="full" type="text" id="mk-f" placeholder="Rule / fix, one line (e.g. read the normal off the plane equation carefully)">
-    <div class="full chips" id="mk-tags" style="margin:0">${MTAGS.map(t=>`<button type="button" class="chip" data-tag="${t[0]}" onclick="this.classList.toggle('on')">${t[1]}</button>`).join('')}</div>
-    <button class="b full" onclick="addMistake()">Add to log</button></div>
-  <p class="note" style="margin-top:-2px">Tap the weak areas this line belongs to (none picked → tagged from the text). Leave the redo box blank for <b>auto</b>: the gap shrinks as that subject’s exam gets closer and never lands after it. Auto today: ${autoLine}.</p>`;
   const cnt=k=>{ const a=ms.filter(m=>hasTag(m,k)); return [a.filter(m=>!m.fixed).length,a.length]; };
-  const [oa,aa]=cnt('');
-  h+=`<h2>By weak area <span class="marks">open / all</span></h2><div class="chips">
-    <button class="chip ${tf?'':'on'}" onclick="mkFilter('')">All<span class="n">${oa}/${aa}</span></button>
-    ${MTAGS.map(t=>{ const [o,a]=cnt(t[0]); return `<button class="chip ${tf===t[0]?'on':''}" onclick="mkFilter('${t[0]}')">${t[1]}<span class="n">${o}/${a}</span></button>`; }).join('')}</div>
-    <button class="b" onclick="startRedo()" ${cnt(tf)[0]?'':'disabled'}>Wrong answers only · redo ${cnt(tf)[0]} open line${cnt(tf)[0]===1?'':'s'}${tf?' tagged '+esc(MTAG_L[tf]):''}</button>`;
-  h+=`<h2>Redo now <span class="marks">${due.length}${tf?' · '+esc(MTAG_L[tf]):''}</span></h2><div class="card" style="padding:4px 2px">${due.length?due.map(m=>mistakeRow(m)).join(''):'<div class="list-row faint">Nothing due. 👌</div>'}</div>`;
-  h+=`<h2>Coming up <span class="marks">${up.length}</span></h2><div class="card" style="padding:4px 2px">${up.length?up.map(m=>mistakeRow(m)).join(''):'<div class="list-row faint">No upcoming redos.</div>'}</div>`;
-  h+=`<details class="card" style="padding:2px 6px 6px;margin-top:14px"><summary>Fixed ✓ <span class="marks" style="margin-left:6px;font-weight:400;color:var(--faint)">${fixed.length}</span><span class="chev">›</span></summary><div style="padding:0 4px 6px">${fixed.length?fixed.map(m=>mistakeRow(m)).join(''):'<div class="list-row faint">None yet.</div>'}</div></details>`;
+  const [oa,aa]=cnt(''), open=cnt(tf)[0];
+  let h=`<div class="ptools"><div class="chips" style="margin:0;flex:1"><button class="chip ${tf?'':'on'}" onclick="mkFilter('')">All<span class="n">${oa}/${aa}</span></button>
+      ${MTAGS.map(t=>{ const [o,a]=cnt(t[0]); return a?`<button class="chip ${tf===t[0]?'on':''}" onclick="mkFilter('${t[0]}')">${t[1]}<span class="n">${o}/${a}</span></button>`:''; }).join('')}</div>
+    <div class="pbtns"><button class="b ghost sm" onclick="startRedo()" ${open?'':'disabled'}>Redo session · ${open}</button><button class="b sm" onclick="openMistakeForm()">Log a mistake</button></div></div>`;
+  if(!ms.length) return h+`<div class="card empty"><b>No mistakes logged yet</b>After marking a paper, log one line per lost mark. Each gets a redo date, and it’s only fixed when the cold redo is right.<div style="margin-top:14px"><button class="b" onclick="openMistakeForm()">Log a mistake</button></div></div>`;
+  h+=`<section class="mcol"><h2>Redo now <span class="marks">${due.length}${tf?' · '+esc(MTAG_L[tf]):''}</span></h2><div class="card mlist">${due.length?due.map(m=>mistakeRow(m)).join(''):'<div class="list-row faint">Nothing due. Nice.</div>'}</div></section>`;
+  if(up.length){ const g={}; up.forEach(m=>{ const k=weekLabel(m.due); (g[k]=g[k]||[]).push(m); });
+    h+=`<h2>Coming up <span class="marks">${up.length}</span></h2>`+Object.keys(g).map(k=>`<div class="mwk">${k}</div><div class="card mlist">${g[k].map(m=>mistakeRow(m)).join('')}</div>`).join(''); }
+  h+=`<details class="card" style="padding:2px 6px 6px;margin-top:22px"><summary>Fixed <span class="marks" style="margin-left:6px;font-weight:400;color:var(--faint)">${fixed.length}</span><span class="chev">›</span></summary><div style="padding:0 4px 6px">${fixed.length?fixed.map(m=>mistakeRow(m)).join(''):'<div class="list-row faint">None yet.</div>'}</div></details>`;
   return h;
 }
 window.addMistake=()=>{
@@ -2897,8 +2939,8 @@ window.addMistake=()=>{
   const picked=[...document.querySelectorAll('#mk-tags .chip.on')].map(b=>b.dataset.tag);
   m.tags=picked.length?picked:autoTags(m);
   state.mistakes.push(m);
-  paint(); save(); toast('Added — redo '+isoToLabel(m.due)+(r.ex?' · '+r.ex[2].replace(/\s*\(.*$/,'')+' '+inDays(r.ex[0]):''));
-  setTimeout(()=>{ const q2=document.getElementById('mk-q'); if(q2) q2.focus(); },50);
+  paint(); save(); toast('Added · redo '+isoToLabel(m.due)+(r.ex?' · '+r.ex[2].replace(/\s*\(.*$/,'')+' '+inDays(r.ex[0]):''));
+  setTimeout(()=>{ const q2=document.getElementById('mk-q'); if(q2) q2.focus(); },60);
 };
 function fixMistake(m){ m.fixed=true; m.fixedAt=localISO(); }
 function missMistake(m){ m.tries=(m.tries||0)+1; m.due=addDaysISO(redoPlan(m.s,2).n); }
@@ -2914,7 +2956,7 @@ window.startRedo=()=>{
   const tf=state.mkFilter||'';
   const ids=openMistakes().filter(m=>hasTag(m,tf)).sort((a,b)=>a.due<b.due?-1:1).map(m=>m.id);
   if(!ids.length){ toast('No open lines'+(tf?' tagged '+MTAG_L[tf]:'')); return; }
-  rs={ids,i:0,shown:false,right:0,wrong:0,tag:tf}; paint(); window.scrollTo({top:0,behavior:'smooth'});
+  rs={ids,i:0,shown:false,right:0,wrong:0,tag:tf}; paint();
 };
 function redoSessionHTML(){
   if(!rs) return '';
@@ -2925,7 +2967,7 @@ function redoSessionHTML(){
     <button class="b" onclick="endRedo()">Close</button></div>`;
   const m=(state.mistakes||[]).find(x=>x.id===rs.ids[rs.i]);
   if(!m||m.fixed){ rs.i++; return redoSessionHTML(); }
-  return `<div class="card fcard" style="border-left:3px solid var(--red)"><div class="fg">${head} · ${rs.i+1} / ${rs.ids.length}</div>
+  return `<div class="card fcard ${rs.shown?'shown':''}" style="--sc:${SCOL[m.s]}"><div class="fg">${head}</div>
     <div class="fq"><span class="sd" style="background:${SCOL[m.s]}"></span>${esc(m.paper||SUBJ[m.s])}${m.q?' · '+esc(m.q):''}</div>
     ${m.what?`<div class="note" style="margin:0">Last time you: ${esc(m.what)}</div>`:''}
     <div class="note" style="margin:6px 0 0">Redo it cold — no notes, no answer — then check.</div>
@@ -3964,7 +4006,7 @@ window.startCards=all=>{
   const pool=(all?state.cards.filter(c=>!sub||c.s===sub):cardsDue(sub)).slice().sort((a,b)=>a.box-b.box||(a.due<b.due?-1:1));
   if(!pool.length){ toast('No cards due'+(sub?' for '+SUBJ[sub]:'')); return; }
   cs={ids:pool.map(c=>c.id),i:0,shown:false,try:'',n:[0,0,0,0,0],again:{}};
-  paint(); window.scrollTo({top:0,behavior:'smooth'});
+  paint();
 };
 window.csShow=()=>{ if(!cs||cs.i>=cs.ids.length) return; const ta=document.getElementById('cs-try'); if(ta) cs.try=ta.value.trim(); cs.shown=true; paint(); };
 window.csGrade=k=>{
@@ -3986,7 +4028,7 @@ function cardSessionHTML(){
     <div class="fq">${[1,2,3,4].map(k=>GRADE_L[k]+' '+cs.n[k]).join(' · ')}</div>
     <div class="note" style="margin:4px 0 12px">Misses are back in box 1 for tomorrow; the rest moved up.</div><button class="b" onclick="endCards()">Close</button></div>`;
   const c=state.cards.find(x=>x.id===cs.ids[cs.i]); if(!c){ cs.i++; return cardSessionHTML(); }
-  return `<div class="card fcard" style="border-left:3px solid ${SCOL[c.s]}"><div class="fg">${SUBJ[c.s]} · ${esc(c.g||'')} · box ${c.box} · ${cs.i+1} / ${cs.ids.length}</div>
+  return `<div class="card fcard ${cs.shown?'shown':''}" style="--sc:${SCOL[c.s]}"><div class="fg">${SUBJ[c.s]} · ${esc(c.g||'')} · box ${c.box}</div>
     <div class="fq">${esc(c.q)}</div>
     ${cs.shown?`${cs.try?`<div class="ftry"><b>Your try:</b> ${esc(cs.try)}</div>`:''}<div class="fa">${esc(c.a)}</div>
       <div class="grades">${[1,2,3,4].map(k=>`<button onclick="csGrade(${k})" style="${k===1?'color:var(--red)':k===4?'color:var(--chem)':''}">${GRADE_L[k]}<kbd>${k}</kbd></button>`).join('')}</div>`
@@ -3995,7 +4037,7 @@ function cardSessionHTML(){
 }
 function vCards(){
   const sub=state.cardSub||'', all=state.cards.filter(c=>!sub||c.s===sub), due=cardsDue(sub);
-  let h=cardSessionHTML()+`<p class="note">Small rule cards in Leitner boxes. Answer out loud or type it, reveal, then grade yourself honestly — keys <b>1–4</b>: 1 again (back to box 1) · 2 hard (same box, tomorrow) · 3 good (up a box) · 4 easy (up two). <b>Space</b> shows the answer. Nothing is scheduled after that subject’s next exam.</p>`;
+  let h=`<p class="note">Small rule cards in Leitner boxes. Answer out loud or type it, reveal, then grade yourself honestly — keys <b>1–4</b>: 1 again (back to box 1) · 2 hard (same box, tomorrow) · 3 good (up a box) · 4 easy (up two). <b>Space</b> shows the answer. Nothing is scheduled after that subject’s next exam.</p>`;
   const subs=[...new Set(state.cards.map(c=>c.s))];
   h+=`<div class="chips"><button class="chip ${sub?'':'on'}" onclick="cardSub('')">All<span class="n">${cardsDue('').length} due</span></button>${subs.map(s=>`<button class="chip ${sub===s?'on':''}" onclick="cardSub('${s}')">${SUBJ[s]}<span class="n">${cardsDue(s).length}</span></button>`).join('')}</div>
     <div class="boxes">${[1,2,3,4,5].map(b=>{ const n=all.filter(c=>c.box===b).length, d=due.filter(c=>c.box===b).length;
@@ -4031,7 +4073,8 @@ window.delCard=id=>{
   toast('Card deleted','Undo',()=>{ if(!cUndo) return; state.cards.splice(cUndo.i,0,cUndo.c); state.cardsDel=(state.cardsDel||[]).filter(x=>x!==cUndo.c.id); cUndo=null; paint(); save(); });
 };
 document.addEventListener('keydown',e=>{
-  if(!state||state.tab!=='cards'||!cs||cs.i>=cs.ids.length||e.metaKey||e.ctrlKey||e.altKey) return;
+  if(e.key==='Escape'&&(cs||rs)&&!sheetFn){ cs?endCards():endRedo(); return; }
+  if(!state||!cs||cs.i>=cs.ids.length||e.metaKey||e.ctrlKey||e.altKey) return;
   const tg=e.target&&e.target.tagName;
   if(tg==='INPUT'||tg==='TEXTAREA'||tg==='SELECT') return;
   if(!cs.shown && (e.key===' '||e.key==='Enter')){ if(tg==='BUTTON') return; e.preventDefault(); csShow(); }
@@ -4666,6 +4709,22 @@ function vExams(){
   return h;
 }
 
+/* ================= focus layer: full-screen sessions ================= */
+function paintFocus(){
+  const el=document.getElementById('focus'); if(!el) return;
+  let html='', done=0, total=0, close='';
+  if(cs){ html=cardSessionHTML(); done=cs.i; total=cs.ids.length; close='endCards()'; }
+  else if(rs){ html=redoSessionHTML(); done=rs.i; total=rs.ids.length; close='endRedo()'; }
+  else if(window._tmFull&&state.timer&&typeof timerFocusHTML==='function'){ html=timerFocusHTML(); close='tmFull(false)'; }
+  const on=!!html;
+  if(on&&!el.classList.contains('on')&&window._vt&&window._vt.skipTransition) window._vt.skipTransition();
+  el.classList.toggle('on',on); document.body.classList.toggle('focusing',on); el.setAttribute('aria-hidden',on?'false':'true');
+  if(!on){ el.innerHTML=''; return; }
+  el.innerHTML=`<div class="fxtop">${total?`<div class="fxbar"><span style="width:${Math.min(100,done/total*100)}%"></span></div><span class="fxn">${Math.min(done+1,total)} / ${total}</span>`:'<span></span>'}
+    <button class="fxclose" onclick="${close}">Close <kbd>esc</kbd></button></div><div class="fxin">${html}</div>`;
+  deDash(el);
+}
+
 /* ================= shell ================= */
 /* ================= shell: navigation, header ================= */
 // icons: Tabler Icons (MIT), outline set, inlined so the page works offline
@@ -4875,6 +4934,7 @@ function paint(tabSwitch){
   if(state.tab==='today') settleStrip();
   if(state.tab==='reader') settleReader();
   if(sheetFn) renderSheet();
+  paintFocus();
 }
 function enter(){ document.body.classList.add('entering'); clearTimeout(window._entT); window._entT=setTimeout(()=>document.body.classList.remove('entering'),1100); }
 window.go=id=>{
