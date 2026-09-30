@@ -1667,6 +1667,55 @@ body.bunker .tffill{background:var(--lamp);opacity:.5}
 body.bunker .tfdot.should{box-shadow:0 0 0 3px var(--brass)}
 body.bunker .tfdot.at{background:var(--lamp);box-shadow:0 0 10px var(--lamp)}
 
+/* ---------- Progress ---------- */
+.subjrows{padding:6px;display:flex;flex-direction:column}
+.srow2{display:grid;grid-template-columns:170px minmax(0,1fr) 150px 170px 14px;align-items:center;gap:18px;padding:14px 16px;border:none;background:none;font:inherit;color:inherit;text-align:left;cursor:pointer;border-radius:16px;transition:background .2s}
+.srow2:hover{background:var(--hover)}
+.srow2 + .srow2{box-shadow:0 -1px 0 var(--edge)}
+.srow2 .chev{color:var(--faint)}
+.srn{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.srn b{font-size:15px;font-weight:650}
+.srn small{flex-basis:100%;padding-left:17px;font-size:12px;color:var(--faint);margin-top:-4px}
+.spk{width:100%;height:40px;overflow:visible;display:block}
+.spk .gl,.spark .gl{stroke:var(--ink);stroke-dasharray:3 4;opacity:.3;stroke-width:1;vector-effect:non-scaling-stroke}
+.spk .ln{fill:none;stroke-width:2;vector-effect:non-scaling-stroke}
+.spark.big{height:120px}
+.srlast{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.srlast b{font-size:22px;font-weight:650;letter-spacing:-.5px;font-variant-numeric:tabular-nums}
+.srlast small,.srhrs small{font-size:12px;color:var(--faint)}
+.srhrs{display:flex;flex-direction:column;gap:6px}
+.srhrs i{display:block;height:6px;border-radius:999px;background:var(--fill);overflow:hidden}
+.srhrs em{display:block;height:100%;border-radius:999px;background:var(--sc)}
+.trow{grid-template-columns:170px minmax(0,1fr) 170px 14px}
+.ragbar{display:flex;height:10px;border-radius:999px;overflow:hidden;background:var(--fill)}
+.ragbar em{display:block;height:100%}
+.ragct{display:flex;gap:10px;align-items:baseline;font-variant-numeric:tabular-nums}
+.ragct b{font-size:15px}.ragct small{font-size:12px;color:var(--faint);margin-left:auto}
+.ragpill{width:32px;height:22px;border-radius:999px;display:grid;place-content:center;font-weight:700;font-size:10.5px;color:#fff;flex-shrink:0}
+.covgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
+.covcard{display:flex;flex-direction:column;gap:12px;padding:20px;text-align:left;font:inherit;color:inherit;cursor:pointer;animation:rise .5s cubic-bezier(.16,1,.3,1) both;transition:transform .2s cubic-bezier(.16,1,.3,1),box-shadow .25s}
+.covcard:hover{transform:translateY(-2px);box-shadow:var(--shadow-2)}
+.covtop{display:flex;align-items:center;gap:14px}
+.covtop b{display:block;font-size:17px;font-weight:650}
+.covtop small{font-size:12.5px;color:var(--faint)}
+.cring{width:58px;height:58px;transform:rotate(-90deg)}
+.cring circle{fill:none;stroke-width:7;stroke-linecap:round}
+.cring .bg{stroke:var(--fill)}
+.covnext{display:flex;flex-direction:column;gap:5px;font-size:12.5px;color:var(--sub)}
+.covnext span::before{content:"○";margin-right:7px;color:var(--faint)}
+.logtl{position:relative;padding-left:22px;border-left:2px solid var(--edge);margin-left:6px}
+.logday{position:relative;font-size:13px;font-weight:650;color:var(--sub);margin:18px 0 8px}
+.logday:first-child{margin-top:0}
+.logday::before{content:"";position:absolute;left:-29px;top:4px;width:12px;height:12px;border-radius:50%;background:var(--bg);box-shadow:0 0 0 2px var(--edge-2)}
+.logit{display:flex;align-items:center;gap:10px;padding:12px 16px;margin-bottom:8px;border-radius:16px;background:var(--surface);border:1px solid var(--edge);box-shadow:var(--shadow-1)}
+.logit i{width:9px;height:9px;border-radius:50%;background:var(--sc);flex-shrink:0}
+.logit .grow{display:flex;flex-direction:column;min-width:0}
+.logit small{font-size:12px;color:var(--faint)}
+.logit.sess{background:transparent;box-shadow:none}
+@media (max-width:900px){.srow2,.trow{grid-template-columns:1fr auto 14px}.srspark,.srhrs,.ragbar{display:none}}
+body.bunker .srow2,body.bunker .covcard{font-family:inherit;color:var(--ink)}
+body.bunker .logit{background:rgba(46,56,51,.9)}
+
 </style>
 </head>
 <body>
@@ -3265,51 +3314,6 @@ function vSchool(){
   return h;
 }
 
-function vLog(){
-  let h=`<div class="card" style="padding:12px 16px;margin-bottom:14px">
-    <b>Paper rules</b>
-    <div class="note" style="margin:4px 0 0">Find each paper online the day before, with its mark scheme. Newest papers first; new-course Physics and Chem (first exams 2025) where you can. Keep the most recent paper in each subject for the last practice before that exam. Never re-sit a paper you\u2019ve already seen \u2014 including Chem May 2025 TZ2/TZ3 SL.</div></div>
-  <h2>Log a session <span class="marks">anything not on the plan — school work, extra time</span></h2>
-  <div class="frm">
-    <select id="ls-s">${Object.keys(SUBJ).map(s=>`<option value="${s}">${SUBJ[s]}</option>`).join('')}</select>
-    <input type="number" id="ls-m" placeholder="Minutes" min="5">
-    <input class="full" type="text" id="ls-n" placeholder="What you did (e.g. extra relativity questions, 5/6)">
-    <button class="b full" onclick="addSession()">Log session</button>
-  </div>
-  <h2>Log a paper <span class="marks">every timed paper, marked, goes here</span></h2>
-  <div class="frm">
-    <select id="lp-s">${Object.keys(SUBJ).map(s=>`<option value="${s}">${SUBJ[s]}</option>`).join('')}</select>
-    <input type="text" id="lp-n" placeholder="Paper (e.g. Maths P1 Nov 2024)">
-    <input type="number" id="lp-sc" placeholder="Score">
-    <input type="number" id="lp-tot" placeholder="Out of">
-    <input type="number" id="lp-cw" placeholder="Confident-wrong count">
-    <input type="text" id="lp-note" placeholder="Note (e.g. ran out of time on Q11)">
-    <button class="b full" onclick="addPaper()">Log paper</button>
-  </div>`;
-  if(state.papers.length){
-    h+=`<h2>Papers</h2><div class="card" style="padding:4px 2px">`;
-    state.papers.slice().reverse().forEach((p,ri)=>{
-      const i=state.papers.length-1-ri;
-      h+=`<div class="list-row"><span class="sd" style="background:${SCOL[p.s]}"></span>
-        <span class="grow">${esc(p.n)}${p.note?` — <i>${esc(p.note)}</i>`:''}</span>
-        <span class="scorechip">${p.sc}/${p.tot}</span>${gchip(p)}
-        ${+p.cw?`<span class="cw">${p.cw} CW</span>`:''}
-        <button class="del" onclick="delPaper(${i})">×</button></div>`;
-    });
-    h+=`</div>`;
-  }
-  if(state.sessions.length){
-    h+=`<h2>Sessions</h2><div class="card" style="padding:4px 2px">`;
-    state.sessions.slice(-15).reverse().forEach((s,ri)=>{
-      const i=state.sessions.length-1-ri;
-      h+=`<div class="list-row"><span class="sd" style="background:${SCOL[s.s]}"></span>
-        <span class="grow">${esc(s.n||SUBJ[s.s])}</span><span class="num">${s.m} min</span>
-        <button class="del" onclick="delSession(${i})">×</button></div>`;
-    });
-    h+=`</div>`;
-  }
-  return h;
-}
 
 
 function weekHours(offset){
@@ -3320,82 +3324,6 @@ function weekHours(offset){
   return m/60;
 }
 
-function vStats(){
-  const dm=doneMinBySubj();
-  let h=`<h2>Hours vs plan <span class="marks">dark tick = planned hours</span></h2><div class="card" style="padding:14px 16px"><div class="barwrap">`;
-  Object.keys(TARGETS).forEach(s=>{
-    const done=dm[s]/60, tgt=TARGETS[s];
-    const max=Math.max(tgt*1.25,done,1);
-    h+=`<div class="barrow"><span class="lab">${SUBJ[s]}</span>
-      <span class="track"><span class="fill" style="width:${Math.min(100,done/max*100)}%;background:${SCOL[s]}"></span>
-      <span class="tgt" style="left:${tgt/max*100}%"></span></span>
-      <span class="num">${done.toFixed(1)} / ${tgt} h</span></div>`;
-  });
-  h+=`</div></div>`;
-  const tw=weekHours(0), lw=weekHours(1);
-  h+=`<div class="card" style="padding:12px 16px;margin-bottom:8px"><b>Beat your own record</b>
-    <div style="font-size:13px;margin-top:4px">This week <b style="font-variant-numeric:tabular-nums">${tw.toFixed(1)} h</b> · last week <b style="font-variant-numeric:tabular-nums">${lw.toFixed(1)} h</b>
-    ${lw>0?(tw>=lw?` — <span style="color:var(--chem);font-weight:600">ahead</span>`:` — <span style="color:var(--red);font-weight:600">${(lw-tw).toFixed(1)} h behind your record</span>`):''}</div>
-    <div class="note" style="margin:2px 0 0">Compete with last week, not with anyone else. (Only dated work counts, so this starts building from today.)</div></div>`;
-  h+=`<h2>Paper scores <span class="marks">dashed line \u2248 next grade up (rough)</span></h2>`;
-  const byS={};
-  state.papers.forEach(p=>{ if(p.tot) (byS[p.s]=byS[p.s]||[]).push(p); });
-  ['math','physics','chem','history','english','spanish'].forEach(s=>{
-    const ps=(byS[s]||[]).slice().sort((a,b)=>(a.d||'')<(b.d||'')?-1:1);
-    const gl=GRADE_LINE[s];
-    const nx=FINALS.filter(f=>f[3]===s).find(f=>daysUntil(f[0])>=0);
-    h+=`<div class="card" style="padding:12px 16px;margin-bottom:8px"><div style="display:flex;align-items:baseline;gap:8px"><b>${SUBJ[s]}</b><span class="note" style="margin:0">${nx?'next exam '+inDays(nx[0]):'exams done'}</span></div>`;
-    if(!ps.length){ h+=`<div class="note" style="margin:4px 0 0">No scores logged yet \u2014 tick a paper or marking task and enter the score.</div></div>`; return; }
-    const W=300,H=90,pad=8,n=ps.length;
-    const X=i=>n===1?W/2:pad+i*(W-2*pad)/(n-1), Y=v=>H-pad-(Math.max(0,Math.min(100,v))/100)*(H-2*pad);
-    const pts=ps.map((p,i)=>[X(i).toFixed(1),Y(p.sc/p.tot*100).toFixed(1)]);
-    h+=`<svg viewBox="0 0 ${W} ${H}" class="spark" preserveAspectRatio="none"><line x1="0" x2="${W}" y1="${Y(gl[0])}" y2="${Y(gl[0])}" class="gl"/>
-      ${n>1?`<polyline points="${pts.map(p=>p.join(',')).join(' ')}" style="stroke:${SCOL[s]}" class="ln"/>`:''}
-      ${pts.map(p=>`<line x1="${p[0]}" y1="${p[1]}" x2="${p[0]}" y2="${p[1]}" style="stroke:${SCOL[s]};stroke-width:8;stroke-linecap:round;vector-effect:non-scaling-stroke"/>`).join('')}</svg>
-      <div class="note" style="margin:2px 0 6px">Grade ${gl[1]} line \u2248 ${gl[0]}% \u00b7 latest ${Math.round(ps[n-1].sc/ps[n-1].tot*100)}%${n>1?' \u00b7 first '+Math.round(ps[0].sc/ps[0].tot*100)+'%':''}</div>`;
-    ps.forEach(p=>{ const i=state.papers.indexOf(p); h+=`<div class="list-row" style="padding:3px 2px"><span class="grow">${esc(p.n)}</span><span class="num">${p.sc}/${p.tot} \u00b7 ${Math.round(p.sc/p.tot*100)}%</span>${gchip(p)}<button class="del delx" title="Delete score" onclick="delPaper(${i})">\u00d7</button></div>`; });
-    h+=`</div>`;
-  });
-  h+=`<p class="note">Paper % isn\u2019t the same as your final grade % (IAs count too) \u2014 treat the line as a rough guide. Which way the line is heading matters more than any one point.</p>`;
-  return h;
-}
-
-
-const RAG=[{c:'rgba(29,29,31,.12)',l:'—'},{c:'var(--red)',l:'R'},{c:'var(--spanish)',l:'A'},{c:'var(--chem)',l:'G'}];
-function vTopics(){
-  const hg=!!state.hideGreen;
-  let h=whatNextHTML()+`<div class="quick" style="margin:0 0 4px"><button onclick="tglHideGreen()" style="${hg?'background:var(--ink);color:#fff;border-color:var(--ink)':''}">${hg?'Showing R/A/unrated only':'Hide green'}</button></div>`;
-  ['math','physics','chem','history','english','spanish'].forEach(sub=>{
-    const ts=state.topics.filter(t=>t.s===sub);
-    if(!ts.length)return;
-    const c=[0,0,0,0]; ts.forEach(t=>c[t.rag||0]++);
-    const pctG=Math.round(c[3]/ts.length*100);
-    const isOpen=(state.openSub===sub);
-    h+=`<details class="card" ${isOpen?'open':''} ontoggle="if(this.open)state.openSub='${sub}';else if(state.openSub==='${sub}')state.openSub=null;" style="padding:2px 6px 6px;margin-bottom:8px"><summary onclick="setOpenSub(event,'${sub}')">
-      ${SUBJ[sub]}
-      <span style="margin-left:auto;display:flex;gap:5px;align-items:center;font-size:11.5px;font-weight:600">
-        <span style="color:var(--red)" data-cnt="${sub}-1">${c[1]}R</span>
-        <span style="color:var(--spanish)" data-cnt="${sub}-2">${c[2]}A</span>
-        <span style="color:var(--chem)" data-cnt="${sub}-3">${c[3]}G</span>
-        <span style="color:var(--faint);font-weight:400" data-cnt="${sub}-0">${c[0]} unrated \u00b7 ${pctG}% green</span>
-      </span><span class="chev">\u203a</span></summary><div style="padding:0 6px 6px">`;
-    if(!isOpen){ h+=`<div class="note" style="padding:8px 4px">Tap to expand \u2014 ${ts.length} items</div></div></details>`; return; }
-    let g='';
-    ts.forEach(t=>{
-      if(hg && t.rag===3) return;
-      if(t.g!==g){g=t.g;h+=`<div class="day-h" style="margin:11px 2px 3px">${esc(g)}</div>`;}
-      const r=RAG[t.rag||0];
-      h+=`<div class="list-row ragrow" data-sub="${sub}" onclick="cyc(event,'${t.id}')" style="padding:7px 2px;cursor:pointer;user-select:none">
-        <span class="grow" style="font-size:12.5px">${esc(t.t)}</span>
-        <span class="num" data-rdt="${t.id}" title="Last reviewed" style="font-size:10.5px;color:var(--faint)">${lastRev(t)?shortD(lastRev(t)):''}</span>
-        <button class="del" title="Reviewed today (keeps the rating)" onclick="event.stopPropagation();reviewTopic('${t.id}')">✓</button>
-        <span data-rid="${t.id}" style="width:32px;height:22px;border-radius:999px;display:grid;place-content:center;
-          font-weight:700;font-size:10.5px;color:#fff;background:${r.c};transition:background .12s var(--ease)">${r.l}</span></div>`;
-    });
-    h+=`</div></details>`;
-  });
-  return h;
-}
 /* ================= appearance ================= */
 const THEMES=[['auto','Auto · follows your Mac'],['light','Light'],['dark','Dark'],['midnight','Midnight'],['aurora','Aurora'],['launch','Launch Control']];
 const mqDark=window.matchMedia('(prefers-color-scheme: dark)');
@@ -3455,26 +3383,6 @@ function covPct(sub){
   if(!it.length)return[0,0,0];
   const d=it.filter(c=>state.cov[c.id]).length;
   return [Math.round(d/it.length*100), d, it.length];
-}
-function vCover(){
-  let h='';
-  ['physics','math','chem','history','english','spanish'].forEach(sub=>{
-    const [pct,d,tot]=covPct(sub);
-    h+=`<div class="card" style="padding:12px 16px;margin-bottom:10px">
-      <div class="barrow" style="margin-bottom:9px"><span class="lab" style="width:70px;font-weight:700">${SUBJ[sub]}</span>
-        <span class="track" style="height:14px"><span class="fill" data-cbar="${sub}" style="width:${pct}%;background:${SCOL[sub]}"></span>
-        <span class="tgt" style="left:80%"></span></span>
-        <span class="num" data-cnum="${sub}" style="width:92px;font-weight:600;color:${pct>=80?'var(--chem)':'var(--sub)'}">${pct}% · ${d}/${tot}</span></div>`;
-    let g='';
-    COVERAGE.map((c,i)=>({...c,id:'c'+i})).filter(c=>c.s===sub).forEach(c=>{
-      if(c.g!==g){g=c.g;h+=`<div class="day-h" style="margin:10px 2px 4px">${g}</div>`;}
-      const on=!!state.cov[c.id];
-      h+=`<div class="list-row" style="padding:5px 2px"><input type="checkbox" ${on?'checked':''} onchange="tglCov('${c.id}')" style="width:17px;height:17px">
-        <span class="grow" data-vid="${c.id}" style="${on?'opacity:.5;text-decoration:line-through':''}">${esc(c.t)}</span></div>`;
-    });
-    h+=`</div>`;
-  });
-  return h;
 }
 window.tglCov=id=>{
   state.cov[id]=!state.cov[id]; state.covText=COVERAGE.map(c=>c.t);
@@ -4785,6 +4693,128 @@ document.addEventListener('keydown',e=>{
   if(e.key==='Escape'){ tmFull(false); } else if(e.key===' '){ e.preventDefault(); timerPause(); updateTimerFocus(); }
   else if(e.key==='ArrowRight'){ tmQ(1); } else if(e.key==='ArrowLeft'){ tmQ(-1); }
 });
+
+/* ================= Progress ================= */
+const RAG=[{c:'var(--faint)',l:'-'},{c:'var(--red)',l:'R'},{c:'var(--warn)',l:'A'},{c:'var(--ok)',l:'G'}];
+/* ---- Progress: scores & hours ---- */
+function sparkSVG(ps,s,w,h,big){
+  const gl=GRADE_LINE[s], pad=big?10:4, n=ps.length, W=w, H=h;
+  const X=i=>n===1?W/2:pad+i*(W-2*pad)/(n-1), Y=v=>H-pad-(Math.max(0,Math.min(100,v))/100)*(H-2*pad);
+  const pts=ps.map((p,i)=>[X(i),Y(p.sc/p.tot*100)]);
+  return `<svg viewBox="0 0 ${W} ${H}" class="${big?'spark big':'spk'}" preserveAspectRatio="none" aria-hidden="true">
+    ${gl?`<line x1="0" x2="${W}" y1="${Y(gl[0])}" y2="${Y(gl[0])}" class="gl"/>`:''}
+    ${n>1?`<polyline points="${pts.map(p=>p.map(v=>v.toFixed(1)).join(',')).join(' ')}" style="stroke:${SCOL[s]}" class="ln"/>`:''}
+    ${pts.map(p=>`<line x1="${p[0].toFixed(1)}" y1="${p[1].toFixed(1)}" x2="${p[0].toFixed(1)}" y2="${p[1].toFixed(1)}" style="stroke:${SCOL[s]};stroke-width:${big?9:6};stroke-linecap:round;vector-effect:non-scaling-stroke"/>`).join('')}</svg>`;
+}
+function papersOf(s){ return state.papers.filter(p=>p.s===s&&+p.tot>0).sort((a,b)=>(a.d||'')<(b.d||'')?-1:1); }
+window.openSubjectScores=s=>openSheet(()=>{
+  const ps=papersOf(s), dm=doneMinBySubj(), nx=FINALS.filter(f=>f[3]===s).find(f=>daysUntil(f[0])>=0);
+  return {pre:`<span class="sdot" style="background:${SCOL[s]}"></span>`,title:SUBJ[s],sub:(nx?'Next exam '+inDays(nx[0]):'Exams done')+' · '+(dm[s]/60).toFixed(1)+' of '+TARGETS[s]+' h planned',
+    html:`<div class="sblock"><h4>Paper scores</h4>${ps.length?sparkSVG(ps,s,300,110,true)+`<div class="note" style="margin:4px 0 10px">Dashed line ≈ grade ${GRADE_LINE[s][1]} at ${GRADE_LINE[s][0]}% (rough). Enter real boundaries in Exams for exact grades.</div>`
+      +ps.map(p=>{ const i=state.papers.indexOf(p), gi=gradeInfo(p); return `<div class="list-row" style="align-items:flex-start;padding:8px 2px"><span class="grow"><b>${esc(p.n)}</b> <span class="scorechip">${p.sc}/${p.tot} · ${Math.round(p.sc/p.tot*100)}%</span><br>${gi&&!gi.none?gradeText(p,gi):'<span class="faint">'+(p.d?shortD(p.d):'')+(p.note?' · '+esc(p.note):'')+'</span>'}</span><button class="del delx" title="Delete score" onclick="delPaper(${i})">×</button></div>`; }).join('')
+      :'<div class="note" style="margin:0">No scores yet. Tick a paper or marking task and enter the score, or log one in Progress › Log.</div>'}</div>`};
+});
+function vStats(){
+  const dm=doneMinBySubj(), subs=['math','physics','chem','history','english','spanish'];
+  const done=Object.values(dm).reduce((a,b)=>a+b,0)/60, plan=Object.values(TARGETS).reduce((a,b)=>a+b,0), tw=weekHours(0), lw=weekHours(1);
+  const lat=subs.map(s=>papersOf(s).slice(-1)[0]).filter(Boolean), avg=lat.length?Math.round(lat.reduce((a,p)=>a+p.sc/p.tot*100,0)/lat.length):null;
+  let h=`<div class="tiles four">
+    <div class="card tile"><span>Hours studied</span><b>${done.toFixed(1)}</b><small>of about ${plan} h planned</small></div>
+    <div class="card tile" style="animation-delay:.04s"><span>This week</span><b>${tw.toFixed(1)} h</b><small>${lw>0?(tw>=lw?'ahead of last week ('+lw.toFixed(1)+' h)':(lw-tw).toFixed(1)+' h behind last week'):'beat it next week'}</small></div>
+    <div class="card tile" style="animation-delay:.08s"><span>Papers scored</span><b>${state.papers.length}</b><small>${state.papers.filter(p=>{const g=gradeInfo(p);return g&&!g.none;}).length} with a grade</small></div>
+    <div class="card tile" style="animation-delay:.12s"><span>Latest average</span><b>${avg===null?'-':avg+'%'}</b><small>last paper in each subject</small></div></div>
+  <h2>By subject</h2><div class="card subjrows">`;
+  subs.forEach(s=>{
+    const ps=papersOf(s), last=ps[ps.length-1], gi=last&&gradeInfo(last), d=dm[s]/60, t=TARGETS[s]||1, nx=FINALS.filter(f=>f[3]===s).find(f=>daysUntil(f[0])>=0);
+    h+=`<button class="srow2" onclick="openSubjectScores('${s}')" style="--sc:${SCOL[s]}">
+      <span class="srn"><i class="sdot"></i><b>${SUBJ[s]}</b><small>${nx?'exam '+inDays(nx[0]):'exams done'}</small></span>
+      <span class="srspark">${ps.length?sparkSVG(ps,s,160,40):'<span class="faint">no scores yet</span>'}</span>
+      <span class="srlast">${last?`<b>${Math.round(last.sc/last.tot*100)}%</b>${gi&&!gi.none?`<span class="scorechip">G${gi.g}</span>`:''}<small>${ps.length} paper${ps.length>1?'s':''}</small>`:'<small>-</small>'}</span>
+      <span class="srhrs"><i><em style="width:${Math.min(100,d/t*100)}%"></em></i><small>${d.toFixed(1)} / ${t} h</small></span><span class="chev">›</span></button>`;
+  });
+  h+=`</div><p class="note" style="margin-top:12px">Paper % isn’t your final grade % (IAs count too), so treat the lines as a rough guide. Which way a line is heading matters more than any one point.</p>`;
+  return h;
+}
+/* ---- Progress: topics ---- */
+function topicListHTML(sub){
+  const hg=!!state.hideGreen, ts=state.topics.filter(t=>t.s===sub); let g='', h='';
+  ts.forEach(t=>{
+    if(hg&&t.rag===3) return;
+    if(t.g!==g){ g=t.g; h+=`<div class="mwk">${esc(g)}</div>`; }
+    const r=RAG[t.rag||0];
+    h+=`<div class="list-row ragrow" onclick="cyc(event,'${t.id}');paint()" style="padding:8px 2px;cursor:pointer;user-select:none;align-items:center">
+      <span class="grow" style="font-size:13.5px">${esc(t.t)}</span>
+      <span class="num" style="font-size:11.5px;color:var(--faint)">${lastRev(t)?shortD(lastRev(t)):''}</span>
+      <button class="del" title="Reviewed today (keeps the rating)" onclick="event.stopPropagation();reviewTopic('${t.id}')">✓</button>
+      <span class="ragpill" style="background:${r.c}">${r.l}</span></div>`;
+  });
+  return h||'<div class="note">Everything here is green.</div>';
+}
+window.openTopics=sub=>openSheet(()=>{ const ts=state.topics.filter(t=>t.s===sub), c=[0,0,0,0]; ts.forEach(t=>c[t.rag||0]++);
+  return {pre:`<span class="sdot" style="background:${SCOL[sub]}"></span>`,title:SUBJ[sub]+' topics',sub:`${c[1]} red · ${c[2]} amber · ${c[3]} green · ${c[0]} unrated. Tap a topic to change its rating.`,
+    html:`<div style="display:flex;justify-content:flex-end;padding-top:12px"><button class="chip ${state.hideGreen?'on':''}" onclick="tglHideGreen()">${state.hideGreen?'Showing red, amber and unrated':'Hide green'}</button></div>${topicListHTML(sub)}`}; });
+function vTopics(){
+  let h=whatNextHTML()+`<h2>By subject</h2><div class="card subjrows">`;
+  ['math','physics','chem','history','english','spanish'].forEach(sub=>{
+    const ts=state.topics.filter(t=>t.s===sub); if(!ts.length) return;
+    const c=[0,0,0,0]; ts.forEach(t=>c[t.rag||0]++); const w=i=>c[i]/ts.length*100;
+    h+=`<button class="srow2 trow" onclick="openTopics('${sub}')" style="--sc:${SCOL[sub]}">
+      <span class="srn"><i class="sdot"></i><b>${SUBJ[sub]}</b><small>${ts.length} topics</small></span>
+      <span class="ragbar"><em style="width:${w(1)}%;background:var(--red)"></em><em style="width:${w(2)}%;background:var(--warn)"></em><em style="width:${w(3)}%;background:var(--ok)"></em></span>
+      <span class="ragct"><b style="color:var(--red)">${c[1]}</b><b style="color:var(--warn)">${c[2]}</b><b style="color:var(--ok)">${c[3]}</b><small>${Math.round(w(3))}% green</small></span><span class="chev">›</span></button>`;
+  });
+  return h+`</div>`;
+}
+/* ---- Progress: cover ---- */
+function ringSmall(pct,col){ const r=26,c=2*Math.PI*r; return `<svg viewBox="0 0 64 64" class="cring" aria-hidden="true"><circle cx="32" cy="32" r="${r}" class="bg"/><circle cx="32" cy="32" r="${r}" class="fg" style="stroke:${col}" stroke-dasharray="${c.toFixed(1)}" stroke-dashoffset="${(c*(1-pct/100)).toFixed(1)}"/></svg>`; }
+window.openCover=sub=>openSheet(()=>{ const [pct,d,tot]=covPct(sub); let g='', h='';
+  COVERAGE.map((c,i)=>({...c,id:'c'+i})).filter(c=>c.s===sub).forEach(c=>{
+    if(c.g!==g){ g=c.g; h+=`<div class="mwk">${esc(g)}</div>`; }
+    const on=!!state.cov[c.id];
+    h+=`<label class="list-row" style="padding:8px 2px;align-items:center;cursor:pointer"><input type="checkbox" ${on?'checked':''} onchange="tglCov('${c.id}');paint()">
+      <span class="grow" style="${on?'opacity:.5;text-decoration:line-through':''}">${esc(c.t)}</span></label>`; });
+  return {pre:`<span class="sdot" style="background:${SCOL[sub]}"></span>`,title:SUBJ[sub]+' exam-ready checklist',sub:`${d} of ${tot} done · ${pct}%. Aim for 80% before the exam.`,html:h}; });
+function vCover(){
+  let h=`<p class="note">What “exam-ready” means for each subject: the target fixes and papers from your plan. Tick them as they become true.</p><div class="covgrid">`;
+  ['physics','math','chem','history','english','spanish'].forEach((sub,k)=>{
+    const [pct,d,tot]=covPct(sub), next=COVERAGE.map((c,i)=>({...c,id:'c'+i})).filter(c=>c.s===sub&&!state.cov[c.id]).slice(0,3);
+    h+=`<button class="card covcard" onclick="openCover('${sub}')" style="--sc:${SCOL[sub]};animation-delay:${k*.04}s">
+      <span class="covtop">${ringSmall(pct,pct>=80?'var(--ok)':SCOL[sub])}<span><b>${SUBJ[sub]}</b><small>${d}/${tot} · ${pct}%</small></span></span>
+      <span class="covnext">${next.length?next.map(c=>`<span>${esc(c.t)}</span>`).join(''):'<span>All done</span>'}</span></button>`;
+  });
+  return h+`</div>`;
+}
+/* ---- Progress: log ---- */
+window.openLogForm=kind=>openSheet(()=>kind==='paper'?{title:'Log a paper',sub:'Every timed paper, marked, goes here. Scores from ticked tasks are logged automatically.',html:`<div class="sform">
+    <div class="srow"><label>Subject<select id="lp-s">${Object.keys(SUBJ).filter(s=>s!=='buffer').map(s=>`<option value="${s}">${SUBJ[s]}</option>`).join('')}</select></label><label>Paper<input type="text" id="lp-n" placeholder="e.g. Maths P1 Nov 2024"></label></div>
+    <div class="srow"><label>Score<input type="number" id="lp-sc" min="0"></label><label>Out of<input type="number" id="lp-tot" min="1"></label><label>Confident-wrong<input type="number" id="lp-cw" min="0" placeholder="0"></label></div>
+    <label>Note<input type="text" id="lp-note" placeholder="e.g. ran out of time on Q11"></label>
+    <button class="b" onclick="addPaper();closePanel()">Log paper</button></div>`}
+  :{title:'Log a session',sub:'Anything not on the plan: school work, extra practice. It counts towards your hours.',html:`<div class="sform">
+    <div class="srow"><label>Subject<select id="ls-s">${Object.keys(SUBJ).map(s=>`<option value="${s}">${SUBJ[s]}</option>`).join('')}</select></label><label>Minutes<input type="number" id="ls-m" min="5" placeholder="45"></label></div>
+    <label>What you did<input type="text" id="ls-n" placeholder="e.g. extra relativity questions, 5/6"></label>
+    <button class="b" onclick="addSession();closePanel()">Log session</button></div>`});
+function vLog(){
+  const ev=[];
+  state.papers.forEach((p,i)=>ev.push({d:p.d||'',k:'p',i,p}));
+  state.sessions.forEach((x,i)=>ev.push({d:x.d||'',k:'s',i,x}));
+  ev.sort((a,b)=>a.d<b.d?1:a.d>b.d?-1:b.i-a.i);
+  let h=`<div class="ptools"><p class="note" style="margin:0;flex:1">Find each paper the day before with its mark scheme. Newest papers first; never re-sit one you’ve seen (including Chem May 2025 TZ2/TZ3 SL).</p>
+    <div class="pbtns"><button class="b ghost sm" onclick="openLogForm('session')">Log a session</button><button class="b sm" onclick="openLogForm('paper')">Log a paper</button></div></div>`;
+  if(!ev.length) return h+`<div class="card empty"><b>Nothing logged yet</b>Papers you score from ticked tasks and anything you log here show up as a timeline.</div>`;
+  let day='';
+  h+=`<div class="logtl">`;
+  ev.forEach(e=>{
+    if(e.d!==day){ day=e.d; h+=`<div class="logday">${e.d?isoToLabel(e.d):'Undated'}</div>`; }
+    if(e.k==='p'){ const p=e.p, gi=gradeInfo(p);
+      h+=`<div class="logit" style="--sc:${SCOL[p.s]}"><i></i><span class="grow"><b>${esc(p.n)}</b>${p.note?`<small>${esc(p.note)}</small>`:''}</span>
+        <span class="scorechip">${p.sc}/${p.tot}${p.tot?' · '+Math.round(p.sc/p.tot*100)+'%':''}</span>${gi&&!gi.none?`<span class="scorechip">G${gi.g}</span>`:''}${+p.cw?`<span class="cw">${p.cw} CW</span>`:''}
+        <button class="del delx" title="Delete" onclick="delPaper(${e.i})">×</button></div>`; }
+    else { const x=e.x; h+=`<div class="logit sess" style="--sc:${SCOL[x.s]}"><i></i><span class="grow"><b>${esc(x.n||SUBJ[x.s]+' session')}</b><small>${SUBJ[x.s]}</small></span><span class="num">${x.m} min</span>
+        <button class="del delx" title="Delete" onclick="delSession(${e.i})">×</button></div>`; }
+  });
+  return h+`</div>`;
+}
 
 /* ================= focus layer: full-screen sessions ================= */
 function paintFocus(){
