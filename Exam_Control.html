@@ -1643,6 +1643,86 @@ body.bunker .logit{background:rgba(46,56,51,.9)}
 body.bunker .msg.jc{background:rgba(233,223,194,.08);color:var(--ink)}
 body.bunker .msg.me{background:linear-gradient(180deg,#E0563F,#B8322A);color:#FFF1E4}
 
+/* ================= onboarding ================= */
+#onb{position:fixed;inset:0;z-index:90;background:var(--bg);display:none;overflow:auto;-webkit-overflow-scrolling:touch}
+#onb.on{display:block;animation:obIn .45s cubic-bezier(.2,.8,.2,1)}
+@keyframes obIn{from{opacity:0;transform:scale(1.02)}to{opacity:1;transform:none}}
+.ob-wrap{max-width:860px;margin:0 auto;padding:28px 24px 120px}
+.ob-top{display:flex;align-items:center;gap:14px;margin-bottom:26px}
+.ob-top .brandm{font-weight:700;letter-spacing:-.01em}
+.ob-prog{flex:1;display:flex;gap:6px}
+.ob-prog i{flex:1;height:4px;border-radius:4px;background:var(--fill);overflow:hidden;position:relative}
+.ob-prog i::after{content:"";position:absolute;inset:0;background:var(--blue);transform:scaleX(0);transform-origin:left;transition:transform .5s cubic-bezier(.2,.8,.2,1)}
+.ob-prog i.done::after{transform:scaleX(1)}
+.ob-step{animation:obStep .5s cubic-bezier(.2,.8,.2,1) both}
+.ob-step.back{animation-name:obBack}
+@keyframes obStep{from{opacity:0;transform:translateX(36px)}to{opacity:1;transform:none}}
+@keyframes obBack{from{opacity:0;transform:translateX(-36px)}to{opacity:1;transform:none}}
+.ob-step h2{font-size:clamp(26px,3.4vw,38px);letter-spacing:-.025em;line-height:1.1;margin:0 0 8px}
+.ob-step .lead{color:var(--sub);font-size:16px;max-width:60ch;margin:0 0 22px;line-height:1.5}
+.ob-grid{display:grid;gap:12px}
+.ob-card{background:var(--surface);border:1px solid var(--edge);border-radius:18px;padding:16px 18px;box-shadow:var(--shadow-1)}
+.ob-sub{display:grid;grid-template-columns:14px 1fr auto auto;gap:12px;align-items:center;animation:obStep .45s both}
+.ob-sub .dot{width:12px;height:12px;border-radius:50%}
+.ob-sub input[type=text]{width:100%}
+.ob-in,.ob-wrap input[type=text],.ob-wrap input[type=date],.ob-wrap input[type=time],.ob-wrap textarea{font:inherit;color:var(--ink);background:var(--surface-2);border:1px solid var(--edge-2);border-radius:12px;padding:10px 12px}
+.ob-wrap textarea{width:100%;min-height:84px;resize:vertical;line-height:1.45}
+.ob-seg{display:inline-flex;background:var(--fill);border-radius:10px;padding:3px}
+.ob-seg button{border:0;background:none;color:var(--sub);font:inherit;font-weight:600;padding:6px 12px;border-radius:8px;cursor:pointer;transition:background .2s,color .2s}
+.ob-seg button.on{background:var(--surface);color:var(--ink);box-shadow:var(--shadow-1)}
+.ob-grade{display:flex;align-items:center;gap:8px;min-width:170px}
+.ob-grade b{font-size:24px;width:22px;text-align:center;font-variant-numeric:tabular-nums;transition:transform .25s}
+.ob-grade b.bump{animation:obBump .35s}
+@keyframes obBump{50%{transform:scale(1.35)}}
+.ob-wrap input[type=range]{-webkit-appearance:none;appearance:none;height:6px;border-radius:6px;background:linear-gradient(90deg,var(--c,var(--blue)) var(--p,50%),var(--fill) var(--p,50%));flex:1;cursor:pointer}
+.ob-wrap input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:var(--surface);border:2px solid var(--c,var(--blue));box-shadow:var(--shadow-1);transition:transform .15s}
+.ob-wrap input[type=range]:active::-webkit-slider-thumb{transform:scale(1.2)}
+.ob-split{display:grid;grid-template-columns:minmax(220px,300px) 1fr;gap:24px;align-items:center}
+@media (max-width:700px){.ob-split{grid-template-columns:1fr}.ob-sub{grid-template-columns:14px 1fr;}.ob-sub .ob-grade,.ob-sub .ob-seg{grid-column:2}}
+.ob-donut{position:relative;aspect-ratio:1}
+.ob-donut svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ob-donut circle{transition:stroke-dasharray .45s cubic-bezier(.2,.8,.2,1),stroke-dashoffset .45s cubic-bezier(.2,.8,.2,1)}
+.ob-donut .mid{position:absolute;inset:0;display:grid;place-content:center;text-align:center}
+.ob-donut .mid b{font-size:34px;letter-spacing:-.03em}
+.ob-donut .mid span{color:var(--sub);font-size:13px}
+.ob-row{display:flex;align-items:center;gap:12px;padding:8px 0}
+.ob-row .nm{width:120px;font-weight:600;display:flex;gap:8px;align-items:center}
+.ob-row .pc{width:92px;text-align:right;font-variant-numeric:tabular-nums;color:var(--sub);font-size:13px}
+.ob-row .pc b{color:var(--ink);font-size:15px}
+.ob-chips{display:flex;flex-wrap:wrap;gap:8px}
+.ob-chip{border:1px solid var(--edge-2);background:var(--surface);color:var(--ink);font:inherit;font-weight:600;padding:8px 14px;border-radius:999px;cursor:pointer;transition:all .2s}
+.ob-chip.on{background:var(--ink);color:var(--bg);border-color:var(--ink);transform:translateY(-1px)}
+.ob-bars{display:flex;align-items:flex-end;gap:6px;height:90px;margin-top:10px}
+.ob-bars i{flex:1;border-radius:6px 6px 3px 3px;background:var(--blue);transition:height .4s cubic-bezier(.2,.8,.2,1),opacity .3s}
+.ob-bars i.off{opacity:.18}
+.ob-bars+.ob-bl{display:flex;gap:6px;font-size:11px;color:var(--faint)}.ob-bl span{flex:1;text-align:center}
+.ob-themes{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.ob-th{border:2px solid var(--edge);border-radius:16px;padding:0;overflow:hidden;cursor:pointer;background:none;text-align:left;transition:transform .25s,border-color .25s}
+.ob-th:hover{transform:translateY(-3px)}
+.ob-th.on{border-color:var(--blue)}
+.ob-th .pv{height:86px;padding:10px;display:flex;flex-direction:column;gap:6px}
+.ob-th .pv i{display:block;height:8px;border-radius:4px}
+.ob-th .nm{display:block;padding:8px 12px;font-weight:600;color:var(--ink);background:var(--surface)}
+.ob-tip{display:flex;gap:10px;align-items:flex-start;background:color-mix(in srgb,var(--blue) 9%,var(--surface));border:1px solid color-mix(in srgb,var(--blue) 25%,transparent);border-radius:14px;padding:11px 14px;font-size:14px;line-height:1.45;animation:obStep .5s .15s both}
+.ob-tip button{margin-left:auto;border:0;background:none;color:var(--sub);cursor:pointer;font-size:18px;line-height:1}
+.ob-nav{position:fixed;left:0;right:0;bottom:0;padding:14px 24px calc(14px + env(safe-area-inset-bottom));background:var(--glass-bg);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-top:1px solid var(--edge)}
+.ob-nav .in{max-width:860px;margin:0 auto;display:flex;gap:10px;align-items:center}
+.ob-nav .sp{flex:1}
+.ob-hero{display:grid;place-items:center;text-align:center;padding:4vh 0}
+.ob-orb{width:120px;height:120px;border-radius:50%;background:conic-gradient(var(--math),var(--physics),var(--chem),var(--history),var(--english),var(--spanish),var(--math));animation:obSpin 9s linear infinite;mask:radial-gradient(circle,transparent 46%,#000 47%);-webkit-mask:radial-gradient(circle,transparent 46%,#000 47%);margin-bottom:22px}
+@keyframes obSpin{to{transform:rotate(1turn)}}
+.ob-think{display:flex;gap:6px;align-items:center;color:var(--sub)}
+.ob-think i{width:8px;height:8px;border-radius:50%;background:var(--blue);animation:obDot 1s infinite alternate}
+.ob-think i:nth-child(2){animation-delay:.2s}.ob-think i:nth-child(3){animation-delay:.4s}
+@keyframes obDot{from{opacity:.25;transform:translateY(0)}to{opacity:1;transform:translateY(-4px)}}
+.ob-chat{display:grid;gap:10px;max-height:46vh;overflow:auto;margin-bottom:12px}
+.ob-msg{padding:11px 14px;border-radius:14px;white-space:pre-wrap;line-height:1.5;font-size:14.5px;max-width:92%}
+.ob-msg.me{background:var(--blue);color:#fff;justify-self:end}
+.ob-msg.jc{background:var(--surface);border:1px solid var(--edge)}
+.ob-sum{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;margin:14px 0}
+.ob-sum div{background:var(--surface);border:1px solid var(--edge);border-radius:14px;padding:12px}
+.ob-sum b{display:block;font-size:24px;letter-spacing:-.02em}.ob-sum span{color:var(--sub);font-size:12.5px}
+@media (prefers-reduced-motion:reduce){#onb *,#onb{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
@@ -1714,6 +1794,7 @@ body.bunker .msg.me{background:linear-gradient(180deg,#E0563F,#B8322A);color:#FF
 <div class="scrim" id="drawerscrim" onclick="closePanel()"></div>
 <aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-hidden="true"></aside>
 
+<div id="onb" role="dialog" aria-modal="true" aria-label="Setup"></div>
 <div id="toast" role="status" aria-live="polite"></div>
 <div id="tmpanel" class="glass"></div>
 <div id="printarea"></div>
@@ -2548,7 +2629,7 @@ function normaliseDay(label){
   if(!m) return null;
   const mo=MONTHS[m[3][0].toUpperCase()+m[3].slice(1,3).toLowerCase()];
   if(mo===undefined) return null;
-  const d=new Date(2026,mo,+m[2]);
+  const d=new Date(yearFor(mo),mo,+m[2]);
   return WD[d.getDay()]+' '+(+m[2])+' '+m[3][0].toUpperCase()+m[3].slice(1,3).toLowerCase();
 }
 function validDay(label){
@@ -2567,13 +2648,14 @@ let state={tasks:null,checks:{},sessions:[],papers:[],tab:null,topics:null};
 let mem=null;
 
 async function load(){
-  try{const r=await window.storage.get(SKEY); if(r&&r.value){state=JSON.parse(r.value);}}
+  try{const r=await window.storage.get(SKEY); if(r&&r.value){state=JSON.parse(r.value);} else window._fresh=true;}
   catch(e){ if(mem) state=mem; }
+  if(state.custom){ try{ applyCustom(state.custom); }catch(e){ console.error(e); delete state.custom; } }
   normalize();
 }
 function normalize(){
   // rebuild the plan when the seed changes, carrying over completed ticks by task text
-  if(!state.tasks || state.planV!==PLAN_VERSION){
+  if(!state.custom && (!state.tasks || state.planV!==PLAN_VERSION)){
     const prev={}; (state.tasks||[]).forEach(t=>{ prev[t.origT||t.t]={done:t.done,doneAt:t.doneAt,
       slipped:t.slipped,origDay:t.origDay,origBlk:t.origBlk,day:t.day,blk:t.blk,
       edited:t.edited,t:t.t,m:t.m,s:t.s,am:t.am,skipped:t.skipped,at:t.at,wk:t.wk,origWk:t.origWk}; });
@@ -2651,7 +2733,9 @@ function save(){            // instant: paint never waits on storage
 }
 
 /* ================= helpers ================= */
+function examRange(){ const a=dateOf(FINALS[0][0]), b=dateOf(FINALS[FINALS.length-1][0]); return a.getDate()+' '+MON_LONG[a.getMonth()]+' to '+b.getDate()+' '+MON_LONG[b.getMonth()]; }
 function curWeek(){
+  if(CUSTOM_WEEK){ const t=todayLabel(), i=DAY_ORDER.indexOf(t); return CUSTOM_WEEK(i>-1?t:(new Date()<dateOf(DAY_ORDER[0])?DAY_ORDER[0]:DAY_ORDER[DAY_ORDER.length-1])); }
   const n=new Date();
   const d=(y,mo,da)=>new Date(y,mo,da);
   if(n<d(2026,9,5))return'H1';
@@ -2710,12 +2794,15 @@ const TIMER_PRESETS=[['Maths P1',120],['Maths P2',120],['Maths P3',75],['Physics
   ['English P1',75],['English P2',105],['Spanish P1',75],['Spanish Reading',60],['Spanish Listening',45]];
 const MON3=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
+var PLAN_Y0=2026, PLAN_M0=null, CUSTOM_WEEK=null;
+function yearFor(mo){ return (PLAN_M0!=null&&mo<PLAN_M0)?PLAN_Y0+1:PLAN_Y0; }
 function localISO(d){ d=d||new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
-function dateOf(label){ const m=String(label).match(/^\w{3}\s+(\d{1,2})\s+(\w{3})$/); if(!m) return null; return new Date(2026,MONTHS[m[2]],+m[1]); }
+function dateOf(label){ const m=String(label).match(/^\w{3}\s+(\d{1,2})\s+(\w{3})$/); if(!m) return null; return new Date(yearFor(MONTHS[m[2]]),MONTHS[m[2]],+m[1]); }
 function labelOf(d){ return WD[d.getDay()]+' '+d.getDate()+' '+MON3[d.getMonth()]; }
 function isoToLabel(iso){ const p=iso.split('-'); return labelOf(new Date(+p[0],+p[1]-1,+p[2])); }
 function addDaysISO(n){ const d=new Date(); d.setDate(d.getDate()+n); return localISO(d); }
 function weekOf(label){
+  if(CUSTOM_WEEK) return CUSTOM_WEEK(label);
   const d=dateOf(label); if(!d) return curWeek();
   const b=[[new Date(2026,9,5),'H1'],[new Date(2026,9,12),'H2'],[new Date(2026,9,19),'LV'],[new Date(2026,9,26),'SL'],[new Date(2026,10,2),'X1'],[new Date(2026,10,9),'X2']];
   for(const [lim,w] of b){ if(d<lim) return w; } return 'X3';
@@ -3447,7 +3534,24 @@ window.addPaper=()=>{
 window.delPaper=i=>{state.papers.splice(i,1);paint();save();};
 
 /* ================= coach ================= */
+function customSummary(){
+  const c=state.custom, wk=curWeek();
+  const openT=state.tasks.filter(t=>t.wk===wk).map(t=>`${t.id} | ${t.day} | blk ${t.blk} | ${SUBJ[t.s]} | ${t.m}min | ${t.done?'DONE':'todo'} | ${t.t}`).join('\n')||'none';
+  const papers=state.papers.map(p=>`${p.n}: ${p.sc}/${p.tot}${p.note?', note: '+p.note:''}`).join(' | ')||'none yet';
+  const red=state.topics.filter(t=>t.rag===1).slice(0,20).map(t=>SUBJ[t.s]+': '+t.t).join(' | ')||'none';
+  return `Today: ${new Date().toDateString()}.
+Exams: ${FINALS.map(f=>f[0]+' '+f[1]+' '+f[2]).join('; ')}.
+Goals: ${c.subjects.map(s=>s.name+' '+(s.level||'')+' target '+s.target).join('; ')}.
+Rest days: ${REST_DAYS.join(', ')||'none'}.
+Recent papers: ${papers}.
+Red topics: ${red}.
+TASKS THIS WEEK (${wk}) - id | day | block | subject | minutes | status | text:
+${openT}
+Valid subjects: ${Object.keys(SUBJ).join(', ')}.
+Valid weeks: ${WEEKS.map(w=>w[0]+' ('+w[1].split(' · ')[1]+')').join(', ')}.`;
+}
 function stateSummary(){
+  if(state.custom) return customSummary();
   const dm=doneMinBySubj();
   const hours=Object.keys(TARGETS).map(s=>`${SUBJ[s]}: ${(dm[s]/60).toFixed(1)}h done of ${TARGETS[s]}h target`).join('; ');
   const wk=curWeek();
@@ -3565,7 +3669,7 @@ window.ask=async preset=>{
       method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1000,
         messages:[{role:'user',content:
-`You are the revision coach inside Tom's IB final-exam tracker (November 2026 exams). Be direct and concrete; say plainly when something is wrong. Use analogies before algebra. Respond in plain text (no markdown headers), under 250 words. Rules you enforce: the plan follows what actually happened, not what was planned; study 13:00-18:00 and keep rest days free; after 26 Oct the next exam comes first; never split timed papers; marking and logging count as study and are never cut; mistake-log redos beat new papers; Spanish listening daily until 30 Oct; protect sleep before exam days; aim for roughly 6/10 across everything rather than 9/10 on a few topics.
+`You are the revision coach inside ${state.custom?(state.custom.name||'a student')+'’s':'Tom’s'} IB final-exam tracker. Be direct and concrete; say plainly when something is wrong. Use analogies before algebra. Respond in plain text (no markdown headers), under 250 words. Rules you enforce: the plan follows what actually happened, not what was planned; study 13:00-18:00 and keep rest days free; after 26 Oct the next exam comes first; never split timed papers; marking and logging count as study and are never cut; mistake-log redos beat new papers; Spanish listening daily until 30 Oct; protect sleep before exam days; aim for roughly 6/10 across everything rather than 9/10 on a few topics.
 
 Student data:
 ${stateSummary()}
@@ -3583,7 +3687,7 @@ IF AND ONLY IF the student is asking you to CHANGE the plan (retime, rename, add
  {"op":"delete","id":"t30"}]
 \`\`\`
 
-Rules for actions: use exact ids from the list above; keep any single block at or under 90 minutes unless it is a timed paper; keep study inside 13:00-18:00; never add work to the rest days (Sun 4 Oct, Sun 11 Oct); only use day strings that already appear in the list. Omit the block entirely if no change was requested.`}]})
+Rules for actions: use exact ids from the list above; keep any single block at or under 90 minutes unless it is a timed paper; keep study inside ${state.onb&&state.custom?state.onb.from+'-'+state.onb.to:'13:00-18:00'}; never add work to the rest days (${REST_DAYS.join(', ')||'none'}); only use day strings that already appear in the list. Omit the block entirely if no change was requested.`}]})
     });
     const data=await r.json();
     if(data&&data.content){
@@ -4464,7 +4568,7 @@ function vPlan(){
   const cur=curWeek(), sel=window._openWk&&state.tasks.some(t=>t.wk===window._openWk)?window._openWk:cur, ti=todayIdx(), p=wkParts(sel);
   const wks=WEEKS.filter(([w])=>state.tasks.some(t=>t.wk===w));
   let h=`<div class="ptools"><div class="wkpills" role="tablist" aria-label="Weeks">${wks.map(([w])=>{ const q=wkParts(w);
-      return `<button class="wkp ${w===sel?'on':''}" role="tab" onclick="pickWeek('${w}')"><b>${WK_SHORT[w]}</b><small>${q.dates}</small>${w===cur?'<i></i>':''}</button>`; }).join('')}</div>
+      return `<button class="wkp ${w===sel?'on':''}" role="tab" onclick="pickWeek('${w}')"><b>${WK_SHORT[w]||q.name}</b><small>${q.dates}</small>${w===cur?'<i></i>':''}</button>`; }).join('')}</div>
     <div class="pbtns"><button class="b sm" onclick="openAddTask()">Add task</button><button class="b ghost sm" onclick="jumpToday()">Today</button>
       <button class="b ghost sm" onclick="printWeek('${sel}')">Print</button><button class="b ghost sm" onclick="openHelp()" title="How this plan works">How it works</button></div></div>`;
   const ts=state.tasks.filter(t=>t.wk===sel), req=ts.filter(t=>!isOpt(t)&&!t.skipped), dn=req.filter(t=>t.done);
@@ -4541,7 +4645,7 @@ function vExams(){
   const graded=state.papers.filter(p=>{ const g=gradeInfo(p); return g&&!g.none; }).length;
   let h=`<div class="tiles four">
     <div class="card tile"><span>Next paper</span><b>${up.length?(up[0].D===0?'Today':up[0].D+' d'):'Done'}</b><small>${up.length?esc(examName(up[0].f)):'all 13 sat'}</small></div>
-    <div class="card tile" style="animation-delay:.04s"><span>Papers left</span><b>${up.length}</b><small>${done} of 13 sat</small></div>
+    <div class="card tile" style="animation-delay:.04s"><span>Papers left</span><b>${up.length}</b><small>${done} of ${FINALS.length} sat</small></div>
     <div class="card tile ${red?'hot':''}" style="animation-delay:.08s"><span>Plan fits</span><b style="color:${red?'var(--red)':amb?'var(--warn)':'var(--ok)'}">${red?red+' red':amb?amb+' tight':'All clear'}</b><small>${red||amb?'tap a paper for what to cut':'every paper has room'}</small></div>
     <div class="card tile" style="animation-delay:.12s"><span>Grades worked out</span><b>${graded}</b><small>of ${state.papers.length} scored papers</small></div></div>`;
   h+=`<h2>The papers</h2><div class="card board">${FINALS.map((f,i)=>{ const D=daysUntil(f[0]), past=up.every(o=>o.i!==i), x=cap[kitKey(f)], [kd,kt]=kitDone(f), dt=dateOf(f[0]);
@@ -4550,11 +4654,11 @@ function vExams(){
       <span class="bname"><b><i class="sdot"></i>${esc(examName(f))}</b><small>${t12(EXAM_AT[f[1]])} · ${past?'done':D===0?'today':D===1?'tomorrow':'in '+D+' days'}</small></span>
       <span class="bcap">${x?`<i class="statusdot" style="background:${CAP_ST[x.st][0]}"></i>${isFinite(x.r)?Math.round(x.r*100)+'% full':'no time left'}`:''}</span>
       <span class="bkit ${kd===kt?'ok':''}">${past?'':`Kit ${kd}/${kt}`}</span><span class="chev">›</span></button>`; }).join('')}</div>`;
-  const bs=state.bdOpen&&PAPER_KEYS[state.bdOpen]?state.bdOpen:'math';
+  const bs=state.bdOpen&&PAPER_KEYS[state.bdOpen]?state.bdOpen:(PAPER_KEYS.math?'math':Object.keys(PAPER_KEYS)[0]);
   h+=`<div class="egrid"><div><h2>Raw mark to grade</h2>
-      <p class="note">Targets: Maths 4, Physics 4, Chem 6, everything else one grade up. Safe means ${SAFE_LO}-${SAFE_HI} marks above the line, because boundaries move between sessions. Half papers are scaled up.</p>
+      <p class="note">Targets: ${state.custom?state.custom.subjects.map(x=>x.name+' '+x.target).join(', ')+'.':'Maths 4, Physics 4, Chem 6, everything else one grade up.'} Safe means ${SAFE_LO}-${SAFE_HI} marks above the line, because boundaries move between sessions. Half papers are scaled up.</p>
       <div class="card" style="padding:4px 2px" id="gradelist">${gradeListHTML()}</div></div>
-    <div><h2>November boundaries</h2><div class="chips">${Object.keys(PAPER_KEYS).map(s=>`<button class="chip ${bs===s?'on':''}" onclick="state.bdOpen='${s}';paint();save()">${SUBJ[s]}<span class="n">${PAPER_KEYS[s].filter(k=>boundsOf(s,k)).length}/${PAPER_KEYS[s].length}</span></button>`).join('')}</div>
+    <div><h2>Grade boundaries</h2><div class="chips">${Object.keys(PAPER_KEYS).map(s=>`<button class="chip ${bs===s?'on':''}" onclick="state.bdOpen='${s}';paint();save()">${SUBJ[s]}<span class="n">${PAPER_KEYS[s].filter(k=>boundsOf(s,k)).length}/${PAPER_KEYS[s].length}</span></button>`).join('')}</div>
       <div class="card" style="padding:16px 18px">${boundGridHTML(bs)}</div></div></div>`;
   const c=state.cap, ratio=paceRatio();
   h+=`<h2>Hours you really have</h2><div class="card" style="padding:16px 18px">
@@ -4781,7 +4885,7 @@ function paintTabs(){
   const cnt={today:[rem,false],practice:[prac,prac>0]};
   const main=SPACES.map(([id,l,ic])=>navBtn(id,l,ic,(cnt[id]||[])[0],(cnt[id]||[])[1])).join('');
   const nm=document.getElementById('navmain'); if(nm) nm.innerHTML=main;
-  const mo=document.getElementById('navmore'); if(mo) mo.innerHTML='<div class="navlbl">More</div>'+MORE.map(([id,l,ic])=>navBtn(id,l,ic)).join('');
+  const mo=document.getElementById('navmore'); if(mo) mo.innerHTML='<div class="navlbl">More</div>'+MORE.map(([id,l,ic])=>navBtn(id,l,ic)).join('')+`<button class="nav" onclick="openOnboard()">${icon('target')}<span class="lb">Setup &amp; replan</span></button>`;
   const bb=document.getElementById('bottombar');
   if(bb) bb.innerHTML=main+`<button class="nav" onclick="openSide()">${icon('menu')}<span class="lb">More</span></button>`;
   const sw=document.getElementById('swatches'), t=themeNow();
@@ -4798,9 +4902,9 @@ function paintHead(){
   const sp=spaceOf(state.tab), d=new Date();
   const T={
     today:[WD_LONG[d.getDay()]+' '+d.getDate()+' '+MON_LONG[d.getMonth()], daysLeft()>0?`${daysLeft()} days to your first exam, ${daysFinal()} to the last.`:(daysFinal()>0?`Exams are on. ${daysFinal()} days to the last one.`:'Exams are done.')],
-    plan:['Plan','Every study day up to 13 November. Tap a task for its steps.'],
+    plan:['Plan','Every study day up to '+examRange().split(' to ')[1]+'. Tap a task for its steps.'],
     practice:['Practice',''],
-    exams:['Exams','13 papers, 29 October to 13 November.'],
+    exams:['Exams',FINALS.length+' papers, '+examRange()+'.'],
     progress:['Progress',''],
     library:['Library','Your dossiers and summaries.'],
     school:['Checklist','One-off jobs for this week.'],
@@ -4868,7 +4972,7 @@ function vToday(){
       <div class="wh">${ex[0]} · ${t12(EXAM_AT[ex[1]])}</div>
       <div class="big">${D===0?`<b>${t12(EXAM_AT[ex[1]])}</b><span>today</span>`:`<b>${D}</b><span>${D===1?'day · tomorrow':'days'}</span>`}</div>
       ${after?`<div class="then">Then<b>${esc(examName(after))}</b>${after[0]} · ${t12(EXAM_AT[after[1]])}</div>`:''}</section>`;
-  } else h+=`<div class="hero"><section class="card ncard examday" style="--sc:var(--chem)"><div class="lbl">Exams</div><div class="nm">All 13 papers done.</div><div class="big"><b>✓</b></div></section>`;
+  } else h+=`<div class="hero"><section class="card ncard examday" style="--sc:var(--chem)"><div class="lbl">Exams</div><div class="nm">All ${FINALS.length} papers done.</div><div class="big"><b>✓</b></div></section>`;
   const tt=state.tasks.filter(t=>t.day===tLbl&&!isOpt(t)&&!t.skipped), dn=tt.filter(t=>t.done);
   const planned=tt.reduce((a,t)=>a+t.m,0), doneMin=doneTodayMin(), st=listenStreak(), full=tt.length&&dn.length===tt.length;
   h+=`<section class="card rcard"><div class="ring ${full?'full':''}">${ringSVG(tt.length?dn.length/tt.length:0)}
@@ -4974,11 +5078,305 @@ window.go=id=>{
   save();
 };
 
+/* ================= custom plan (built by Claude from onboarding) ================= */
+// A plan Claude builds replaces the seed constants in memory at load; reverting just drops state.custom and reloads.
+const PALETTE=['var(--math)','var(--physics)','var(--chem)','var(--history)','var(--english)','var(--spanish)'];
+function applyCustom(c){
+  const isos=c.tasks.map(t=>t.date).concat(c.exams.map(e=>e.date)).filter(Boolean).sort();
+  const d0=dateFromISO(isos[0]), d1=dateFromISO(isos[isos.length-1]);
+  PLAN_Y0=d0.getFullYear(); PLAN_M0=d0.getMonth();
+  Object.keys(SUBJ).forEach(k=>{ delete SUBJ[k]; delete SCOL[k]; });
+  c.subjects.forEach((s,i)=>{ SUBJ[s.id]=s.name; SCOL[s.id]=PALETTE[i%PALETTE.length]; });
+  SUBJ.buffer='Buffer'; SCOL.buffer='var(--buffer)';
+  FINALS.splice(0,FINALS.length,...c.exams.slice().sort((a,b)=>(a.date+a.session)<(b.date+b.session)?-1:1).map(e=>[isoToLabel(e.date),e.session==='AM'?'AM':'PM',e.name,e.s]));
+  EXAM_DATES.clear(); EXAM_DAYS.clear(); FINALS.forEach(f=>{ EXAM_DATES.add(f[0]); EXAM_DAYS.add(f[0]); });
+  REST_DAYS.splice(0,REST_DAYS.length,...(c.rest||[]).map(isoToLabel));
+  DAY_ORDER.length=0; for(let d=new Date(d0);d<=d1;d.setDate(d.getDate()+1)) DAY_ORDER.push(labelOf(d));
+  // Monday weeks
+  const mon=d=>{ const x=new Date(d); x.setDate(x.getDate()-((x.getDay()+6)%7)); x.setHours(0,0,0,0); return x; };
+  const w0=mon(d0), wid=d=>'W'+(Math.round((mon(d)-w0)/604800000)+1);
+  CUSTOM_WEEK=label=>{ const d=dateOf(label); return d?wid(d):'W1'; };
+  WEEKS.length=0; Object.keys(BUFFER_DAY).forEach(k=>delete BUFFER_DAY[k]);
+  for(let m=new Date(w0);m<=d1;m.setDate(m.getDate()+7)){
+    const e=new Date(m); e.setDate(e.getDate()+6); const id=wid(m);
+    const ex=[...new Set(FINALS.filter(f=>{ const d=dateOf(f[0]); return d>=m&&d<=e; }).map(f=>SUBJ[f[3]]))];
+    const rng=m.getMonth()===e.getMonth()?m.getDate()+'–'+e.getDate()+' '+MON3[e.getMonth()]:m.getDate()+' '+MON3[m.getMonth()]+'–'+e.getDate()+' '+MON3[e.getMonth()];
+    WEEKS.push([id,'Week '+id.slice(1)+' · '+rng+' · '+(ex.length?'Exams: '+ex.join(', '):((c.weeks||{})[id]||'Study'))]);
+    let last=null; for(let d=new Date(m);d<=e&&d<=d1;d.setDate(d.getDate()+1)){ const l=labelOf(d); if(d>=d0&&!EXAM_DAYS.has(l)) last=l; }
+    BUFFER_DAY[id]=last||DAY_ORDER[DAY_ORDER.length-1];
+  }
+  BUFFER_DAY.X3=DAY_ORDER[DAY_ORDER.length-1];
+  Object.keys(TARGET_GRADE).forEach(k=>delete TARGET_GRADE[k]);
+  [PAPER_KEYS,PAPER_MAX,GRADE_LINE,TARGETS].forEach(o=>Object.keys(o).forEach(k=>delete o[k]));
+  c.subjects.forEach(s=>{
+    if(s.target) TARGET_GRADE[s.id]=+s.target;
+    const ks=[]; FINALS.filter(f=>f[3]===s.id).forEach(f=>{ (f[2].match(/\bP[1-3]\b|Paper [1-3]/g)||[]).forEach(k=>{ k=k.replace('Paper ','P'); if(ks.indexOf(k)<0) ks.push(k); }); });
+    PAPER_KEYS[s.id]=ks.length?ks.sort():['P1','P2'];
+    PAPER_MAX[s.id]={}; PAPER_KEYS[s.id].forEach(k=>PAPER_MAX[s.id][k]=((s.max||{})[k])||100);
+    TARGETS[s.id]=Math.round(c.tasks.filter(t=>t.s===s.id).reduce((a,t)=>a+(+t.m||0),0)/60);
+  });
+  SEED_TOPICS.splice(0,SEED_TOPICS.length,...(c.topics||[]).filter(t=>SUBJ[t.s]&&t.t).map(t=>({s:t.s,g:t.g||'General',t:t.t,rag:[0,1,2,3].indexOf(+t.rag)>-1?+t.rag:0})));
+  COVERAGE.splice(0,COVERAGE.length); SEED_CARDS.splice(0,SEED_CARDS.length);
+  const nm=c.name||'Your plan'; document.title='Exam Control — '+nm;
+  document.querySelectorAll('.brand div span').forEach(el=>{ el.textContent=nm+' · '+MON_LONG[d1.getMonth()]+' '+d1.getFullYear(); });
+}
+function checkPlan(c){
+  if(!c||!Array.isArray(c.subjects)||!Array.isArray(c.exams)||!Array.isArray(c.tasks)) throw new Error('The plan needs subjects, exams and tasks.');
+  const iso=/^\d{4}-\d{2}-\d{2}$/;
+  c.subjects=c.subjects.filter(s=>s&&s.name).map((s,i)=>({...s,id:String(s.id||s.name).toLowerCase().replace(/[^a-z0-9]/g,'').slice(0,14)||('s'+i)}));
+  const ids=new Set(c.subjects.map(s=>s.id)); ids.add('buffer');
+  c.exams=c.exams.filter(e=>e&&iso.test(e.date)&&ids.has(e.s));
+  c.tasks=c.tasks.filter(t=>t&&iso.test(t.date)&&t.t).map(t=>({...t,s:ids.has(t.s)?t.s:'buffer',m:Math.max(5,Math.min(240,+t.m||45))}));
+  c.rest=(c.rest||[]).filter(d=>iso.test(d));
+  if(!c.subjects.length||!c.exams.length||!c.tasks.length) throw new Error('The plan came back without subjects, exams or tasks.');
+  return c;
+}
+function installPlan(c){
+  checkPlan(c);
+  if(!state.custom) state.preTasks=state.tasks;          // your old plan, for "go back"
+  state.custom=c; applyCustom(c);
+  const byDay={};
+  state.tasks=c.tasks.slice().sort((a,b)=>(a.date+(a.at||''))<(b.date+(b.at||''))?-1:1).map((t,i)=>{
+    const day=isoToLabel(t.date), n=byDay[day]=(byDay[day]||0)+1;
+    return {id:'k'+i,custom:true,wk:weekOf(day),day,blk:'ABCDEFGHIJKL'[n-1]||'Z',s:t.s,t:t.t,m:t.m,rec:t.rec||'concept',at:/^\d{1,2}:\d{2}$/.test(t.at||'')?t.at:undefined,done:false};
+  });
+  FINALS.forEach(f=>state.tasks.push({id:'kx'+state.tasks.length,custom:true,wk:weekOf(f[0]),day:f[0],blk:f[1]==='AM'?'A':'X',s:f[3],t:'EXAM '+f[2],m:0,rec:'exam',at:EXAM_AT[f[1]],done:false}));
+  state.topics=null; state.cov={}; state.covText=[]; state.bounds={}; state.examChk={};
+  state.cards=(state.cards||[]).filter(x=>!x.seed); state.planV=PLAN_VERSION;
+  normalize(); state.tab='today'; save();
+}
+window.revertPlan=()=>{
+  if(!confirm('Go back to the original built-in plan? The Claude-built plan is removed.')) return;
+  delete state.custom; state.tasks=state.preTasks||null; delete state.preTasks; state.topics=null;
+  try{ window.storage.set(SKEY,JSON.stringify(state)); }catch(e){}
+  setTimeout(()=>location.reload(),300);
+};
+
+/* ================= onboarding ================= */
+const OB_STEPS=[['welcome','Welcome'],['subjects','Subjects'],['exams','Exams'],['marks','Marks'],['split','Time split'],['week','Your week'],['style','Style'],['build','Build']];
+const WD_MON=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+function obDefaults(){
+  const subs=Object.keys(SUBJ).filter(k=>k!=='buffer').map(k=>{
+    const f=FINALS.filter(x=>x[3]===k);
+    return {id:k,name:SUBJ[k],lvl:f.some(x=>/\bHL\b/.test(x[2]))?'HL':'SL',target:TARGET_GRADE[k]||5,exams:f.map(x=>x[0]+' '+x[1]+' · '+x[2]).join('\n'),marks:'',weak:''};
+  });
+  const w={}; subs.forEach(s=>w[s.id]=s.lvl==='HL'?60:45);
+  return {step:0,name:'',subjects:subs,start:localISO(),split:w,hours:4,from:'13:00',to:'18:00',rest:[6],extra:'',dismissed:{},chat:[]};
+}
+function ob(){ state.onb=Object.assign(obDefaults(),state.onb||{}); return state.onb; }
+window.openOnboard=()=>{ const o=ob(); o.step=Math.min(o.step||0,OB_STEPS.length-1); closeSide&&closeSide(); obRender(); document.getElementById('onb').classList.add('on'); document.body.style.overflow='hidden'; };
+window.closeOnboard=(finish)=>{ const o=ob(); if(finish) o.done=true; else o.skipped=true; save(); document.getElementById('onb').classList.remove('on'); document.body.style.overflow=''; paint(true); };
+window.obGo=d=>{ const o=ob(); o.step=Math.max(0,Math.min(OB_STEPS.length-1,o.step+d)); window._obDir=d; save(); obRender(); document.getElementById('onb').scrollTop=0; };
+window.obJump=i=>{ const o=ob(); window._obDir=i-o.step; o.step=i; save(); obRender(); };
+function obShares(){ const o=ob(), ids=o.subjects.map(s=>s.id), tot=ids.reduce((a,k)=>a+(+o.split[k]||0),0)||1; const r={}; ids.forEach(k=>r[k]=(+o.split[k]||0)/tot); return r; }
+function obWeekHours(){ const o=ob(); return (7-o.rest.length)*o.hours; }
+function obTip(key,html){ const o=ob(); if(o.dismissed[key]||!html) return ''; return `<div class="ob-tip"><span>💡</span><span>${html}</span><button title="Hide tip" onclick="ob().dismissed['${key}']=1;save();obRender()">×</button></div>`; }
+function obSlug(n,i){ return (String(n).toLowerCase().replace(/[^a-z0-9]/g,'').slice(0,14))||('s'+i); }
+function colOf(i){ return PALETTE[i%PALETTE.length]; }
+
+function obStepHTML(){
+  const o=ob(), k=OB_STEPS[o.step][0];
+  if(k==='welcome') return `<div class="ob-hero"><div class="ob-orb"></div>
+    <h2>Let’s build your exam plan</h2>
+    <p class="lead" style="margin-inline:auto">A few quick questions about your subjects, exams, marks and your week. Then Claude turns them into a day-by-day timetable, built the same way as a hand-tuned IB plan: papers sat and marked, mistakes redone, the hardest subject first. Every step can be skipped.</p>
+    <div style="display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap"><input type="text" placeholder="Your first name" value="${esc(o.name)}" oninput="ob().name=this.value;save()" style="min-width:220px"><button class="b" onclick="obGo(1)">Start</button></div></div>`;
+  if(k==='subjects'){
+    const hl=o.subjects.filter(s=>s.lvl==='HL').length;
+    return `<h2>Your subjects</h2><p class="lead">Name each one, set HL or SL, and slide to the grade you’re aiming for.</p>
+    <div class="ob-grid">${o.subjects.map((s,i)=>`<div class="ob-card ob-sub" style="animation-delay:${i*50}ms">
+      <span class="dot" style="background:${colOf(i)}"></span>
+      <input type="text" value="${esc(s.name)}" placeholder="e.g. Biology" oninput="obSub(${i},'name',this.value)">
+      <span class="ob-seg">${['HL','SL'].map(L=>`<button class="${s.lvl===L?'on':''}" onclick="obSub(${i},'lvl','${L}',1)">${L}</button>`).join('')}</span>
+      <span class="ob-grade"><input type="range" min="1" max="7" value="${s.target}" style="--c:${colOf(i)};--p:${(s.target-1)/6*100}%" oninput="obGrade(${i},this)"><b id="obg${i}">${s.target}</b>
+      <button class="b ghost sm" title="Remove" onclick="obDel(${i})">×</button></span></div>`).join('')}</div>
+    <div style="display:flex;gap:10px;margin:14px 0"><button class="b ghost" onclick="obAdd()">+ Add subject</button></div>
+    ${hl!==3&&o.subjects.length>=6?obTip('hl3','IB diplomas usually carry exactly 3 HL subjects (4 is allowed). You have '+hl+'. Double-check the levels, since they change how much time Claude gives each.'):''}
+    ${obTip('target','Set targets you’d be <b>happy</b> with, not a dream grade. Claude puts the extra hours where the gap between your marks and your target is biggest.')}`;
+  }
+  if(k==='exams') return `<h2>When are your exams?</h2><p class="lead">Paste your timetable for each subject, e.g. “Mon 9 Nov PM · Maths AA HL P1 (2h)”. Rough is fine; Claude will ask about anything unclear.</p>
+    <div class="ob-card" style="margin-bottom:12px;display:flex;gap:12px;align-items:center;flex-wrap:wrap"><b>Start studying from</b><input type="date" value="${o.start}" onchange="ob().start=this.value;save()"></div>
+    <div class="ob-grid">${o.subjects.map((s,i)=>`<div class="ob-card"><div style="display:flex;gap:8px;align-items:center;margin-bottom:8px"><span class="sdot" style="background:${colOf(i)}"></span><b>${esc(s.name||'Subject')}</b> <small style="color:var(--sub)">${s.lvl}</small></div>
+      <textarea rows="2" placeholder="Date, AM/PM, paper, length" oninput="obSub(${i},'exams',this.value)">${esc(s.exams)}</textarea></div>`).join('')}</div>
+    <div style="margin-top:12px">${obTip('ex','Your exams coordinator’s PDF timetable is the source of truth. Check your time zone’s AM/PM start times.')}</div>`;
+  if(k==='marks') return `<h2>Marks and weak spots</h2><p class="lead">Recent mock or past-paper scores, and the topics that cost you marks. Leave gaps; Claude will ask for what it needs.</p>
+    <div class="ob-grid">${o.subjects.map((s,i)=>`<div class="ob-card"><div style="display:flex;gap:8px;align-items:center;margin-bottom:8px"><span class="sdot" style="background:${colOf(i)}"></span><b>${esc(s.name||'Subject')}</b><small style="color:var(--sub);margin-left:auto">target ${s.target}</small></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><textarea rows="2" placeholder="Marks, e.g. Mock P1 52/110, P2 61/110" oninput="obSub(${i},'marks',this.value)">${esc(s.marks)}</textarea>
+      <textarea rows="2" placeholder="Weak topics, e.g. vectors, induction" oninput="obSub(${i},'weak',this.value)">${esc(s.weak)}</textarea></div></div>`).join('')}</div>
+    <div style="margin-top:12px">${obTip('marks','Marked papers are the most useful thing you can give. Scores with the paper total (52/110) tell Claude how far you are from each boundary.')}</div>`;
+  if(k==='split'){
+    const sh=obShares(), wh=obWeekHours();
+    const low=o.subjects.find(s=>s.lvl==='HL'&&sh[s.id]<Math.min(...o.subjects.filter(x=>x.lvl==='SL').map(x=>sh[x.id]),1));
+    return `<h2>How should your time split?</h2><p class="lead">Drag to weight each subject. Claude keeps the timetable within about 5% of this.</p>
+    <div class="ob-split"><div class="ob-donut">${obDonut()}<div class="mid"><b id="obwh">${wh}h</b><span>a week</span></div></div>
+    <div class="ob-card">${o.subjects.map((s,i)=>`<div class="ob-row"><span class="nm"><span class="sdot" style="background:${colOf(i)}"></span>${esc(s.name||'Subject')}</span>
+      <input type="range" min="0" max="100" value="${+o.split[s.id]||0}" style="--c:${colOf(i)};--p:${+o.split[s.id]||0}%" oninput="obSplit('${s.id}',this)">
+      <span class="pc" id="obpc-${s.id}"><b>${Math.round(sh[s.id]*100)}%</b> · ${(sh[s.id]*wh).toFixed(1)}h</span></div>`).join('')}
+      <div style="display:flex;gap:8px;margin-top:8px"><button class="b ghost sm" onclick="obSuggest()">Suggest from levels and targets</button><button class="b ghost sm" onclick="obEven()">Even</button></div></div></div>
+    <div style="margin-top:14px" id="obsplittip">${low?obTip('hlsplit',`<b>${esc(low.name)}</b> is HL but gets less time than an SL subject. HL papers are longer and the syllabus bigger, so it usually needs about 1.5× the time.`):''}${obTip('split','Don’t zero anything. Even a strong subject needs a little time for recall and a timed paper before its exam.')}</div>`;
+  }
+  if(k==='week'){
+    return `<h2>Your week</h2><p class="lead">How much you can realistically study, and when.</p>
+    <div class="ob-grid" style="grid-template-columns:repeat(auto-fit,minmax(260px,1fr))">
+      <div class="ob-card"><b>Hours a study day</b><div class="ob-grade" style="margin-top:10px"><input type="range" min="1" max="10" step="0.5" value="${o.hours}" style="--p:${(o.hours-1)/9*100}%" oninput="obHours(this)"><b id="obhv">${o.hours}</b></div>
+        <div class="ob-bars" id="obbars">${obBars()}</div><div class="ob-bl">${WD_MON.map(d=>`<span>${d}</span>`).join('')}</div></div>
+      <div class="ob-card"><b>Rest days</b><p class="note" style="margin:6px 0 10px">No work is planned on these.</p>
+        <div class="ob-chips">${WD_MON.map((d,i)=>`<button class="ob-chip ${o.rest.indexOf(i)>-1?'on':''}" onclick="obRest(${i})">${d}</button>`).join('')}</div>
+        <b style="display:block;margin-top:16px">Study window</b><div style="display:flex;gap:8px;align-items:center;margin-top:8px"><input type="time" value="${o.from}" onchange="ob().from=this.value;save()"> to <input type="time" value="${o.to}" onchange="ob().to=this.value;save()"></div></div></div>
+    <div class="ob-card" style="margin-top:12px"><b>Anything else Claude should know?</b><textarea style="margin-top:8px" placeholder="e.g. IA due 20 Oct, part-time job Saturdays, I focus best in the morning" oninput="ob().extra=this.value;save()">${esc(o.extra)}</textarea></div>
+    <div style="margin-top:12px" id="obweektip">${obWeekTip()}</div>`;
+  }
+  if(k==='style'){
+    const cur=state.theme||'auto';
+    const pv={auto:['#F3F4F6','#fff','#14161B','#2B6FF3'],light:['#F3F4F6','#fff','#14161B','#2B6FF3'],dark:['#0D0E11','#16171B','#F1F2F4','#4C8BFF'],midnight:['#070B1A','#0F1630','#E8ECFF','#7C8CFF'],aurora:['#F6F1FF','#fff','#1B1530','#8B5CF6'],launch:['#0B0E08','#141A10','#D8E6B0','#E8A33A']};
+    return `<h2>Make it yours</h2><p class="lead">Pick a look. It changes live, and you can switch any time from the sidebar.</p>
+    <div class="ob-themes">${THEMES.map(([t,l])=>{ const c=pv[t]||pv.light, au=t==='auto';
+      return `<button class="ob-th ${cur===t?'on':''}" onclick="obTheme('${t}')"><span class="pv" style="background:${au?'linear-gradient(90deg,#F3F4F6 50%,#0D0E11 50%)':c[0]}">
+        <i style="width:60%;background:${c[3]}"></i><i style="width:85%;background:${au?'#888':c[2]};opacity:.5"></i><i style="width:40%;background:${au?'#888':c[2]};opacity:.3"></i>
+        <span style="display:flex;gap:5px;margin-top:auto">${PALETTE.slice(0,4).map(p=>`<i style="width:18px;height:18px;border-radius:50%;background:${p}"></i>`).join('')}</span></span><span class="nm">${l}</span></button>`; }).join('')}</div>
+    <div class="ob-card" style="margin-top:14px;display:flex;gap:12px;align-items:center;flex-wrap:wrap"><b>Open on</b>
+      <span class="ob-seg">${[['today','Today'],['plan','Plan'],['exams','Exams']].map(([t,l])=>`<button class="${(o.home||'today')===t?'on':''}" onclick="ob().home='${t}';save();obRender()">${l}</button>`).join('')}</span></div>`;
+  }
+  if(k==='build'){
+    const wh=obWeekHours(), sh=obShares(), days=o.start?Math.max(0,Math.round((obLastExam()-dateFromISO(o.start))/86400000)):0;
+    return `<h2>Build your timetable</h2><p class="lead">Claude reads everything above, asks for anything missing (marks, paper totals, exam times), then writes your plan day by day.</p>
+    <div class="ob-sum"><div><b>${o.subjects.length}</b><span>subjects</span></div><div><b>${days||'?'}</b><span>days to your last exam</span></div><div><b>${wh}h</b><span>a week</span></div>
+      <div><b>${esc((o.subjects.slice().sort((a,b)=>sh[b.id]-sh[a.id])[0]||{}).name||'-')}</b><span>gets the most time</span></div></div>
+    <div class="ob-card" id="obchat">${obChatHTML()}</div>
+    <details class="ob-card" style="margin-top:12px"><summary style="cursor:pointer;font-weight:600">Using Claude in another window instead?</summary>
+      <p class="note">Copy the prompt, paste it into Claude, answer its questions, then paste its final reply here.</p>
+      <div style="display:flex;gap:8px;margin-bottom:10px"><button class="b ghost sm" onclick="obCopy()">Copy prompt</button></div>
+      <textarea id="obpaste" rows="4" placeholder="Paste Claude’s reply with the plan here"></textarea>
+      <div style="display:flex;gap:8px;margin-top:8px"><button class="b sm" onclick="obImport(document.getElementById('obpaste').value)">Import plan</button></div></details>
+    ${state.custom?`<div class="ob-card" style="margin-top:12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap"><span>You’re on a Claude-built plan.</span><button class="b ghost sm" onclick="revertPlan()">Go back to the original plan</button></div>`:''}
+    <div style="margin-top:12px">${obTip('build','Claude plans; you decide. Any task can be edited, moved or deleted afterwards, and <b>John Claude</b> can rebalance a week whenever it slips.')}</div>`;
+  }
+  return '';
+}
+function obRender(){
+  const el=document.getElementById('onb'); if(!el) return; const o=ob(), last=o.step===OB_STEPS.length-1;
+  el.innerHTML=`<div class="ob-wrap"><div class="ob-top"><span class="brandm">Setup</span>
+    <div class="ob-prog">${OB_STEPS.map((s,i)=>`<i class="${i<=o.step?'done':''}" title="${s[1]}" onclick="obJump(${i})" style="cursor:pointer"></i>`).join('')}</div>
+    <button class="b ghost sm" onclick="closeOnboard()">Skip setup</button></div>
+    <div class="ob-step ${(window._obDir||1)<0?'back':''}">${obStepHTML()}</div></div>
+    <div class="ob-nav"><div class="in">${o.step?'<button class="b ghost" onclick="obGo(-1)">Back</button>':''}<span class="sp"></span>
+      <span class="note" style="margin:0">${o.step+1} of ${OB_STEPS.length} · ${OB_STEPS[o.step][1]}</span>
+      ${last?`<button class="b" onclick="closeOnboard(1)">Done</button>`:`${o.step?'<button class="b ghost" onclick="obGo(1)">Skip</button>':''}<button class="b" onclick="obGo(1)">${o.step?'Next':'Start'}</button>`}</div></div>`;
+  const c=document.querySelector('.ob-chat'); if(c) c.scrollTop=c.scrollHeight;
+}
+window.obSub=(i,k,v,re)=>{ const o=ob(), s=o.subjects[i]; s[k]=v;
+  if(k==='name'&&!s.fixedId){ const nid=obSlug(v,i); if(nid!==s.id&&!o.subjects.some((x,j)=>j!==i&&x.id===nid)){ o.split[nid]=o.split[s.id]; delete o.split[s.id]; s.id=nid; } }
+  save(); if(re) obRender(); };
+window.obGrade=(i,el)=>{ const v=+el.value; ob().subjects[i].target=v; el.style.setProperty('--p',(v-1)/6*100+'%'); const b=document.getElementById('obg'+i); b.textContent=v; b.classList.remove('bump'); void b.offsetWidth; b.classList.add('bump'); save(); };
+window.obAdd=()=>{ const o=ob(); if(o.subjects.length>=8) return; const id='s'+Date.now().toString(36).slice(-4); o.subjects.push({id,name:'',lvl:'SL',target:5,exams:'',marks:'',weak:''}); o.split[id]=45; save(); obRender(); };
+window.obDel=i=>{ const o=ob(); const s=o.subjects.splice(i,1)[0]; if(s) delete o.split[s.id]; save(); obRender(); };
+function obDonut(){
+  const o=ob(), sh=obShares(), R=42, C=2*Math.PI*R; let off=0;
+  return `<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="${R}" fill="none" stroke="var(--fill)" stroke-width="12"/>${o.subjects.map((s,i)=>{ const len=sh[s.id]*C, h=`<circle id="obd-${s.id}" cx="50" cy="50" r="${R}" fill="none" stroke="${colOf(i)}" stroke-width="12" stroke-dasharray="${Math.max(0,len-1.2)} ${C}" stroke-dashoffset="${-off}"/>`; off+=len; return h; }).join('')}</svg>`;
+}
+function obRefreshSplit(){
+  const o=ob(), sh=obShares(), wh=obWeekHours(), R=42, C=2*Math.PI*R; let off=0;
+  o.subjects.forEach(s=>{ const c=document.getElementById('obd-'+s.id), len=sh[s.id]*C; if(c){ c.setAttribute('stroke-dasharray',Math.max(0,len-1.2)+' '+C); c.setAttribute('stroke-dashoffset',-off); } off+=len;
+    const p=document.getElementById('obpc-'+s.id); if(p) p.innerHTML=`<b>${Math.round(sh[s.id]*100)}%</b> · ${(sh[s.id]*wh).toFixed(1)}h`; });
+}
+window.obSplit=(id,el)=>{ ob().split[id]=+el.value; el.style.setProperty('--p',el.value+'%'); obRefreshSplit(); save(); };
+window.obSuggest=()=>{ const o=ob(); o.subjects.forEach(s=>{ o.split[s.id]=Math.round(Math.min(100,(s.lvl==='HL'?42:28)*(0.7+s.target*0.1)+(s.weak?8:0))); }); save(); obRender(); };
+window.obEven=()=>{ const o=ob(); o.subjects.forEach(s=>o.split[s.id]=50); save(); obRender(); };
+function obBars(){ const o=ob(); return WD_MON.map((d,i)=>{ const off=o.rest.indexOf(i)>-1; return `<i class="${off?'off':''}" style="height:${off?6:o.hours/10*100}%"></i>`; }).join(''); }
+function obWeekTip(){ const o=ob(), wh=obWeekHours();
+  return o.hours>7?obTip('burn','More than 7 hours a day rarely holds for weeks. Past that, focus drops and it shows in timed papers. 5–6 good hours usually beat 9 tired ones.')
+    :!o.rest.length?obTip('rest','No rest day at all? One lighter day a week protects the other six.')
+    :obTip('week',`That’s <b>${wh} hours a week</b>. Claude keeps a buffer block each week for whatever slips.`); }
+window.obHours=el=>{ const o=ob(); o.hours=+el.value; el.style.setProperty('--p',(o.hours-1)/9*100+'%'); document.getElementById('obhv').textContent=o.hours; document.getElementById('obbars').innerHTML=obBars(); document.getElementById('obweektip').innerHTML=obWeekTip(); save(); };
+window.obRest=i=>{ const o=ob(), k=o.rest.indexOf(i); if(k>-1) o.rest.splice(k,1); else if(o.rest.length<3) o.rest.push(i); save(); obRender(); };
+window.obTheme=t=>{ state.theme=t; applyMode(); save(); obRender(); };
+function obLastExam(){ const o=ob(); let last=null; o.subjects.forEach(s=>{ (s.exams||'').split('\n').forEach(l=>{ const n=normaliseDay((l.match(/^\w{3}\s+\d{1,2}\s+\w{3}/)||[''])[0]); const d=n&&dateOf(n); if(d&&(!last||d>last)) last=d; }); }); return last||dateOf(FINALS[FINALS.length-1][0]); }
+
+/* ---- Claude builds the plan ---- */
+function obPrompt(){
+  const o=ob(), sh=obShares(), wh=obWeekHours();
+  const ex=SEED_TASKS.filter(t=>/paper|redo|recall/.test(t.rec)).slice(0,4).map(t=>'- '+t.t.slice(0,200)).join('\n');
+  return `You are building a personalised IB final-exam revision timetable for ${o.name||'a student'}. The timetable is loaded into a study-tracker app, so the final plan must follow the JSON format below exactly.
+
+STUDENT
+Start date: ${o.start}. Today: ${localISO()}.
+Study days: ${WD_MON.filter((d,i)=>o.rest.indexOf(i)<0).join(', ')} (rest: ${o.rest.map(i=>WD_MON[i]).join(', ')||'none'}). About ${o.hours} h per study day, between ${o.from} and ${o.to}. ${wh} h a week.
+${o.subjects.map(s=>`- ${s.name} ${s.lvl} (id "${s.id}"), target grade ${s.target}, share of time ${Math.round(sh[s.id]*100)}%
+  Exams: ${(s.exams||'not given').replace(/\n/g,'; ')}
+  Marks: ${s.marks||'not given'}
+  Weak spots: ${s.weak||'not given'}`).join('\n')}
+Other notes: ${o.extra||'none'}
+
+HOW TO WORK
+1. First check what's missing. If you don't have exam dates and AM/PM sessions for every subject, or no recent marks for a subject, ask me up to 6 short, specific questions (e.g. "What did you get on your last Maths P1, out of how many?") and stop there. Don't output the plan yet.
+2. Once you have enough (or I say "go with what you have"), give 3-5 lines of advice in plain words, then the plan.
+
+HOW TO PLAN (this approach has worked well for IB students)
+- Every past paper is a set of three: sit it timed, mark it with the mark scheme, and log every lost mark. Never re-sit a paper already seen.
+- Mistakes from marked papers get a redo 3 days later and again about 7 days later.
+- The biggest gap between current mark and target gets the most early time. Weak topics come before timed papers in that subject.
+- Order the work by exam date: the first exam's subject is sharp first, and nothing is dropped for more than about 5 days.
+- The 2 days before an exam are light for that subject: recall, formula sheet, one short timed section. The night before: pack the kit, sleep.
+- On exam days, only light review for that day's paper. Plan the next exam's subject on the other half-day.
+- Blocks of 25-90 min (timed papers can run to paper length). Keep inside ${o.from}-${o.to}. Leave one buffer block each week (s "buffer") for whatever slips.
+- Keep each subject's total time within about 5% of its share above.
+- Write task text as a specific instruction: what to do, from which paper or topic, and how to finish. Style examples:
+${ex}
+
+OUTPUT FORMAT
+End your reply with one fenced block tagged plan containing valid JSON only:
+\`\`\`plan
+{"name":"${o.name||'Student'}",
+ "subjects":[{"id":"math","name":"Maths AA","level":"HL","target":6,"max":{"P1":110,"P2":110,"P3":55}}],
+ "exams":[{"date":"2026-11-09","session":"PM","name":"Maths AA HL P1 (2h)","s":"math"}],
+ "rest":["2026-10-04"],
+ "tasks":[{"date":"2026-10-01","at":"13:00","s":"math","m":90,"rec":"paper","t":"Sit Maths P1 May 2023 TZ1 timed (2h)..."}],
+ "topics":[{"s":"math","g":"Calculus","t":"Integration by parts","rag":1}]}
+\`\`\`
+Rules: dates are YYYY-MM-DD; "at" is 24-hour HH:MM; subject ids must be exactly the ids above (or "buffer"); rec is one of paper, mark, redo, concept, recall, review, essay, mcq, listen, lang, buffer, setup; rag is 1 red, 2 amber, 3 green, 0 unrated. Cover every day from the start date to the last exam, include rest days in "rest", and give topics 8-15 syllabus topics per subject rated from the marks and weak spots. Don't list the exams as tasks; the app adds them.`;
+}
+function obChatHTML(){
+  const o=ob(), msgs=o.chat||[];
+  if(!msgs.length) return `<div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap"><button class="b" onclick="obAsk()">Build my plan with Claude</button><span class="note" style="margin:0">Works when this page is open inside Claude.</span></div>`;
+  return `<div class="ob-chat">${msgs.map(m=>`<div class="ob-msg ${m.role==='user'?'me':'jc'}">${esc(m.role==='user'&&m===msgs[0]?'My setup answers':m.content.replace(/```plan[\s\S]*?```/,'[plan attached]'))}</div>`).join('')}
+    ${window._obBusy?'<div class="ob-think"><i></i><i></i><i></i> Claude is planning, this takes a minute…</div>':''}</div>
+    ${window._obBusy?'':(o.planReady?`<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="b" onclick="obUse()">Use this plan</button><button class="b ghost" onclick="obRedo()">Start over</button></div>`
+    :`<div style="display:flex;gap:8px"><textarea id="obreply" rows="2" placeholder="Answer Claude, or type: go with what you have"></textarea><button class="b" onclick="obSend()">Send</button></div>`)}`;
+}
+async function obCall(){
+  const o=ob(); window._obBusy=true; obRender();
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-opus-5-5',max_tokens:16000,output_config:{effort:'high'},messages:o.chat.map(m=>({role:m.role,content:m.content}))})});
+    const data=await r.json();
+    if(data.stop_reason==='refusal') throw new Error('refusal');
+    const txt=(data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('\n').trim();
+    if(!txt) throw new Error(data.error&&data.error.message||'empty');
+    o.chat.push({role:'assistant',content:txt});
+    o.planReady=/```plan[\s\S]*?```/.test(txt);
+  }catch(e){
+    o.chat.push({role:'assistant',content:'Claude isn’t reachable from here. This only works when the page is open inside Claude, not as a downloaded file. Use “Copy prompt” below instead, then paste Claude’s reply.'});
+  }
+  window._obBusy=false; save(); obRender();
+}
+window.obAsk=()=>{ const o=ob(); o.chat=[{role:'user',content:obPrompt()}]; o.planReady=false; obCall(); };
+window.obSend=()=>{ const el=document.getElementById('obreply'), v=el&&el.value.trim(); if(!v) return; ob().chat.push({role:'user',content:v}); obCall(); };
+window.obRedo=()=>{ ob().chat=[]; ob().planReady=false; save(); obRender(); };
+window.obUse=()=>{ const o=ob(), last=[...o.chat].reverse().find(m=>m.role==='assistant'); if(last) obImport(last.content); };
+window.obCopy=()=>{ const p=obPrompt(); (navigator.clipboard?navigator.clipboard.writeText(p):Promise.reject()).then(()=>toast('Prompt copied, paste it into Claude'),()=>{ const t=document.getElementById('obpaste'); if(t){ t.value=p; t.select(); } toast('Copy it from the box'); }); };
+window.obImport=txt=>{
+  const m=String(txt||'').match(/```(?:plan|json)?\s*([\s\S]*?)```/), raw=m?m[1]:(String(txt).match(/\{[\s\S]*\}/)||[''])[0];
+  let c; try{ c=JSON.parse(raw.trim()); }catch(e){ alert('Couldn’t read a plan in that text. It needs the ```plan block Claude writes at the end.'); return; }
+  try{ const n=(c.tasks||[]).length; if(!confirm('Replace your current timetable with this plan ('+n+' tasks)? Your mistake log, papers and library stay.')) return; installPlan(c); }
+  catch(e){ alert(e.message); return; }
+  const o=ob(); if(o.home) state.tab=o.home; closeOnboard(1); toast('Your new plan is in');
+};
+
 (async()=>{await load(); window.state=state;
   if(state.uiV!==2){ state.uiV=2; state.tab='today'; }      // first open after the redesign lands on Today
   if(!state.tab) state.tab='today';
   applyMode();
   paint();
+  if(window._fresh && !state.onb) openOnboard();
   enter(); paintTimer(); setInterval(timerTick,1000);
   let lastDay=todayLabel();
   function checkRollover(){
