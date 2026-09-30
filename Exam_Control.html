@@ -1716,6 +1716,45 @@ body.bunker .tfdot.at{background:var(--lamp);box-shadow:0 0 10px var(--lamp)}
 body.bunker .srow2,body.bunker .covcard{font-family:inherit;color:var(--ink)}
 body.bunker .logit{background:rgba(46,56,51,.9)}
 
+/* ---------- Checklist, Recipes, John Claude ---------- */
+.chkhead{display:grid;grid-template-columns:1fr auto;gap:14px 24px;align-items:center;padding:22px 26px;margin-bottom:18px}
+.chkhead h3{margin:0;font-size:22px;font-weight:700;letter-spacing:-.5px}
+.chkhead .sub{font-size:13.5px;color:var(--sub);margin-top:3px}
+.chkn{display:flex;flex-direction:column;align-items:flex-end}
+.chkn b{font-size:28px;font-weight:650;letter-spacing:-.8px;font-variant-numeric:tabular-nums}
+.chkn b em{font-style:normal;font-size:16px;color:var(--faint);font-weight:500}
+.chkn span{font-size:12px;color:var(--faint)}
+.chkhead .wkbar{grid-column:1/-1}
+.recgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:14px}
+.reccard{padding:20px 22px;animation:rise .5s cubic-bezier(.16,1,.3,1) both}
+.rech{display:flex;align-items:center;gap:10px;justify-content:space-between}
+.rech h3{margin:0 0 4px;font-size:17px;font-weight:650;letter-spacing:-.2px}
+.recsteps{position:relative;padding-left:16px;border-left:2px solid var(--edge-2);display:flex;flex-direction:column;gap:9px;margin-top:8px}
+.recstep{position:relative;display:grid;grid-template-columns:58px 1fr;gap:8px;font-size:13.5px;line-height:1.45}
+.recstep::before{content:"";position:absolute;left:-22px;top:5px;width:9px;height:9px;border-radius:50%;background:var(--surface);box-shadow:0 0 0 2px var(--blue)}
+.rmin{font-weight:650;font-variant-numeric:tabular-nums;color:var(--sub);font-size:12.5px}
+.rgl2{padding:6px 18px}
+.rgl2 div{display:grid;grid-template-columns:140px 1fr;gap:12px;padding:9px 0;border-top:1px solid var(--edge);font-size:13px}
+.rgl2 div:first-child{border-top:none}
+.rgl2 span{color:var(--sub)}
+.chat{display:flex;flex-direction:column;padding:0;overflow:hidden;min-height:calc(100vh - 220px)}
+.chatwarn{margin:16px 18px 0;padding:10px 14px;border-radius:12px;font-size:13px;color:var(--sub);background:color-mix(in srgb,var(--warn) 14%,transparent)}
+.chatlog{flex:1;overflow-y:auto;padding:20px 22px;display:flex;flex-direction:column;gap:12px;max-height:calc(100vh - 330px)}
+.chatempty{margin:auto;text-align:center;max-width:420px;color:var(--sub);font-size:14px;line-height:1.55}
+.chatempty b{display:block;font-size:18px;color:var(--ink);margin-bottom:6px}
+.msg{max-width:78%;padding:11px 15px;border-radius:18px;font-size:14px;line-height:1.55;animation:rise .35s cubic-bezier(.16,1,.3,1)}
+.msg.me{align-self:flex-end;background:var(--blue);color:#fff;border-bottom-right-radius:6px}
+.msg.jc{align-self:flex-start;background:var(--fill);border-bottom-left-radius:6px}
+#actionbox:empty{display:none}
+#actionbox{padding:0 22px}
+.chatq{display:flex;gap:6px;flex-wrap:wrap;padding:12px 18px 0;border-top:1px solid var(--edge)}
+.chatin{display:flex;gap:8px;align-items:flex-end;padding:12px 18px 18px}
+.chatin textarea{flex:1;min-height:44px;max-height:160px;resize:vertical;font-size:14px;border-radius:14px}
+.chatin .b{padding:11px 20px}
+@media (max-width:700px){.recgrid{grid-template-columns:1fr}.rgl2 div{grid-template-columns:1fr;gap:2px}.msg{max-width:92%}}
+body.bunker .msg.jc{background:rgba(233,223,194,.08);color:var(--ink)}
+body.bunker .msg.me{background:linear-gradient(180deg,#E0563F,#B8322A);color:#FFF1E4}
+
 </style>
 </head>
 <body>
@@ -3299,18 +3338,15 @@ const FINALS=[
 ];
 
 function vSchool(){
-  const wk=curWeek();
-  const items=CHECKLISTS[wk]||[];
-  const wkChecks=state.checks[wk]||{};
-  const done=items.filter(i=>wkChecks[i.id]).length;
-  let h='';
-  items.forEach(i=>{
-    const c=!!wkChecks[i.id];
-    h+=`<div class="task card ${c?'done':''}" data-cid="${i.id}"><input type="checkbox" ${c?'checked':''} onchange="tglCheck('${wk}','${i.id}')">
-      <div class="body"><div class="t"><span class="sd" style="background:${SCOL[i.s]}"></span>${esc(t12(i.t))}</div></div></div>`;
-  });
-  const wl=(WEEKS.find(w=>w[0]===wk)||[,''])[1];
-  h=`<p class="note" style="margin:0 0 10px">One-off jobs for <b>${wl}</b>. The list changes automatically each week.</p>`+h;
+  const wk=curWeek(), items=CHECKLISTS[wk]||[], ck=state.checks[wk]||{}, done=items.filter(i=>ck[i.id]).length;
+  const wl=(WEEKS.find(w=>w[0]===wk)||[,''])[1].split(' · ');
+  let h=`<section class="card chkhead"><div><h3>${esc(wl[0]||'This week')}</h3><div class="sub">${esc([wl[2],wl[1]].filter(Boolean).join(' · ').replace(/[–—]/g,'-'))}</div></div>
+    <div class="chkn"><b>${done}<em>/${items.length}</em></b><span>done</span></div><div class="wkbar"><span style="width:${items.length?done/items.length*100:0}%"></span></div></section>`;
+  if(!items.length) return h+`<div class="card empty"><b>Nothing this week</b>The list changes automatically each week.</div>`;
+  h+=`<div class="plist">`+items.map(i=>{ const c=!!ck[i.id];
+    return `<div class="task card ${c?'done':''}" data-cid="${i.id}"><input type="checkbox" ${c?'checked':''} onchange="tglCheck('${wk}','${i.id}');paint()">
+      <div class="body"><div class="t"><span class="sd" style="background:${SCOL[i.s]}"></span>${esc(t12(i.t))}</div><div class="m">${SUBJ[i.s]==='Buffer'?'Admin':SUBJ[i.s]}</div></div></div>`; }).join('')+`</div>
+    <p class="note" style="margin-top:12px">One-off jobs for this week. The list changes by itself each Monday.</p>`;
   return h;
 }
 
@@ -3408,40 +3444,37 @@ window.tglCov=id=>{
 
 
 function vRecipes(){
-  let h='';
-  Object.keys(RECIPES).forEach(k=>{
-    const r=RECIPES[k];
-    h+=`<details class="card" style="padding:2px 6px 6px;margin-bottom:8px"><summary>${r.n}<span class="chev">\u203a</span></summary><div style="padding:0 10px 8px">`;
-    if(r.x) h+=`<p class="note" style="margin:2px 0 8px">${r.x}</p>`;
-    r.st.forEach(st=>{
-      h+=`<div class="list-row" style="padding:6px 2px;align-items:flex-start">
-        <span class="num" style="width:46px;flex-shrink:0;font-weight:600;color:${st[0]?'var(--ink)':'var(--faint)'}">${st[0]?st[0]+' min':'\u2014'}</span>
-        <span class="grow">${st[1]}</span></div>`;
-    });
-    h+=`</div></details>`;
-  });
-  h+=`<div class="card" style="padding:12px 16px;margin-top:12px"><b>Rules that hold across all of them</b>
-    <div class="note" style="margin-top:5px">Phone in another room, not face-down on the desk. Check answers question-by-question, never in a batch at the end. Breaks mean leaving the chair. 20\u201330 min of walking, running or sport every day; same wake time; lights out around 22:30.</div></div>`;
-  h+=`<details class="card" style="padding:2px 6px 6px;margin-top:12px"><summary>What the terms mean<span class="chev">\u203a</span></summary><div style="padding:0 10px 8px">`;
-  GLOSSARY.forEach(g=>{ h+=`<div class="list-row" style="padding:6px 2px;align-items:flex-start"><span style="width:130px;flex-shrink:0;font-weight:600">${esc(g[0])}</span><span class="grow">${esc(g[1])}</span></div>`; });
-  h+=`</div></details>`;
+  let h=`<p class="note">How each kind of task in the plan is done. Minutes are a guide; a dash means it takes as long as it takes.</p><div class="recgrid">`;
+  Object.keys(RECIPES).forEach((k,n)=>{ const r=RECIPES[k], tot=r.st.reduce((a,x)=>a+(+x[0]||0),0);
+    h+=`<section class="card reccard" style="animation-delay:${Math.min(n,8)*.03}s"><div class="rech"><h3>${esc(r.n)}</h3>${tot?`<span class="tag">${tot}+ min</span>`:''}</div>
+      ${r.x?`<div class="note" style="margin:2px 0 10px">${esc(r.x)}</div>`:''}
+      <div class="recsteps">${r.st.map(x=>`<div class="recstep"><span class="rmin">${x[0]?x[0]+' min':'-'}</span><span>${esc(t12(x[1]))}</span></div>`).join('')}</div></section>`; });
+  h+=`</div><div class="egrid" style="margin-top:8px"><div><h2>Rules for all of them</h2><div class="card" style="padding:18px 20px"><div class="note" style="margin:0;font-size:14px">Phone in another room, not face-down on the desk. Check answers question by question, never in a batch at the end. Breaks mean leaving the chair. 20-30 min of walking, running or sport every day; same wake time; lights out around 10:30 pm.</div></div></div>
+    <div><h2>What the terms mean</h2><div class="card rgl2">${GLOSSARY.map(g=>`<div><b>${esc(g[0])}</b><span>${esc(g[1])}</span></div>`).join('')}</div></div></div>`;
   return h;
 }
 
+function chatHTML(){
+  const c=state.chat||[];
+  if(!c.length) return `<div class="chatempty"><b>Ask about your plan</b>John Claude reads your live data (hours, papers, mistake log, open tasks) and answers with concrete changes. It suggests; you decide.</div>`;
+  return c.map(m=>`<div class="msg ${m.r}">${m.pending?'<span class="thinking">Thinking…</span>':esc(m.t).replace(/\n/g,'<br>')}</div>`).join('');
+}
+function renderChat(){ const el=document.getElementById('chatlog'); if(!el) return; el.innerHTML=chatHTML(); deDash(el); el.scrollTop=el.scrollHeight; }
+window.clearChat=()=>{ state.chat=[]; renderChat(); save(); };
 function vCoach(){
-  return `<div class="coach glass"><h3>John Claude</h3>
-  <p class="note" style="position:relative">Built-in Claude. Reads your live data \u2014 hours, papers, mistake log, open tasks \u2014 and answers with concrete changes. It suggests; you tick.</p>
-  ${(location.protocol==='file:'||window.__localStore)?'<div class="card" style="padding:10px 12px;margin:8px 0;border-left:3px solid var(--spanish);position:relative"><div class="note" style="margin:0"><b>Offline here.</b> John Claude can\u2019t reach Claude when this page is opened as a file on your computer. Everything else works normally.</div></div>':''}
-  <div class="quick">
-    <button onclick="ask('Replan the rest of this week around what I actually did. Keep 13:00\u201318:00, rest days free, next exam first. Tell me exactly what to change.')">Replan this week</button>
-    <button onclick="ask('Based on my data, what exactly should I do today and for how long?')">What today?</button>
-    <button onclick="ask('Recalculate my hours: am I on track per subject against the planned hours? Where do I cut if behind?')">Recalc hours</button>
-    <button onclick="ask('Look at my paper scores and open mistake-log lines. Which topics should my next 3 targeted-revision blocks cover?')">Pick my next 3 blocks</button>
-    <button onclick="ask('Rewrite this week: retime anything mis-sized, rename anything vague, add what is missing and remove what is not worth doing. Then give me the actions.')">Let John Claude edit the plan</button>
-  </div>
-  <textarea id="coach-q" placeholder="Or ask anything: e.g. 'Marking the Maths P1 took 90 min, rebalance this week'"></textarea>
-  <div style="margin-top:8px;position:relative"><button class="b" id="coach-btn" onclick="ask()">Ask John Claude</button></div>
-  <div class="out" id="coach-out"></div><div id="actionbox"></div></div>`;
+  const off=location.protocol==='file:'||window.__localStore;
+  const Q=[['Replan this week','Replan the rest of this week around what I actually did. Keep 13:00-18:00, rest days free, next exam first. Tell me exactly what to change.'],
+    ['What today?','Based on my data, what exactly should I do today and for how long?'],
+    ['Recalc hours','Recalculate my hours: am I on track per subject against the planned hours? Where do I cut if behind?'],
+    ['Pick my next 3 blocks','Look at my paper scores and open mistake-log lines. Which topics should my next 3 targeted-revision blocks cover?'],
+    ['Edit the plan','Rewrite this week: retime anything mis-sized, rename anything vague, add what is missing and remove what is not worth doing. Then give me the actions.']];
+  return `<div class="chat card">
+    ${off?`<div class="chatwarn"><b>Offline here.</b> John Claude can only reach Claude when this page is open inside Claude. Everything else works normally.</div>`:''}
+    <div class="chatlog" id="chatlog">${chatHTML()}</div>
+    <div id="actionbox"></div>
+    <div class="chatq">${Q.map(q=>`<button class="chip" onclick="ask(${esc(JSON.stringify(q[1]))})">${q[0]}</button>`).join('')}${(state.chat||[]).length?'<button class="chip" onclick="clearChat()">Clear</button>':''}</div>
+    <div class="chatin"><textarea id="coach-q" rows="1" placeholder="Ask anything, e.g. Marking the Maths P1 took 90 min, rebalance this week" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();ask()}"></textarea>
+      <button class="b" id="coach-btn" onclick="ask()">Send</button></div></div>`;
 }
 
 /* ================= actions ================= */
@@ -3635,9 +3668,12 @@ window.ask=async preset=>{
   const ta=document.getElementById('coach-q');
   const q=preset||ta.value.trim();
   if(!q)return;
-  const out=document.getElementById('coach-out');
-  const btn=document.getElementById('coach-btn');
-  out.innerHTML='<span class="thinking">Thinking…</span>'; btn.disabled=true;
+  // chat: the question and a pending reply go into the history; the old single output box is now the last message
+  state.chat=state.chat||[]; state.chat.push({r:'me',t:q}); const msg={r:'jc',t:'',pending:true}; state.chat.push(msg);
+  if(state.chat.length>40) state.chat.splice(0,state.chat.length-40);
+  if(!preset&&ta) ta.value=''; renderChat();
+  const out={set textContent(v){ msg.t=v; msg.pending=false; renderChat(); save(); }};
+  const btn=document.getElementById('coach-btn')||{}; btn.disabled=true;
   try{
     const r=await fetch('https://api.anthropic.com/v1/messages',{
       method:'POST',headers:{'Content-Type':'application/json'},
@@ -3680,7 +3716,6 @@ Rules for actions: use exact ids from the list above; keep any single block at o
     out.textContent='John Claude is unavailable. This panel only works when the page is open inside Claude (artifact view), not as a downloaded file.';
   }
   btn.disabled=false;
-  if(!preset)ta.value='';
 };
 
 /* ================= exams: shared helpers ================= */
