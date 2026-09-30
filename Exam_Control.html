@@ -1723,6 +1723,40 @@ body.bunker .msg.me{background:linear-gradient(180deg,#E0563F,#B8322A);color:#FF
 .ob-sum div{background:var(--surface);border:1px solid var(--edge);border-radius:14px;padding:12px}
 .ob-sum b{display:block;font-size:24px;letter-spacing:-.02em}.ob-sum span{color:var(--sub);font-size:12.5px}
 @media (prefers-reduced-motion:reduce){#onb *,#onb{animation:none!important;transition:none!important}}
+
+/* ===== declutter pass ===== */
+.task .acts{opacity:0;transition:opacity .18s}
+.task:hover .acts,.task:focus-within .acts,.task.open .acts{opacity:1}
+@media (hover:none){.task .acts{opacity:1}}
+#tmbtn.idle{width:40px;height:40px;padding:0;display:grid;place-items:center;font-size:16px}
+.rcard .lostlink{border:0;background:none;color:var(--sub);font:inherit;font-size:13px;padding:0;margin-top:6px;cursor:pointer;text-align:left}
+.rcard .lostlink b{color:var(--blue);font-weight:600}
+.slim{display:flex;align-items:center;gap:10px;padding:12px 14px;margin-bottom:12px;font-size:14px}
+.slim .grow{flex:1;color:var(--sub)} .slim .grow b{color:var(--ink)}
+details.fold{margin-top:28px}
+details.fold>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:10px;font-size:20px;font-weight:650;letter-spacing:-.015em;padding:6px 0}
+details.fold>summary::-webkit-details-marker{display:none}
+details.fold>summary::after{content:"›";color:var(--faint);transition:transform .25s;font-size:22px}
+details.fold[open]>summary::after{transform:rotate(90deg)}
+details.fold>summary small{font-size:13px;font-weight:500;color:var(--sub);letter-spacing:0}
+.setgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px}
+.setgrid .card{padding:18px 20px}
+.setgrid h3{margin:0 0 4px;font-size:16px}
+.setgrid .note{margin:0 0 14px}
+.setgrid .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.navsearch{display:flex;align-items:center;gap:10px;width:100%;margin:0 0 14px;padding:9px 12px;border:1px solid var(--edge);border-radius:12px;background:var(--surface);color:var(--faint);font:inherit;font-size:14px;cursor:pointer}
+.navsearch kbd{margin-left:auto;font:inherit;font-size:11.5px;border:1px solid var(--edge-2);border-radius:6px;padding:1px 6px}
+#search{position:fixed;inset:0;z-index:95;display:none;background:rgba(10,12,16,.35);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+#search.on{display:block;animation:obIn .2s}
+#search .box{max-width:620px;margin:12vh auto 0;background:var(--surface);border:1px solid var(--edge);border-radius:18px;box-shadow:var(--shadow-2);overflow:hidden;animation:obStep .25s both}
+#search input{width:100%;border:0;border-bottom:1px solid var(--edge);background:none;color:var(--ink);font:inherit;font-size:18px;padding:18px 20px;outline:none}
+#search .res{max-height:52vh;overflow:auto;padding:6px}
+#search .it{display:flex;gap:10px;align-items:center;width:100%;border:0;background:none;color:var(--ink);font:inherit;text-align:left;padding:10px 14px;border-radius:10px;cursor:pointer}
+#search .it.on,#search .it:hover{background:var(--fill)}
+#search .it small{color:var(--sub);margin-left:auto;white-space:nowrap;font-size:12.5px}
+#search .it span.t{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#search .emp{padding:18px 20px;color:var(--sub);font-size:14px}
+@media (max-width:700px){#search .box{margin:8px}}
 </style>
 </head>
 <body>
@@ -1730,6 +1764,7 @@ body.bunker .msg.me{background:linear-gradient(180deg,#E0563F,#B8322A);color:#FF
 <div class="app">
   <aside class="side" id="side" aria-label="Sections">
     <div class="brand"><span class="mark"></span><div><b>Exam Control</b><span>Tom · November 2026</span></div></div>
+    <button class="navsearch" onclick="openSearch()">⌕ Search<kbd>⌘K</kbd></button>
     <nav class="navgrp" id="navmain"></nav>
     <div class="navgrp" id="navmore"></div>
     <div class="grow"></div>
@@ -1775,17 +1810,6 @@ body.bunker .msg.me{background:linear-gradient(180deg,#E0563F,#B8322A);color:#FF
   <div class="statgrid" id="stats"></div>
   <div class="headrow"><header class="pagehead" id="pagehead"></header><button id="tmbtn" onclick="tglTimerPanel()">⏱ Timer</button></div>
   <div id="view"></div>
-  <div class="footer card">
-    Log the real minutes, not the planned ones. The plan follows what actually happened.
-    Ticks save in this browser. John Claude only works when this page is open inside Claude.
-    <div style="margin-top:10px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-      <span id="planv" style="font-size:11.5px"></span><span id="lastbk" style="font-size:11.5px"></span>
-      <button class="b ghost sm" onclick="forceReseed()">Reload latest plan</button>
-      <button class="b ghost sm" onclick="exportData()">Export backup</button>
-      <button class="b ghost sm" onclick="importData()">Import backup</button>
-      <button class="b ghost sm" onclick="wipeAll()">Wipe everything</button>
-    </div>
-  </div>
   </div></main>
 </div>
 <nav class="bottombar" id="bottombar" aria-label="Sections"></nav>
@@ -1794,6 +1818,7 @@ body.bunker .msg.me{background:linear-gradient(180deg,#E0563F,#B8322A);color:#FF
 <div class="scrim" id="drawerscrim" onclick="closePanel()"></div>
 <aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-hidden="true"></aside>
 
+<div id="search" onclick="if(event.target===this)closeSearch()"><div class="box"><input id="sq" placeholder="Search tasks, topics, dossiers, mistakes, cards" autocomplete="off" oninput="runSearch()" onkeydown="searchKey(event)"><div class="res" id="sres"></div></div></div>
 <div id="onb" role="dialog" aria-modal="true" aria-label="Setup"></div>
 <div id="toast" role="status" aria-live="polite"></div>
 <div id="tmpanel" class="glass"></div>
@@ -2723,6 +2748,7 @@ function normalize(){
   const haveC=new Set(state.cards.map(c=>c.id)), delC=new Set(state.cardsDel||[]), seedC={};
   SEED_CARDS.forEach(c=>{ seedC[c.id]=c; if(!haveC.has(c.id)&&!delC.has(c.id)) state.cards.push({...c,box:1,due:localISO(),seed:true,reps:0}); });
   state.cards.forEach(c=>{ const sc=seedC[c.id]; if(c.seed&&sc){ c.s=sc.s; c.g=sc.g; c.q=sc.q; c.a=sc.a; } });
+  if(!state.cardsDrip){ state.cardsDrip=1; const fresh=state.cards.filter(c=>c.seed&&!c.reps&&c.box===1); if(fresh.length>10) fresh.forEach((c,i)=>{ const d=new Date(); d.setDate(d.getDate()+Math.floor(i/10)); c.due=localISO(d); }); }
   capAllDues();
 }
 let saveTimer=null;
@@ -2879,7 +2905,7 @@ function taskBody(t,where){
     +(rest?`<div style="margin-bottom:6px">${esc(t12(rest))}</div>`:'')
     +(rp?`<div style="opacity:.75;font-size:11.5px"><b>${esc(rp.n)}</b>${steps}</div>`:'')
     +(isPaper&&t.rec!=='exam'?`<button class="b ghost sm" style="margin-top:8px" data-lbl="${esc(paperName(t))}" onclick="event.stopPropagation();startTimer(this.dataset.lbl,${presetFor(t)})">⏱ Start timer · ${fmtDur(presetFor(t))}</button>`:'');
-  return `<div class="t" onclick="xtra(event,'${t.id}')"><span class="sd" style="background:${SCOL[t.s]}"></span>${t.slipped?'<span style="color:var(--spanish);font-weight:600">↳ moved · </span>':''}${esc(t12(head)).replace(/^★\s*/,'<span class="star" title="Protected: do this even if the day shrinks">★</span>')}<span class="caret">▶</span></div>
+  return `<div class="t" onclick="xtra(event,'${t.id}')"><span class="sd" style="background:${SCOL[t.s]}"></span>${t.slipped?'<span style="color:var(--spanish);font-weight:600">↳ moved · </span>':''}${esc(t12(head)).replace(/^★\s*/,topStar(t)?'<span class="star" title="Protected: do this even if the day shrinks">★</span>':'')}<span class="caret">▶</span></div>
     <div class="m">${meta}</div>
     ${detail?`<div class="xtra">${detail}</div>`:''}${ownsForm(t,where)?sheetHTML(t):''}`;
 }
@@ -2895,6 +2921,7 @@ function sheetHTML(t){
     <span class="sheetbtns"><button class="b sm" onclick="saveSheet('${t.id}')">Save</button>
     <button class="b ghost sm" onclick="closeSheet('${t.id}')">Skip</button></span></div>`;
 }
+function topStar(t){ if(!/^★/.test(t.t)) return false; const s=state.tasks.filter(x=>x.day===t.day&&/^★/.test(x.t)&&!x.skipped); return s.indexOf(t)<3; }
 function taskCard(t,where){
   const btns=`<span class="acts">
       <button class="del" title="Edit" onclick="editTask('${t.id}')">✎</button>
@@ -3226,6 +3253,7 @@ function paintTimer(){
   const btn=document.getElementById('tmbtn'), pn=document.getElementById('tmpanel'); if(!btn||!pn) return;
   const T=state.timer, left=timerLeft(), rd=inReading(), wl=T?writeLeft():0;
   btn.textContent=T?(left>0?'⏱ '+(rd?'Read '+mmss(left-T.dur):mmss(wl))+(T.paused?' ‖':''):'⏱ Time’s up'):'⏱ Timer';
+  btn.classList.toggle('idle',!T); if(!T){ btn.textContent='⏱'; btn.title='Timer'; }
   btn.classList.toggle('running',!!T&&left>0); btn.classList.toggle('over',!!T&&left===0);
   btn.classList.toggle('warn',!!T&&left>0&&!rd&&wl<=600);
   pn.style.display=state.tmOpen?'block':'none';
@@ -3463,6 +3491,19 @@ window.slipAllOverdue=()=>{
   paint(); save(); toast(od.length+' task'+(od.length>1?'s':'')+' moved to '+target);
 };
 // out of action today: spread today's unfinished tasks over the next few study days, lightest day first
+function spreadOver(list,fromIdx){
+  const days=[]; let i=fromIdx;
+  while(days.length<3){ const d=nextStudyDay(i); if(!d) break; days.push(d); i=dayIdx(d)+1; }
+  if(!days.length){ alert('No study day left to move them to.'); return 0; }
+  const load=d=>state.tasks.filter(t=>t.day===d&&isActive(t)).reduce((a,t)=>a+t.m,0);
+  list.slice().sort((a,b)=>b.m-a.m).forEach(t=>{ const d=days.slice().sort((x,y)=>load(x)-load(y))[0]; moveTo(t,d); });
+  return days;
+}
+window.catchUp=()=>{
+  const od=overdueTasks(); if(!od.length) return;
+  const from=todayIdx()+(nowMin()>=17*60?1:0), days=spreadOver(od,Math.max(from,0)); if(!days) return;
+  paint(); save(); toast(od.length+' task'+(od.length>1?'s':'')+' spread over '+days.join(', '));
+};
 window.lostToday=()=>{
   const td=todayLabel(), left=state.tasks.filter(t=>t.day===td&&isActive(t)&&t.rec!=='exam');
   if(!left.length){ toast('Nothing left today'); return; }
@@ -3909,15 +3950,6 @@ function whatNext(n){
     const D=daysUntil(ex[0]), lr=lastRev(t), stale=lr?Math.max(0,Math.round((td-dateFromISO(lr))/86400000)):null;
     return {t,ex,stale,score:(t.rag===1?2:1)*((stale===null?30:Math.min(stale,30))+3)/(D+2)};
   }).filter(Boolean).sort((a,b)=>b.score-a.score).slice(0,n);
-}
-function whatNextHTML(){
-  const q=whatNext(8);
-  if(!q.length) return `<div class="card" style="padding:12px 16px;margin-bottom:12px"><b>What next</b><div class="note" style="margin:4px 0 0">Rate topics red or amber below. The ones you’ve left longest — weighted by how close that subject’s exam is — queue up here.</div></div>`;
-  return `<div class="card" style="padding:12px 14px;margin-bottom:12px"><div class="todayhead"><span class="todaydate">What next<small>Red and amber topics, longest untouched, weighted by how close the exam is</small></span></div>
-    ${q.map(x=>`<div class="list-row" style="padding:6px 2px;align-items:center"><span style="width:24px;height:18px;border-radius:999px;display:grid;place-content:center;font-size:10px;font-weight:700;color:#fff;background:${RAG[x.t.rag].c};flex-shrink:0">${RAG[x.t.rag].l}</span>
-      <span class="grow">${esc(x.t.t)}<br><span class="faint">${SUBJ[x.t.s]} · ${x.stale===null?'never reviewed':x.stale===0?'reviewed today':'untouched '+x.stale+' day'+(x.stale>1?'s':'')} · ${esc(examName(x.ex))} ${inDays(x.ex[0])}</span></span>
-      <button class="b ghost sm" onclick="reviewTopic('${x.t.id}')">✓ Reviewed</button></div>`).join('')}
-    <div class="note" style="margin:6px 0 0">✓ stamps today as the last review and keeps the rating. Changing a rating counts as a review too.</div></div>`;
 }
 window.reviewTopic=id=>{ const t=state.topics.find(x=>x.id===id); if(!t) return; t.rv=localISO(); paint(); save(); toast('Reviewed today — '+t.t); };
 
@@ -4646,7 +4678,7 @@ function vExams(){
   let h=`<div class="tiles four">
     <div class="card tile"><span>Next paper</span><b>${up.length?(up[0].D===0?'Today':up[0].D+' d'):'Done'}</b><small>${up.length?esc(examName(up[0].f)):'all 13 sat'}</small></div>
     <div class="card tile" style="animation-delay:.04s"><span>Papers left</span><b>${up.length}</b><small>${done} of ${FINALS.length} sat</small></div>
-    <div class="card tile ${red?'hot':''}" style="animation-delay:.08s"><span>Plan fits</span><b style="color:${red?'var(--red)':amb?'var(--warn)':'var(--ok)'}">${red?red+' red':amb?amb+' tight':'All clear'}</b><small>${red||amb?'tap a paper for what to cut':'every paper has room'}</small></div>
+    <div class="card tile ${red?'hot':''}" style="animation-delay:.08s"><span>Plan fits</span><b style="color:${red?'var(--red)':amb?'var(--warn)':'var(--ok)'}">${red?'Over':amb?'Tight':'Room to spare'}</b><small>${red?red+' paper'+(red>1?'s have':' has')+' more work than time':amb?'under 15% spare before '+amb+' paper'+(amb>1?'s':''):'every paper has room'}</small></div>
     <div class="card tile" style="animation-delay:.12s"><span>Grades worked out</span><b>${graded}</b><small>of ${state.papers.length} scored papers</small></div></div>`;
   h+=`<h2>The papers</h2><div class="card board">${FINALS.map((f,i)=>{ const D=daysUntil(f[0]), past=up.every(o=>o.i!==i), x=cap[kitKey(f)], [kd,kt]=kitDone(f), dt=dateOf(f[0]);
     return `<button class="brow ${past?'past':''}" onclick="openExam(${i})" style="--sc:${SCOL[f[3]]}">
@@ -4655,15 +4687,11 @@ function vExams(){
       <span class="bcap">${x?`<i class="statusdot" style="background:${CAP_ST[x.st][0]}"></i>${isFinite(x.r)?Math.round(x.r*100)+'% full':'no time left'}`:''}</span>
       <span class="bkit ${kd===kt?'ok':''}">${past?'':`Kit ${kd}/${kt}`}</span><span class="chev">›</span></button>`; }).join('')}</div>`;
   const bs=state.bdOpen&&PAPER_KEYS[state.bdOpen]?state.bdOpen:(PAPER_KEYS.math?'math':Object.keys(PAPER_KEYS)[0]);
-  h+=`<div class="egrid"><div><h2>Raw mark to grade</h2>
+  h+=`<details class="fold" ${state.gradesOpen?'open':''} ontoggle="state.gradesOpen=this.open;save()"><summary>Grades and boundaries <small>${graded} of ${state.papers.length} papers graded</small></summary><div class="egrid"><div><h2>Raw mark to grade</h2>
       <p class="note">Targets: ${state.custom?state.custom.subjects.map(x=>x.name+' '+x.target).join(', ')+'.':'Maths 4, Physics 4, Chem 6, everything else one grade up.'} Safe means ${SAFE_LO}-${SAFE_HI} marks above the line, because boundaries move between sessions. Half papers are scaled up.</p>
       <div class="card" style="padding:4px 2px" id="gradelist">${gradeListHTML()}</div></div>
     <div><h2>Grade boundaries</h2><div class="chips">${Object.keys(PAPER_KEYS).map(s=>`<button class="chip ${bs===s?'on':''}" onclick="state.bdOpen='${s}';paint();save()">${SUBJ[s]}<span class="n">${PAPER_KEYS[s].filter(k=>boundsOf(s,k)).length}/${PAPER_KEYS[s].length}</span></button>`).join('')}</div>
-      <div class="card" style="padding:16px 18px">${boundGridHTML(bs)}</div></div></div>`;
-  const c=state.cap, ratio=paceRatio();
-  h+=`<h2>Hours you really have</h2><div class="card" style="padding:16px 18px">
-    <div class="editrow" style="gap:10px 18px">${CAP_L.map(([k,l])=>`<label style="font-size:13px;display:flex;align-items:center;gap:6px">${l}<input type="number" min="0" max="720" step="15" value="${c[k]}" data-cap="${k}" onchange="setCap(this)"> min</label>`).join('')}</div>
-    <div class="note" style="margin:10px 0 0">Used for “Plan fits”: every unfinished task before a paper${ratio!==1?`, times ${ratio.toFixed(2)} because that’s how long your ticked tasks really took`:''}, against these minutes for each day from today. Rest days count as 0. Green is up to 85% full, amber up to 100%, red is more work than time.</div></div>`;
+      <div class="card" style="padding:16px 18px">${boundGridHTML(bs)}</div></div></div></details>`;
   return h;
 }
 
@@ -4777,7 +4805,7 @@ window.openTopics=sub=>openSheet(()=>{ const ts=state.topics.filter(t=>t.s===sub
   return {pre:`<span class="sdot" style="background:${SCOL[sub]}"></span>`,title:SUBJ[sub]+' topics',sub:`${c[1]} red · ${c[2]} amber · ${c[3]} green · ${c[0]} unrated. Tap a topic to change its rating.`,
     html:`<div style="display:flex;justify-content:flex-end;padding-top:12px"><button class="chip ${state.hideGreen?'on':''}" onclick="tglHideGreen()">${state.hideGreen?'Showing red, amber and unrated':'Hide green'}</button></div>${topicListHTML(sub)}`}; });
 function vTopics(){
-  let h=whatNextHTML()+`<h2>By subject</h2><div class="card subjrows">`;
+  let h=`<h2 style="margin-top:0">By subject</h2><div class="card subjrows">`;
   ['math','physics','chem','history','english','spanish'].forEach(sub=>{
     const ts=state.topics.filter(t=>t.s===sub); if(!ts.length) return;
     const c=[0,0,0,0]; ts.forEach(t=>c[t.rag||0]++); const w=i=>c[i]/ts.length*100;
@@ -4859,7 +4887,7 @@ function paintFocus(){
 /* ================= shell ================= */
 /* ================= shell: navigation, header ================= */
 // icons: Tabler Icons (MIT), outline set, inlined so the page works offline
-const ICONS={
+const ICONS={gear:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>',
  home:'<path d="M5 12l-2 0l9 -9l9 9l-2 0"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7"/><path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6"/>',
  calendar:'<path d="M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12z"/><path d="M16 3v4"/><path d="M8 3v4"/><path d="M4 11h16"/>',
  target:'<path d="M12 12m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"/><path d="M12 12m-5 0a5 5 0 1 0 10 0a5 5 0 1 0 -10 0"/><path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0"/>',
@@ -4873,7 +4901,7 @@ const ICONS={
 };
 function icon(k){ return `<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[k]||''}</svg>`; }
 const SPACES=[['today','Today','home'],['plan','Plan','calendar'],['practice','Practice','target'],['exams','Exams','clip'],['progress','Progress','trend']];
-const MORE=[['library','Library','books'],['school','Checklist','list'],['recipes','Recipes','notebook'],['coach','John Claude','chat']];
+const MORE=[['library','Library','books'],['school','Checklist','list'],['recipes','Recipes','notebook'],['coach','John Claude','chat'],['settings','Settings','gear']];
 const SUBTABS={practice:[['mistakes','Mistakes'],['cards','Recall cards']],progress:[['stats','Scores & hours'],['topics','Topics'],['cover','Cover'],['log','Log']]};
 function spaceOf(tab){ if(tab==='reader') return 'library'; for(const k in SUBTABS) if(SUBTABS[k].some(x=>x[0]===tab)) return k; return tab; }
 function navBtn(id,label,ic,count,hot){
@@ -4885,7 +4913,7 @@ function paintTabs(){
   const cnt={today:[rem,false],practice:[prac,prac>0]};
   const main=SPACES.map(([id,l,ic])=>navBtn(id,l,ic,(cnt[id]||[])[0],(cnt[id]||[])[1])).join('');
   const nm=document.getElementById('navmain'); if(nm) nm.innerHTML=main;
-  const mo=document.getElementById('navmore'); if(mo) mo.innerHTML='<div class="navlbl">More</div>'+MORE.map(([id,l,ic])=>navBtn(id,l,ic)).join('')+`<button class="nav" onclick="openOnboard()">${icon('target')}<span class="lb">Setup &amp; replan</span></button>`;
+  const mo=document.getElementById('navmore'); if(mo) mo.innerHTML='<div class="navlbl">More</div>'+MORE.map(([id,l,ic])=>navBtn(id,l,ic)).join('');
   const bb=document.getElementById('bottombar');
   if(bb) bb.innerHTML=main+`<button class="nav" onclick="openSide()">${icon('menu')}<span class="lb">More</span></button>`;
   const sw=document.getElementById('swatches'), t=themeNow();
@@ -4909,7 +4937,8 @@ function paintHead(){
     library:['Library','Your dossiers and summaries.'],
     school:['Checklist','One-off jobs for this week.'],
     recipes:['Recipes','How each kind of task is done.'],
-    coach:['John Claude','Ask about your plan, using your live data.']
+    coach:['John Claude','Ask about your plan, using your live data.'],
+    settings:['Settings','Your hours, backups and plan.']
   }[sp]||['',''];
   const seg=SUBTABS[sp]?`<div class="seg" role="tablist">${SUBTABS[sp].map(([id,l])=>`<button role="tab" class="${state.tab===id?'on':''}" onclick="go('${id}')">${l}</button>`).join('')}</div>`:'';
   if(state.tab==='reader'){ const it=(state.library||[]).find(x=>x.id===window._readId), d=it&&docCache[it.id];
@@ -4978,7 +5007,8 @@ function vToday(){
   h+=`<section class="card rcard"><div class="ring ${full?'full':''}">${ringSVG(tt.length?dn.length/tt.length:0)}
       <div class="ctr"><b>${tt.length?dn.length+'/'+tt.length:'0'}</b><span>${tt.length?(full?'day done':'tasks today'):(REST_DAYS.indexOf(tLbl)>-1?'rest day':'nothing planned')}</span></div></div>
     <div class="rstats"><div><b>${(doneMin/60).toFixed(1)} h</b>done today${planned?' of '+(planned/60).toFixed(1)+' h':''}</div>
-      <div><b>${st.n===null?'Done':st.n+' day'+(st.n===1?'':'s')}</b>${st.n===null?'listening exam is over':'listening streak'+(st.today?'':' · not yet today')}</div></div></section></div>`;
+      ${st.n?`<div><b>${st.n} day${st.n===1?'':'s'}</b>listening streak${st.today?'':' · not yet today'}</div>`:`<div><b>${(tt.filter(isActive).reduce((a,t)=>a+t.m,0)/60).toFixed(1)} h</b>left to do today</div>`}
+      ${tt.filter(isActive).length&&!dn.length&&nowMin()>=12*60?`<button class="lostlink" onclick="lostToday()">Out of action today? <b>Spread it out</b></button>`:''}</div></section></div>`;
   // --- left: day strip + timeline
   const ts=state.tasks.filter(t=>t.day===sel), cnt=ts.filter(t=>!isOpt(t)&&!t.skipped), rem=ts.filter(isActive);
   const mins=cnt.reduce((a,t)=>a+t.m,0), rest=REST_DAYS.indexOf(sel)>-1;
@@ -4993,16 +5023,19 @@ function vToday(){
   let R='';
   if(state.orphans){ R+=`<div class="card panel"><div class="note" style="margin:0"><b>${state.orphans} task${state.orphans>1?'s':''} moved.</b> ${state.orphans>1?'They were':'It was'} on a date that isn’t in the plan, and now sit on the right day.</div></div>`; state.orphans=0; }
   R+=examKitHTML()+capBannerHTML();
-  if(isToday && rem.length) R+=`<div class="card panel"><h4><span class="statusdot" style="background:var(--spanish)"></span>Out of action today?<button class="b ghost sm" onclick="lostToday()">Spread it out</button></h4><div class="note" style="margin:0">Moves today’s ${rem.length} unfinished task${rem.length>1?'s':''} onto the next study days, lightest day first. Each can be moved back with ↩.</div></div>`;
   const od=overdueTasks();
-  if(od.length) R+=`<div class="card panel"><h4><span class="statusdot" style="background:var(--warn)"></span>${od.length} overdue<button class="b ghost sm" onclick="slipAllOverdue()">Move to next study day</button></h4>
-    <div class="note" style="margin:0">${od.slice(0,4).map(t=>esc(t.day+' · '+t12(headOf(t)))).join('<br>')}${od.length>4?'<br>and '+(od.length-4)+' more':''}</div></div>`;
+  if(od.length){ const since=od.map(t=>t.day).sort((a,b)=>dayIdx(a)-dayIdx(b))[0];
+    R+=`<div class="card panel"><h4><span class="statusdot" style="background:var(--warn)"></span>Missed since ${since.replace(/^\w+ /,'')}<button class="b sm" onclick="catchUp()">Spread them</button></h4>
+    <div class="note" style="margin:0">${od.length} unfinished task${od.length>1?'s':''} (${(od.reduce((a,t)=>a+t.m,0)/60).toFixed(1)} h) from earlier days. Spreading puts them on your next 3 study days, lightest first.</div></div>`; }
+  const lb=state.lastBackup?Math.round((new Date()-dateFromISO(state.lastBackup))/86400000):null;
+  if((lb===null||lb>=7) && state.tasks.some(t=>t.done)) R+=`<div class="card slim"><span class="grow"><b>Back up your progress.</b> ${lb===null?'Never backed up':'Last backup '+lb+' days ago'}. Everything lives in this browser.</span><button class="b ghost sm" onclick="exportData()">Back up</button></div>`;
   const dm=dueMistakes().length, cd=cardsDue('').length, cap=capacityRows().rows[0];
-  R+=`<div class="tiles">
-    <button class="card tile ${dm?'hot':''}" onclick="go('mistakes')"><span>Redos due</span><b>${dm}</b><small>${openMistakes().length} open in the log</small></button>
-    <button class="card tile" onclick="go('cards')" style="animation-delay:.04s"><span>Recall cards</span><b>${cd}</b><small>due of ${(state.cards||[]).length}</small></button>
-    <button class="card tile" onclick="go('exams')" style="animation-delay:.08s"><span>Plan fits</span><b style="color:${cap?CAP_ST[cap.st][0]:'var(--ok)'}">${cap&&isFinite(cap.r)?Math.round(cap.r*100)+'%':'-'}</b><small>${cap?'full before '+esc(examName(cap.f)):'no exams left'}</small></button>
-    <button class="card tile" onclick="go('stats')" style="animation-delay:.12s"><span>Papers scored</span><b>${state.papers.length}</b><small>${state.papers.length?'see the trends':'score a ticked paper'}</small></button></div>`;
+  const tl=[];
+  if(dm) tl.push(`<button class="card tile hot" onclick="go('mistakes')"><span>Redos due</span><b>${dm}</b><small>${openMistakes().length} open in the log</small></button>`);
+  if(cd) tl.push(`<button class="card tile" onclick="go('cards')"><span>Recall cards</span><b>${cd}</b><small>due today</small></button>`);
+  if(cap&&cap.st!=='g') tl.push(`<button class="card tile" onclick="go('exams')"><span>Plan fits</span><b style="color:${cap.st==='r'?'var(--red)':'var(--warn)'}">${cap.st==='r'?'Over':'Tight'}</b><small>${isFinite(cap.r)?Math.round(cap.r*100)+'% full':'no time'} before ${esc(examName(cap.f))}</small></button>`);
+  if(state.papers.length) tl.push(`<button class="card tile" onclick="go('stats')"><span>Papers scored</span><b>${state.papers.length}</b><small>see the trends</small></button>`);
+  if(tl.length) R+=`<div class="tiles">${tl.join('')}</div>`;
   const wn=whatNext(3);
   R+=`<div class="card panel"><h4>What next<button class="b ghost sm" onclick="go('topics')">All topics</button></h4>${wn.length?wn.map(x=>`<div class="wn"><span class="rg" style="background:${RAG[x.t.rag].c}"></span>
     <span class="grow">${esc(x.t.t)}<small>${SUBJ[x.t.s]} · ${x.stale===null?'never reviewed':'untouched '+x.stale+' d'} · exam ${inDays(x.ex[0])}</small></span>
@@ -5057,7 +5090,7 @@ function paint(tabSwitch){
   const v=document.getElementById('view');
   if(tabSwitch){v.classList.remove('swap'); void v.offsetWidth; v.classList.add('swap');}
   capAllDues();
-  const V={reader:vReader,today:vToday,plan:vPlan,mistakes:vMistakes,cards:vCards,exams:vExams,library:vLibrary,recipes:vRecipes,school:vSchool,cover:vCover,topics:vTopics,log:vLog,stats:vStats,coach:vCoach};
+  const V={reader:vReader,today:vToday,plan:vPlan,mistakes:vMistakes,cards:vCards,exams:vExams,library:vLibrary,recipes:vRecipes,school:vSchool,cover:vCover,topics:vTopics,log:vLog,stats:vStats,coach:vCoach,settings:vSettings};
   if(!V[state.tab]) state.tab='today';
   v.innerHTML=V[state.tab]();
   deDash(v); deDash(document.getElementById('pagehead'));
@@ -5078,6 +5111,54 @@ window.go=id=>{
   save();
 };
 
+function hoursCardHTML(){
+  let h='';
+  const c=state.cap, ratio=paceRatio();
+  h+=`<div class="card"><h3>Hours you really have</h3>
+    <div class="editrow" style="gap:10px 18px">${CAP_L.map(([k,l])=>`<label style="font-size:13px;display:flex;align-items:center;gap:6px">${l}<input type="number" min="0" max="720" step="15" value="${c[k]}" data-cap="${k}" onchange="setCap(this)"> min</label>`).join('')}</div>
+    <div class="note" style="margin:10px 0 0">Used for “Plan fits”: every unfinished task before a paper${ratio!==1?`, times ${ratio.toFixed(2)} because that’s how long your ticked tasks really took`:''}, against these minutes for each day from today. Rest days count as 0. Green is up to 85% full, amber up to 100%, red is more work than time.</div></div>`;
+  return h;
+}
+function vSettings(){
+  const lb=state.lastBackup;
+  return `<div class="setgrid">
+    <div class="card"><h3>Backup</h3><p class="note">Everything saves in this browser only. Last backup: <b>${lb?isoToLabel(lb):'never'}</b>.</p>
+      <div class="row"><button class="b sm" onclick="exportData()">Export backup</button><button class="b ghost sm" onclick="importData()">Import backup</button></div></div>
+    <div class="card"><h3>Your plan</h3><p class="note">${state.custom?'A Claude-built plan for '+esc(state.custom.name||'you')+'.':'The built-in plan, v'+PLAN_VERSION+'.'} ${state.tasks.length} tasks.</p>
+      <div class="row"><button class="b sm" onclick="openOnboard()">Set up and replan with Claude</button>
+      ${state.custom?'<button class="b ghost sm" onclick="revertPlan()">Back to original plan</button>':'<button class="b ghost sm" onclick="forceReseed()">Reload latest plan</button>'}</div></div>
+    ${hoursCardHTML()}
+    <div class="card"><h3>How this works</h3><p class="note">Log the real minutes, not the planned ones; the plan follows what actually happened. John Claude only works when this page is open inside Claude.</p>
+      <div class="row"><button class="b ghost sm" onclick="wipeAll()" style="color:var(--red)">Wipe everything</button></div></div>
+  </div>`;
+}
+/* ---- ⌘K search ---- */
+window.openSearch=()=>{ closeSide&&closeSide(); const s=document.getElementById('search'); s.classList.add('on'); const q=document.getElementById('sq'); q.value=''; q.focus(); runSearch(); };
+window.closeSearch=()=>document.getElementById('search').classList.remove('on');
+function searchItems(q){
+  q=q.toLowerCase().trim(); if(q.length<2) return [];
+  const out=[], hit=x=>String(x||'').toLowerCase().indexOf(q)>-1;
+  state.tasks.forEach(t=>{ if(hit(t.t)) out.push({t:t.t.replace(/^★\s*/,'').split(/ — | \u2014 /)[0],k:'Task · '+t.day,c:SCOL[t.s],go:()=>jumpTo(t.day)}); });
+  state.topics.forEach(t=>{ if(hit(t.t)||hit(t.g)) out.push({t:t.t,k:'Topic · '+SUBJ[t.s],c:SCOL[t.s],go:()=>go('topics')}); });
+  (state.library||[]).forEach(d=>{ if(hit(d.name)||hit(d.title)) out.push({t:d.title||d.name,k:'Dossier',c:SCOL[d.s]||'var(--faint)',go:()=>openReader(d.id)}); });
+  (state.mistakes||[]).forEach(m=>{ const tx=[m.q,m.what,m.fix,m.rule].filter(Boolean).join(' '); if(hit(tx)) out.push({t:tx,k:'Mistake',c:SCOL[m.s]||'var(--faint)',go:()=>go('mistakes')}); });
+  (state.cards||[]).forEach(c=>{ if(hit(c.q)||hit(c.a)) out.push({t:c.q,k:'Card · box '+c.box,c:SCOL[c.s]||'var(--faint)',go:()=>go('cards')}); });
+  out.forEach((x,i)=>{ x.r=(String(x.t).toLowerCase().indexOf(q)>-1?0:1)*1e4+i; });
+  return out.sort((a,b)=>a.r-b.r).slice(0,40);
+}
+window.runSearch=()=>{ const q=document.getElementById('sq').value; window._sr=searchItems(q); window._si=0; paintSearch(); };
+function paintSearch(){ const r=window._sr||[], el=document.getElementById('sres'), q=document.getElementById('sq').value.trim();
+  el.innerHTML=r.length?r.map((x,i)=>`<button class="it ${i===window._si?'on':''}" onclick="pickSearch(${i})"><span class="sdot" style="background:${x.c}"></span><span class="t">${esc(x.t)}</span><small>${esc(x.k)}</small></button>`).join('')
+    :`<div class="emp">${q.length<2?'Type to search across your whole plan.':'Nothing matches “'+esc(q)+'”.'}</div>`;
+  const on=el.querySelector('.on'); if(on) on.scrollIntoView({block:'nearest'}); }
+window.pickSearch=i=>{ const x=(window._sr||[])[i]; if(!x) return; closeSearch(); x.go(); };
+window.searchKey=e=>{ const n=(window._sr||[]).length;
+  if(e.key==='ArrowDown'){ e.preventDefault(); window._si=Math.min(n-1,window._si+1); paintSearch(); }
+  else if(e.key==='ArrowUp'){ e.preventDefault(); window._si=Math.max(0,window._si-1); paintSearch(); }
+  else if(e.key==='Enter'){ e.preventDefault(); pickSearch(window._si); }
+  else if(e.key==='Escape'){ closeSearch(); } };
+document.addEventListener('keydown',e=>{ if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='k'){ e.preventDefault(); openSearch(); }
+  else if(e.key==='/'&&!/INPUT|TEXTAREA|SELECT/.test((document.activeElement||{}).tagName||'')&&!document.activeElement.isContentEditable){ e.preventDefault(); openSearch(); } });
 /* ================= custom plan (built by Claude from onboarding) ================= */
 // A plan Claude builds replaces the seed constants in memory at load; reverting just drops state.custom and reloads.
 const PALETTE=['var(--math)','var(--physics)','var(--chem)','var(--history)','var(--english)','var(--spanish)'];
