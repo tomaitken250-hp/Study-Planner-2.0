@@ -1612,7 +1612,7 @@ body.bunker .rprog{background:var(--lamp);box-shadow:0 0 8px var(--lamp)}
   opacity:0;visibility:hidden;transition:opacity .35s cubic-bezier(.16,1,.3,1),visibility 0s linear .35s}
 .focus.on{opacity:1;visibility:visible;transition:opacity .35s cubic-bezier(.16,1,.3,1)}
 body.focusing{overflow:hidden}
-.fxtop{width:min(760px,100%);display:flex;align-items:center;gap:14px}
+.fxtop{width:min(760px,100%);display:flex;align-items:center;justify-content:flex-end;gap:14px}
 .fxbar{flex:1;height:6px;border-radius:999px;background:var(--fill);overflow:hidden}
 .fxbar span{display:block;height:100%;border-radius:999px;background:var(--blue);transition:width .5s cubic-bezier(.16,1,.3,1)}
 .fxn{font-size:12.5px;color:var(--faint);font-variant-numeric:tabular-nums;white-space:nowrap}
@@ -1639,6 +1639,33 @@ body.bunker .fxbar span{background:var(--lamp);box-shadow:0 0 8px var(--lamp)}
 /* ---------- Mistakes ---------- */
 .mlist{padding:4px 2px}
 .mwk{font-size:13px;font-weight:600;color:var(--sub);margin:16px 4px 8px}
+
+/* ---------- full-screen timer ---------- */
+.tfx{text-align:center;display:flex;flex-direction:column;align-items:center;gap:6px}
+.tfl{font-size:15px;font-weight:600;color:var(--sub)}
+.tgauge{display:none;width:260px;margin:10px 0 -6px}
+.tfphase{font-size:13px;font-weight:600;color:var(--faint);letter-spacing:.2px}
+.tfclock{font-family:-apple-system,"SF Pro Display",sans-serif;font-size:clamp(84px,14vw,168px);font-weight:600;letter-spacing:-6px;line-height:1;font-variant-numeric:tabular-nums;margin:6px 0 20px;transition:color .4s}
+.tfclock.warn{color:var(--warn)} .tfclock.over{color:var(--red)}
+.tftrack{position:relative;width:100%;height:10px;border-radius:999px;background:var(--fill);margin:26px 0 30px}
+.tffill{position:absolute;inset:0;border-radius:999px;background:var(--blue);transform-origin:0 50%;transform:scaleX(0);transition:transform 1s linear;opacity:.35}
+.tfq{position:absolute;top:-6px;width:2px;height:22px;background:var(--edge-2);transform:translateX(-1px)}
+.tfq b{position:absolute;top:-20px;left:50%;transform:translateX(-50%);font-size:11px;font-weight:600;font-style:normal;color:var(--faint);white-space:nowrap}
+.tfdot{position:absolute;top:50%;width:18px;height:18px;margin:-9px 0 0 -9px;border-radius:50%;transition:left 1s cubic-bezier(.16,1,.3,1)}
+.tfdot.should{background:var(--surface);box-shadow:0 0 0 3px var(--blue)}
+.tfdot.at{width:12px;height:12px;margin:-6px 0 0 -6px;background:var(--ok);box-shadow:0 0 0 3px var(--surface),0 0 0 5px var(--ok)}
+.tfpace{display:flex;align-items:center;justify-content:space-between;gap:14px;width:100%;font-size:14px;color:var(--sub)}
+.tfat{display:flex;align-items:center;gap:10px}
+.tfat b{font-size:15px;color:var(--ink);min-width:110px}
+.tfbtns{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:28px}
+.tfkeys{font-size:12px;color:var(--faint);margin-top:14px}
+@media (prefers-reduced-motion:reduce){.tffill,.tfdot,#tf-needle{transition:none!important}}
+body.bunker .tgauge{display:block}
+body.bunker .tfclock{display:inline-block;font-family:ui-monospace,"SF Mono",Menlo,monospace;letter-spacing:6px;font-size:clamp(64px,10vw,120px);padding:8px 24px;border-radius:8px;
+  background:linear-gradient(180deg,#141210,#2A2620 45%,#141210);color:var(--cream);border:5px solid var(--brass);box-shadow:inset 0 4px 12px #000,0 0 0 3px #1a140a}
+body.bunker .tffill{background:var(--lamp);opacity:.5}
+body.bunker .tfdot.should{box-shadow:0 0 0 3px var(--brass)}
+body.bunker .tfdot.at{background:var(--lamp);box-shadow:0 0 10px var(--lamp)}
 
 </style>
 </head>
@@ -3096,7 +3123,7 @@ window.startTimer=(label,minutes)=>{
   if(state.timer.read) toast('Reading time: '+fmtDur(state.timer.read/60)+' — count the questions and marks');
 };
 window.timerPause=()=>{ const T=state.timer; if(!T) return; if(T.paused){ T.start+=Date.now()-T.pausedAt; T.paused=false; T.pausedAt=null; } else { T.paused=true; T.pausedAt=Date.now(); } paintTimer(); save(); };
-window.timerStop=()=>{ if(state.timer && timerLeft()>0 && !confirm('Stop the timer?')) return; state.timer=null; paintTimer(); save(); };
+window.timerStop=()=>{ if(state.timer && timerLeft()>0 && !confirm('Stop the timer?')) return; state.timer=null; window._tmFull=false; paintTimer(); paintFocus(); save(); };
 window.timerAdd=m=>{ if(!state.timer) return; state.timer.dur+=m*60; paintTimer(); save(); };
 window.tglTimerPanel=()=>{ state.tmOpen=!state.tmOpen; paintTimer(); };
 window.setTmPref=()=>{ const r=document.getElementById('tm-read'), e=document.getElementById('tm-every');
@@ -3119,7 +3146,7 @@ function runPanelHTML(T,left){
     <div class="note" id="tm-sub" style="margin:6px 0 8px;text-align:center"></div>
     <div class="tmpace" id="tm-pace"></div>
     <div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap">
-      ${left>0?`<button class="b sm" id="tm-pbtn" onclick="timerPause()">Pause</button><button class="b ghost sm" onclick="timerAdd(5)">+5 min</button>`:''}
+      ${left>0?`<button class="b sm" id="tm-pbtn" onclick="timerPause()">Pause</button><button class="b ghost sm" onclick="timerAdd(5)">+5 min</button><button class="b ghost sm" onclick="tmFull(true)">Full screen</button>`:''}
       <button class="b ghost sm" onclick="timerStop()">${left>0?'Stop':'Clear'}</button></div>
     ${left>0?`<details style="margin-top:10px" ${paceTotal(P)?'':'open'}><summary style="font-size:12.5px;padding:6px 2px">Pacing checkpoints<span class="chev">›</span></summary>
       <div class="tmrow"><label>Marks <input type="number" id="tp-marks" min="1" value="${esc(P.marks)}" onchange="setPace()"></label>
@@ -3183,7 +3210,7 @@ function timerTick(){
       if(k>0 && k>(T.warn.cp||0)){ T.warn.cp=k; beep(2,660); const pt=paceText(T); toast(k*ev+' min in · '+(pt||mmss(wl)+' left'),null,null,12000); save(); } }
   }
   if(!T.paused && !T.warn.end && left===0){ T.warn.end=true; beep(3); fireAlarm(); toast('Time’s up — pens down',null,null,15000); save(); }
-  paintTimer();
+  paintTimer(); if(window._tmFull) updateTimerFocus();
 }
 
 /* ================= backup ================= */
@@ -4709,6 +4736,56 @@ function vExams(){
   return h;
 }
 
+/* ================= full-screen timer ================= */
+window.tmFull=on=>{ window._tmFull=!!on; if(on) state.tmOpen=false; paintTimer(); paintFocus(); };
+window.tmQ=d=>{ const T=state.timer; if(!T) return; const q=qMarks(T.pace)||[]; T.atQ=Math.max(1,Math.min(q.length||99,(T.atQ||1)+d)); save(); updateTimerFocus(); };
+function qStarts(T){ // time-fraction at which each question should start, from the pace target
+  const q=qMarks(T.pace), mpm=paceMpm(T); if(!q||!mpm) return null;
+  const mins=T.dur/60; let cum=0; return q.map(m=>{ const f=cum/mpm/mins; cum+=m; return Math.min(1,f); });
+}
+function timerFocusHTML(){
+  const T=state.timer, st=qStarts(T);
+  return `<div class="tfx">
+    <div class="tfl">${esc(T.label)}</div>
+    <svg class="tgauge" viewBox="0 0 200 120" aria-hidden="true"><defs><linearGradient id="brassG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F5DC96"/><stop offset="1" stop-color="#8A6422"/></linearGradient></defs>
+      <path d="M20 108 A80 80 0 0 1 180 108" fill="none" stroke="url(#brassG)" stroke-width="12" stroke-linecap="round"/>
+      <path d="M20 108 A80 80 0 0 1 180 108" fill="none" stroke="#1B1812" stroke-width="3" stroke-dasharray="2 10.5" pathLength="251"/>
+      <path d="M150 50 A80 80 0 0 1 180 108" fill="none" stroke="#B8322A" stroke-width="5"/>
+      <g id="tf-needle" style="transform-origin:100px 108px;transition:transform .9s cubic-bezier(.3,1.4,.5,1)"><line x1="100" y1="108" x2="100" y2="34" stroke="#E0513A" stroke-width="4" stroke-linecap="round" style="filter:drop-shadow(0 0 3px rgba(224,81,58,.8))"/></g>
+      <circle cx="100" cy="108" r="9" fill="url(#brassG)" stroke="#1B1812" stroke-width="2"/></svg>
+    <div class="tfphase" id="tf-phase"></div>
+    <div class="tfclock" id="tf-clock"></div>
+    ${st?`<div class="tftrack"><div class="tffill" id="tf-fill"></div>${st.map((f,i)=>`<i class="tfq" style="left:${f*100}%"><b>Q${i+1}</b></i>`).join('')}
+      <span class="tfdot should" id="tf-should" title="Where the pace target says you should be"></span><span class="tfdot at" id="tf-at" title="Where you are"></span></div>
+      <div class="tfpace"><span id="tf-pace"></span><span class="tfat"><button class="b ghost sm" onclick="tmQ(-1)" aria-label="Previous question">‹</button><b id="tf-atq"></b><button class="b ghost sm" onclick="tmQ(1)" aria-label="Next question">›</button></span></div>`
+      :`<div class="tftrack"><div class="tffill" id="tf-fill"></div></div><div class="tfpace"><span id="tf-pace">Add marks and questions under Pacing to see where you should be.</span></div>`}
+    <div class="tfbtns"><button class="b" id="tf-pause" onclick="timerPause();updateTimerFocus()">Pause</button><button class="b ghost" onclick="timerAdd(5);updateTimerFocus()">+5 min</button>
+      <button class="b ghost" onclick="tmFull(false);state.tmOpen=true;paintTimer()">Pacing</button><button class="b ghost" onclick="timerStop()">Stop</button></div>
+    <div class="tfkeys">← → move your question · space pause · esc close</div></div>`;
+}
+function updateTimerFocus(){
+  const T=state.timer, g=id=>document.getElementById(id); if(!T||!g('tf-clock')){ return; }
+  const left=timerLeft(), wl=writeLeft(), rd=inReading(), frac=rd?0:Math.min(1,1-wl/T.dur);
+  g('tf-clock').textContent=left>0?mmss(rd?left-T.dur:wl):'Time’s up';
+  g('tf-clock').classList.toggle('warn',!rd&&left>0&&wl<=600); g('tf-clock').classList.toggle('over',left===0);
+  g('tf-phase').textContent=rd?'Reading time · writing starts in '+mmss(left-T.dur):left>0?(T.paused?'Paused':'Writing time · '+fmtDur(Math.round(T.dur/60))):'Pens down';
+  const f=g('tf-fill'); if(f) f.style.transform='scaleX('+frac+')';
+  const n=g('tf-needle'); if(n) n.style.transform='rotate('+(-90+frac*180)+'deg)';
+  const pb=g('tf-pause'); if(pb) pb.textContent=T.paused?'Resume':'Pause';
+  const st=qStarts(T), pc=g('tf-pace');
+  if(st){ const sh=g('tf-should'), at=g('tf-at'), pn=paceNow(T), atQ=Math.min(st.length,T.atQ||1);
+    if(sh) sh.style.left=frac*100+'%'; if(at) at.style.left=st[atQ-1]*100+'%';
+    g('tf-atq').textContent='You’re on Q'+atQ;
+    const want=pn&&pn.q?pn.q:(pn&&pn.q===0?st.length+1:1), diff=atQ-want;
+    if(pc) pc.innerHTML=rd?'Pace starts when writing does':pn&&pn.q===0?'Target: all questions done · checking time':`Target: Q${want} · <b style="color:${diff>=0?'var(--ok)':diff===-1?'var(--warn)':'var(--red)'}">${diff===0?'on pace':diff>0?diff+' ahead':(-diff)+' behind'}</b>`;
+  }
+}
+document.addEventListener('keydown',e=>{
+  if(!window._tmFull||!state.timer) return; const tg=e.target&&e.target.tagName; if(tg==='INPUT'||tg==='TEXTAREA') return;
+  if(e.key==='Escape'){ tmFull(false); } else if(e.key===' '){ e.preventDefault(); timerPause(); updateTimerFocus(); }
+  else if(e.key==='ArrowRight'){ tmQ(1); } else if(e.key==='ArrowLeft'){ tmQ(-1); }
+});
+
 /* ================= focus layer: full-screen sessions ================= */
 function paintFocus(){
   const el=document.getElementById('focus'); if(!el) return;
@@ -4720,9 +4797,10 @@ function paintFocus(){
   if(on&&!el.classList.contains('on')&&window._vt&&window._vt.skipTransition) window._vt.skipTransition();
   el.classList.toggle('on',on); document.body.classList.toggle('focusing',on); el.setAttribute('aria-hidden',on?'false':'true');
   if(!on){ el.innerHTML=''; return; }
+  const isT=!!(window._tmFull&&!cs&&!rs);
   el.innerHTML=`<div class="fxtop">${total?`<div class="fxbar"><span style="width:${Math.min(100,done/total*100)}%"></span></div><span class="fxn">${Math.min(done+1,total)} / ${total}</span>`:'<span></span>'}
     <button class="fxclose" onclick="${close}">Close <kbd>esc</kbd></button></div><div class="fxin">${html}</div>`;
-  deDash(el);
+  deDash(el); if(isT) updateTimerFocus();
 }
 
 /* ================= shell ================= */
