@@ -1062,7 +1062,7 @@ body.bunker .bottombar{display:none}
 .wn .grow small{display:block;color:var(--faint);font-size:12px}
 .statusdot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;vertical-align:1px}
 @media (max-width:1180px){.hero,.tgrid{grid-template-columns:1fr}}
-@media (max-width:620px){.ncard .big b{font-size:64px}.ncard .then{position:static;text-align:left;max-width:none;margin-top:12px}.rcard{flex-direction:column;align-items:flex-start}}
+@media (max-width:620px){.ncard .big b{font-size:64px}.ncard .then{position:static;text-align:left;max-width:none;margin-top:12px}.rcard{padding:18px;gap:16px}.rcard .ring{width:96px;height:96px}.rcard .ctr b{font-size:22px}}
 
 /* Launch Control keeps its own look; give the new shell a console finish there */
 body.bunker .side{display:flex;flex-direction:row;flex-wrap:wrap;gap:4px;align-items:center;padding:6px;margin-bottom:22px;border-radius:5px;
@@ -1757,6 +1757,15 @@ details.fold>summary small{font-size:13px;font-weight:500;color:var(--sub);lette
 #search .it span.t{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 #search .emp{padding:18px 20px;color:var(--sub);font-size:14px}
 @media (max-width:700px){#search .box{margin:8px}}
+
+/* ===== sweep fixes ===== */
+.rcard .rstats .lostlink b{display:inline;font-size:inherit;letter-spacing:0;color:var(--blue);font-weight:600}
+.wkpills{-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 40px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 40px),transparent);padding-right:36px}
+.seg{max-width:100%;overflow-x:auto;scrollbar-width:none}.seg::-webkit-scrollbar{display:none}.seg button{white-space:nowrap;flex-shrink:0}
+@media (hover:none){.del{min-width:34px;min-height:34px;display:inline-grid;place-items:center}}
+@media (max-width:560px){.mrow{flex-wrap:wrap}.mrow .grow{flex:1 1 calc(100% - 40px)}.mrow>.b{margin-left:22px}}
+@media (max-width:560px){.seg button{padding:7px 10px;font-size:12.5px}}
+body.bunker:not([data-sp=today]) .masthead,body.bunker:not([data-sp=today]) #stats,body.bunker:not([data-sp=today]) #beaconbay,body.bunker:not([data-sp=today]) .beaconbay{display:none}
 </style>
 </head>
 <body>
@@ -5080,9 +5089,7 @@ function paintLight(){
   document.body.classList.toggle('alertmode', !!(rem.length && state.bunker));
 }
 function paint(tabSwitch){
-  const pv=document.getElementById('planv');
-  if(pv){const rated=state.topics.filter(t=>t.rag).length;pv.textContent='v'+(state.planV||'?')+' \u00b7 '+state.tasks.length+' tasks \u00b7 '+rated+'/'+state.topics.length+' topics rated';}
-  const lb=document.getElementById('lastbk'); if(lb) lb.textContent=' \u00b7 last backup: '+(state.lastBackup?isoToLabel(state.lastBackup):'never');
+  document.body.dataset.sp=spaceOf(state.tab);
   renderStats();
   paintLight();
   paintTabs();
