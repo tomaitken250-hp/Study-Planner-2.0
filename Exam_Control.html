@@ -4130,7 +4130,7 @@ window.libSearch=v=>{ window._libQ=v; const q=v.toLowerCase(); document.querySel
 //   q  {x}                quote             hr {}
 // Inline HTML is rebuilt from text, so only b/i/code/sub/sup/br/mark ever reach the page; scripts,
 // links, styles and attributes from the original never do.
-const CONV_V=1;
+const CONV_V=2;
 const CONV_EXT=/\.(html?|md|markdown|txt|docx|pdf)$/i;
 function convertible(name){ return CONV_EXT.test(name); }
 const INL_OK={B:'b',STRONG:'b',I:'i',EM:'i',CODE:'code',SUB:'sub',SUP:'sup',MARK:'mark',BR:'br'};
@@ -4300,29 +4300,62 @@ async function fromPDF(buf){
     const tc=await (await pdf.getPage(i)).getTextContent(), lines=[];
     tc.items.forEach(it=>{ if(!it.str) return; const y=Math.round(it.transform[5]), sz=Math.round(Math.hypot(it.transform[2],it.transform[3])*10)/10;
       let L=lines.find(l=>Math.abs(l.y-y)<=Math.max(2,sz*.3)); if(!L){ L={y,sz,parts:[]}; lines.push(L); }
-      L.parts.push({x:it.transform[4],s:it.str,b:/bold|black|heavy/i.test(it.fontName||'')}); L.sz=Math.max(L.sz,sz); });
-    lines.sort((a,b)=>b.y-a.y); lines.forEach(l=>{ l.parts.sort((a,b)=>a.x-b.x); l.text=l.parts.map(p=>p.s).join('').replace(/\s+/g,' ').trim(); l.bold=l.parts.every(p=>p.b); });
+      L.parts.push({x:it.transform[4],w:it.width||0,s:it.str}); L.sz=Math.max(L.sz,sz); });
+    lines.sort((a,b)=>b.y-a.y);
+    lines.forEach(l=>{ l.parts.sort((a,b)=>a.x-b.x); l.text=l.parts.map(p=>p.s).join('').replace(/\s+/g,' ').trim();
+      const vis=l.parts.filter(p=>p.s.trim()); l.x0=vis.length?vis[0].x:0;
+      // cells: runs of text separated by a wide horizontal gap (table columns)
+      l.cells=[]; let cur=null, end=-1e9;
+      vis.forEach(p=>{ if(!cur||p.x-end>Math.max(14,l.sz*1.4)){ cur={x:p.x,s:''}; l.cells.push(cur); } cur.s+=(cur.s&&!/\s$/.test(cur.s)&&p.x-end>1?' ':'')+p.s; end=p.x+p.w; });
+      l.cells.forEach(c=>c.s=c.s.replace(/\s+/g,' ').trim()); });
     pages.push(lines.filter(l=>l.text));
   }
   const freq={}; pages.forEach(ls=>new Set(ls.map(l=>l.text)).forEach(t=>freq[t]=(freq[t]||0)+1));
   const rep=t=>pages.length>2&&freq[t]>=pages.length*.5||/^(page\s*)?\d{1,3}(\s*(of|\/)\s*\d{1,3})?$/i.test(t);
-  const sizes={}; pages.flat().forEach(l=>{ sizes[l.sz]=(sizes[l.sz]||0)+l.text.length; });
+  const all=pages.flat().filter(l=>!rep(l.text));
+  const sizes={}; all.forEach(l=>{ sizes[l.sz]=(sizes[l.sz]||0)+l.text.length; });
   const body=+Object.keys(sizes).sort((a,b)=>sizes[b]-sizes[a])[0]||10;
-  const big=[...new Set(pages.flat().filter(l=>l.sz>=body*1.12).map(l=>l.sz))].sort((a,b)=>b-a);
-  const blocks=[]; let para=null, list=null;
-  const flush=()=>{ if(para){ blocks.push({k:'p',x:esc(para.join(' ').replace(/-\s(?=[a-z])/g,''))}); para=null; } if(list){ blocks.push(list); list=null; } };
-  pages.forEach(ls=>{ let prev=null;
-    ls.forEach(l=>{ if(rep(l.text)){ return; }
-      if(l.sz>=body*1.12&&l.text.length<120){ flush(); blocks.push({k:'h',l:Math.min(3,big.indexOf(l.sz)+1)||2,x:esc(l.text)}); prev=null; return; }
-      const bm=l.text.match(/^([•▪◦●\-–*]|\d+[.)])\s+(.*)$/);
-      if(bm){ if(para){ blocks.push({k:'p',x:esc(para.join(' '))}); para=null; } if(!list) list={k:/\d/.test(bm[1])?'ol':'ul',items:[]}; list.items.push(esc(bm[2])); prev=l; return; }
-      if(list&&prev&&prev.y-l.y<l.sz*1.6&&!/^[A-Z]/.test(l.text)){ list.items[list.items.length-1]+=' '+esc(l.text); prev=l; return; }
-      if(l.bold&&l.text.length<80&&!/[.:,]$/.test(l.text)){ flush(); blocks.push({k:'h',l:3,x:esc(l.text)}); prev=null; return; }
-      const gap=prev?prev.y-l.y:0;
-      if(!para||list||gap>l.sz*1.75){ flush(); para=[]; }
-      para.push(l.text); prev=l; });
-    });
+  const big=[...new Set(all.filter(l=>l.sz>=body*1.12).map(l=>l.sz))].sort((a,b)=>b-a);
+  const xs={}; all.filter(l=>l.sz<body*1.12).forEach(l=>{ const k=Math.round(l.x0); xs[k]=(xs[k]||0)+l.text.length; });
+  // the margin is the left-most x that carries a real share of the text (indented lists can outweigh it)
+  const tot=Object.values(xs).reduce((a,b)=>a+b,0), margin=Math.min(...Object.keys(xs).filter(k=>xs[k]>=tot*.1).map(Number))||0, indented=l=>l.x0>margin+12;
+  const dateLine=new RegExp(DATE_RE.source,'i'), bullet=/^([•▪◦●∙‣\-–*])\s*(.+)$|^(\d+[.)])\s+(.+)$/;
+  const blocks=[]; let para=null, list=null, prev=null;
+  const flush=()=>{ if(para){ blocks.push({k:'p',x:esc(para.join(' ').replace(/(\w)- (?=[a-z])/g,'$1'))}); para=null; } if(list){ blocks.push(list); list=null; } };
+  for(let i=0;i<all.length;i++){
+    const l=all[i], nx=all[i+1], gap=prev?prev.y-l.y:0, newBlock=!prev||gap<0||gap>l.sz*1.75;
+    if(l.sz>=body*1.12&&l.text.length<140){ flush(); blocks.push({k:'h',l:Math.min(3,big.indexOf(l.sz)+1)||2,x:esc(l.text)}); prev=null; continue; }
+    // table: 2+ consecutive lines with the same number (2+) of columns
+    if(l.cells.length>=2&&nx&&nx.cells.length===l.cells.length){
+      flush(); const rows=[]; let j=i;
+      while(j<all.length&&all[j].cells.length===l.cells.length&&all[j].sz<body*1.12){ rows.push(all[j].cells.map(c=>esc(c.s))); j++; }
+      blocks.push({k:'tb',rows,head:true}); i=j-1; prev=null; continue; }
+    const bm=l.text.match(bullet);
+    if(bm||dateLine.test(l.text)&&l.text.length<300){
+      if(para){ blocks.push({k:'p',x:esc(para.join(' '))}); para=null; }
+      if(!list||list.k==='gl') { flush(); list={k:bm&&bm[3]?'ol':'ul',items:[]}; }
+      list.items.push(esc(bm?(bm[2]||bm[4]):l.text)); prev=l; continue; }
+    // glossary: a short line at the margin followed by an indented line
+    if(!indented(l)&&l.text.length<60&&!/[.,;:]$/.test(l.text)&&nx&&indented(nx)&&!bullet.test(nx.text)&&nx.sz<body*1.12){
+      if(!list||list.k!=='gl'){ flush(); list={k:'gl',items:[]}; }
+      list.items.push({t:l.text,d:esc(nx.text)}); i++; prev=nx; continue; }
+    // indented lines under a paragraph are list items even when the bullet is drawn, not written;
+    // a new item starts after a finished sentence, otherwise it's the same item wrapping
+    if(indented(l)&&(!list||list.k==='ul')&&(para||list)){
+      const cont=list&&prev&&indented(prev)&&!newBlock&&!/[.!?:;]$/.test(prev.text);
+      if(cont){ list.items[list.items.length-1]+=' '+esc(l.text); prev=l; continue; }
+      if(para){ blocks.push({k:'p',x:esc(para.join(' '))}); para=null; }
+      if(!list) list={k:'ul',items:[]};
+      list.items.push(esc(l.text)); prev=l; continue; }
+    // continuation of the last list item (wrapped text)
+    if(list&&!newBlock&&(indented(l)||list.k==='gl')&&!/^[A-Z0-9]/.test(l.text.slice(0,1))){
+      const last=list.items[list.items.length-1]; if(list.k==='gl') last.d+=' '+esc(l.text); else list.items[list.items.length-1]=last+' '+esc(l.text); prev=l; continue; }
+    if(list||newBlock||!para){ flush(); para=[]; }
+    para.push(l.text); prev=l;
+  }
   flush();
+  // glossary lists come out of tidyDoc as-is
+  blocks.forEach((b,i)=>{ if(b.k==='gl'&&b.items.length<2) blocks[i]={k:'p',x:'<b>'+esc(b.items[0].t)+'</b> '+b.items[0].d}; });
   return {title:'',blocks};
 }
 
