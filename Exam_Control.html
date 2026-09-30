@@ -3375,6 +3375,18 @@ window.slipAllOverdue=()=>{
   od.forEach(t=>moveTo(t,target));
   paint(); save(); toast(od.length+' task'+(od.length>1?'s':'')+' moved to '+target);
 };
+// out of action today: spread today's unfinished tasks over the next few study days, lightest day first
+window.lostToday=()=>{
+  const td=todayLabel(), left=state.tasks.filter(t=>t.day===td&&isActive(t)&&t.rec!=='exam');
+  if(!left.length){ toast('Nothing left today'); return; }
+  const days=[]; let i=todayIdx()+1;
+  while(days.length<3){ const d=nextStudyDay(i); if(!d) break; days.push(d); i=dayIdx(d)+1; }
+  if(!days.length){ alert('No study day left to move them to.'); return; }
+  if(!confirm('Spread '+left.length+' task'+(left.length>1?'s':'')+' from today over '+days.join(', ')+'?')) return;
+  const load=d=>state.tasks.filter(t=>t.day===d&&isActive(t)).reduce((a,t)=>a+t.m,0);
+  left.sort((a,b)=>b.m-a.m).forEach(t=>{ const d=days.slice().sort((x,y)=>load(x)-load(y))[0]; moveTo(t,d); });
+  paint(); save(); toast(left.length+' task'+(left.length>1?'s':'')+' moved, rest up');
+};
 function moveTo(t,target){ if(!t.slipped){ t.origDay=t.day; t.origBlk=t.blk; t.origWk=t.wk; } t.day=target; t.wk=weekOf(target); t.blk='BUF'; t.slipped=true; }
 window.xtra=(e,id)=>{
   if(e){ if(e.stopPropagation)e.stopPropagation(); if(e.preventDefault)e.preventDefault(); }
@@ -4877,6 +4889,7 @@ function vToday(){
   let R='';
   if(state.orphans){ R+=`<div class="card panel"><div class="note" style="margin:0"><b>${state.orphans} task${state.orphans>1?'s':''} moved.</b> ${state.orphans>1?'They were':'It was'} on a date that isn’t in the plan, and now sit on the right day.</div></div>`; state.orphans=0; }
   R+=examKitHTML()+capBannerHTML();
+  if(isToday && rem.length) R+=`<div class="card panel"><h4><span class="statusdot" style="background:var(--spanish)"></span>Out of action today?<button class="b ghost sm" onclick="lostToday()">Spread it out</button></h4><div class="note" style="margin:0">Moves today’s ${rem.length} unfinished task${rem.length>1?'s':''} onto the next study days, lightest day first. Each can be moved back with ↩.</div></div>`;
   const od=overdueTasks();
   if(od.length) R+=`<div class="card panel"><h4><span class="statusdot" style="background:var(--warn)"></span>${od.length} overdue<button class="b ghost sm" onclick="slipAllOverdue()">Move to next study day</button></h4>
     <div class="note" style="margin:0">${od.slice(0,4).map(t=>esc(t.day+' · '+t12(headOf(t)))).join('<br>')}${od.length>4?'<br>and '+(od.length-4)+' more':''}</div></div>`;
