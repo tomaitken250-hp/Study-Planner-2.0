@@ -3340,7 +3340,8 @@ const FINALS=[
 function vSchool(){
   const wk=curWeek(), items=CHECKLISTS[wk]||[], ck=state.checks[wk]||{}, done=items.filter(i=>ck[i.id]).length;
   const wl=(WEEKS.find(w=>w[0]===wk)||[,''])[1].split(' · ');
-  let h=`<section class="card chkhead"><div><h3>${esc(wl[0]||'This week')}</h3><div class="sub">${esc([wl[2],wl[1]].filter(Boolean).join(' · ').replace(/[–—]/g,'-'))}</div></div>
+  const cap=x=>x?x[0].toUpperCase()+x.slice(1):x;
+  let h=`<section class="card chkhead"><div><h3>${esc((wl[0]||'This week').replace(/\bwk\b/,'week'))}</h3><div class="sub">${esc([cap(wl[2]),wl[1]].filter(Boolean).join(' · ').replace(/[–—]/g,'-'))}</div></div>
     <div class="chkn"><b>${done}<em>/${items.length}</em></b><span>done</span></div><div class="wkbar"><span style="width:${items.length?done/items.length*100:0}%"></span></div></section>`;
   if(!items.length) return h+`<div class="card empty"><b>Nothing this week</b>The list changes automatically each week.</div>`;
   h+=`<div class="plist">`+items.map(i=>{ const c=!!ck[i.id];
